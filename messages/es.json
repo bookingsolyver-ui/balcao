@@ -148,7 +148,8 @@
     "manage": "Gestionar",
     "orders": "Pedidos",
     "ordersNew": "{n, plural, one {# pedido nuevo} other {# pedidos nuevos}}",
-    "openQueue": "Abrir cola de pedidos"
+    "openQueue": "Abrir cola de pedidos",
+    "editSettings": "Editar ajustes"
   },
   "store": {
     "open": "Abierto",
@@ -267,7 +268,9 @@
       "pix": "Pix",
       "mbway": "MB WAY",
       "transfer": "Transferencia",
-      "other": "Otro"
+      "other": "Otro",
+      "express": "Multicaixa Express",
+      "store": "Pagar en la tienda"
     },
     "change": "¿Cambio para cuánto? (opcional)",
     "note": "Notas del pedido",
@@ -381,6 +384,57 @@
       "shipped_delivery": "¡Hola, {name}! Tu pedido #{number} fue enviado. — {business}",
       "completed": "Pedido #{number} completado. ¡Gracias! — {business}",
       "cancelled": "Tu pedido #{number} fue cancelado. Responde aquí si necesitas algo. — {business}"
+    }
+  },
+  "settings": {
+    "title": "Ajustes",
+    "back": "Volver al panel",
+    "save": "Guardar cambios",
+    "saving": "Guardando…",
+    "saved": "Cambios guardados.",
+    "viewOnly": "Solo el propietario y los administradores pueden cambiar los ajustes.",
+    "business": "Negocio",
+    "name": "Nombre del negocio",
+    "address": "Dirección",
+    "whatsapp": "WhatsApp del negocio",
+    "whatsappHint": "Con prefijo del país, o solo el número nacional.",
+    "country": "País",
+    "countryHint": "Al cambiar el país sugerimos zona horaria e idioma; puedes ajustarlos.",
+    "timezone": "Zona horaria",
+    "language": "Idioma de la tienda",
+    "published": "Tienda visible al público",
+    "publishedHint": "Desactivada, la tienda aparece como «no encontrada» y no recibe pedidos.",
+    "currency": "Moneda",
+    "currencyNote": "La moneda ({currency}) no se puede cambiar, porque los precios ya están guardados en ella.",
+    "modules": "Módulos",
+    "moduleSoon": "Aún sin gestión en el panel.",
+    "orders": "Pedidos",
+    "receive": "Formas de recibir",
+    "fee": "Coste de entrega ({currency})",
+    "min": "Pedido mínimo ({currency})",
+    "eta": "Previsión de atención",
+    "payments": "Formas de pago aceptadas",
+    "paymentsHint": "«Pagar en la tienda» solo está disponible para recoger o en mesa, nunca en entregas.",
+    "suggest": "Usar la sugerencia para {country}: {methods}",
+    "hours": "Horario de apertura",
+    "closed": "Cerrado",
+    "opens": "Abre",
+    "closes": "Cierra",
+    "errors": {
+      "name": "Indica el nombre del negocio.",
+      "whatsapp": "WhatsApp no válido. Revisa el número.",
+      "country": "País no válido.",
+      "timezone": "Zona horaria no válida.",
+      "locale": "Idioma no válido.",
+      "fee": "Coste de entrega no válido.",
+      "min": "Pedido mínimo no válido.",
+      "eta": "Indica la previsión de atención (hasta 60 caracteres).",
+      "no_fulfillment": "Activa al menos una forma de recibir.",
+      "no_payment": "Elige al menos una forma de pago.",
+      "no_payment_for_delivery": "La entrega necesita un pago distinto de «Pagar en la tienda».",
+      "hours": "Horario no válido: la hora de cierre debe ser posterior a la de apertura.",
+      "forbidden": "No tienes permiso para cambiar los ajustes.",
+      "generic": "No se pudo guardar. Inténtalo de nuevo."
     }
   }
 }

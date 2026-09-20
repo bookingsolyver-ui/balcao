@@ -1,18 +1,14 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { useRefresh } from '@/lib/useRefresh';
+import { paymentsFor } from '@/lib/payments';
 import { createClient } from '@/lib/supabase/client';
 import { dbErrorKey } from '@/lib/errors';
 import { waLink } from '@/lib/phone';
 import { resolveLines } from '@/lib/cart';
-import { PAY_METHODS, allowedFulfillments, buildOrderParams, orderMessage, totals, unitPrice, type Fulfillment, type OrderForm } from '@/lib/order';
+import { allowedFulfillments, buildOrderParams, orderMessage, totals, unitPrice, type Fulfillment, type OrderForm } from '@/lib/order';
 import { useCart } from './CartProvider';
-
-/** Atualiza a página (stock/disponibilidade). Fora da aplicação Next (testes) não faz nada em vez de rebentar. */
-function useRefresh(): () => void {
-  try { const r = useRouter(); return () => r.refresh(); } catch { return () => undefined; }
-}
 
 interface Done { number: number; total: number; token: string; text: string }
 const CUSTOMER_KEY = 'balcao:customer';
@@ -25,8 +21,11 @@ export function CheckoutDialog() {
   const mod = module!;
   const cfg = info.configs[mod];
   const fulfillments = allowedFulfillments(cfg);
-  const payments = (cfg.payments.filter((p) => (PAY_METHODS as string[]).includes(p)).length ? cfg.payments.filter((p) => (PAY_METHODS as string[]).includes(p)) : ['cash']);
-  const [form, setForm] = useState<OrderForm>({ fulfillment: fulfillments[0] ?? 'pickup', name: '', phone: '', address: '', table: '', payment: payments[0], change: '', note: '' });
+  const initialFulfillment = fulfillments[0] ?? 'pickup';
+  const [form, setForm] = useState<OrderForm>({ fulfillment: initialFulfillment, name: '', phone: '', address: '', table: '', payment: paymentsFor(cfg, initialFulfillment)[0] ?? 'cash', change: '', note: '' });
+  // "pagar na loja" não existe em entregas: a lista muda com a forma de receber
+  const payments = paymentsFor(cfg, form.fulfillment);
+  const payment = payments.includes(form.payment) ? form.payment : (payments[0] ?? 'cash');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [done, setDone] = useState<Done | null>(null);
@@ -49,7 +48,7 @@ export function CheckoutDialog() {
     e.preventDefault();
     setErr(null);
     if (lines.length === 0) return setErr('empty_cart');
-    const built = buildOrderParams(form, { slug: info.slug, module: mod, country: info.country, currency: info.currency, decimals: info.decimals, lines: lines.map((l) => ({ itemId: l.item.id, qty: l.qty })) });
+    const built = buildOrderParams({ ...form, payment }, { slug: info.slug, module: mod, country: info.country, currency: info.currency, decimals: info.decimals, lines: lines.map((l) => ({ itemId: l.item.id, qty: l.qty })) });
     if (!built.ok) return setErr(built.error);
     if (tot.missing > 0) return setErr('below_minimum');
     setBusy(true);
@@ -68,7 +67,7 @@ export function CheckoutDialog() {
         fulfillmentLabel: t(`fulfillment.${form.fulfillment}`), address: built.params.p_address, table: built.params.p_table,
         lines: lines.map((l) => ({ qty: l.qty, name: l.item.name, total: money(unitPrice(l.item) * l.qty) })),
         subtotal: money(tot.subtotal), fee: tot.fee ? money(tot.fee) : null, total: money(r.total_minor),
-        paymentLabel: t(`pay.${form.payment}`), change: built.params.p_cash_change_minor != null ? money(built.params.p_cash_change_minor) : null, note: built.params.p_note,
+        paymentLabel: t(`pay.${payment}`), change: built.params.p_cash_change_minor != null ? money(built.params.p_cash_change_minor) : null, note: built.params.p_note,
         trackUrl: `${window.location.origin}/${locale}/s/${info.slug}/order/${r.public_token}`,
         labels: { order: t('wa.order'), customer: t('wa.customer'), type: t('wa.type'), subtotal: t('wa.subtotal'), delivery: t('wa.delivery'), total: t('wa.total'), payment: t('wa.payment'), changeFor: t('wa.changeFor'), note: t('wa.note'), track: t('wa.track'), table: t('wa.table') },
       });
@@ -125,8 +124,8 @@ export function CheckoutDialog() {
               <div className="field"><label htmlFor="co-phone">{t('phone')}</label><input id="co-phone" className="input" type="tel" inputMode="tel" autoComplete="tel" value={form.phone} onChange={(e) => set_('phone', e.target.value)} /><span className="hint">{t('phoneHint')}</span></div>
             </div>
             <div className="field"><span className="lbl">{t('paymentTitle')}</span>
-              <div className="opts">{payments.map((p) => <button type="button" key={p} className="opt" aria-pressed={form.payment === p} onClick={() => set_('payment', p)}>{t(`pay.${p}` as never)}</button>)}</div></div>
-            {form.payment === 'cash' && <div className="field"><label htmlFor="co-change">{t('change')}</label><input id="co-change" className="input" inputMode="decimal" value={form.change} onChange={(e) => set_('change', e.target.value)} /></div>}
+              <div className="opts">{payments.map((p) => <button type="button" key={p} className="opt" aria-pressed={payment === p} onClick={() => set_('payment', p)}>{t(`pay.${p}` as never)}</button>)}</div></div>
+            {payment === 'cash' && <div className="field"><label htmlFor="co-change">{t('change')}</label><input id="co-change" className="input" inputMode="decimal" value={form.change} onChange={(e) => set_('change', e.target.value)} /></div>}
             <div className="field"><label htmlFor="co-note">{t('note')}</label><input id="co-note" className="input" maxLength={300} value={form.note} onChange={(e) => set_('note', e.target.value)} /></div>
 
             <div className="sf-sum">

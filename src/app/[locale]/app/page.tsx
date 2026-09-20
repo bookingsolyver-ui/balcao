@@ -56,7 +56,10 @@ export default async function Dashboard({ params, searchParams }: { params: Prom
           </div>
 
           <div className="card">
-            <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-.025em', marginBottom: 12 }}>{t('settings')}</h2>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 12 }}>
+              <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-.025em' }}>{t('settings')}</h2>
+              <Link className="btn sm" href={`/app/settings?t=${tenant.slug}`}>{t('editSettings')}</Link>
+            </div>
             <div className="list" style={{ background: 'var(--bg)' }}>
               {[
                 [t('niche'), niche],

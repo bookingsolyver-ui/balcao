@@ -148,7 +148,8 @@
     "manage": "Manage",
     "orders": "Orders",
     "ordersNew": "{n, plural, one {# new order} other {# new orders}}",
-    "openQueue": "Open order queue"
+    "openQueue": "Open order queue",
+    "editSettings": "Edit settings"
   },
   "store": {
     "open": "Open",
@@ -267,7 +268,9 @@
       "pix": "Pix",
       "mbway": "MB WAY",
       "transfer": "Bank transfer",
-      "other": "Other"
+      "other": "Other",
+      "express": "Multicaixa Express",
+      "store": "Pay in store"
     },
     "change": "Change for how much? (optional)",
     "note": "Order notes",
@@ -381,6 +384,57 @@
       "shipped_delivery": "Hi {name}! Your order #{number} has been shipped. — {business}",
       "completed": "Order #{number} completed. Thank you! — {business}",
       "cancelled": "Your order #{number} was cancelled. Reply here if you need anything. — {business}"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "back": "Back to dashboard",
+    "save": "Save changes",
+    "saving": "Saving…",
+    "saved": "Changes saved.",
+    "viewOnly": "Only the owner and admins can change settings.",
+    "business": "Business",
+    "name": "Business name",
+    "address": "Address",
+    "whatsapp": "Business WhatsApp",
+    "whatsappHint": "With country code, or just the national number.",
+    "country": "Country",
+    "countryHint": "Changing the country suggests a time zone and language; you can adjust them.",
+    "timezone": "Time zone",
+    "language": "Store language",
+    "published": "Store visible to the public",
+    "publishedHint": "When off, the store shows as “not found” and takes no orders.",
+    "currency": "Currency",
+    "currencyNote": "The currency ({currency}) cannot be changed, because prices are already stored in it.",
+    "modules": "Modules",
+    "moduleSoon": "No dashboard management yet.",
+    "orders": "Orders",
+    "receive": "Ways to receive",
+    "fee": "Delivery fee ({currency})",
+    "min": "Minimum order ({currency})",
+    "eta": "Estimated time",
+    "payments": "Accepted payment methods",
+    "paymentsHint": "“Pay in store” is only available for pickup or at the table, never for delivery.",
+    "suggest": "Use the suggestion for {country}: {methods}",
+    "hours": "Opening hours",
+    "closed": "Closed",
+    "opens": "Opens",
+    "closes": "Closes",
+    "errors": {
+      "name": "Enter the business name.",
+      "whatsapp": "Invalid WhatsApp number. Please check it.",
+      "country": "Invalid country.",
+      "timezone": "Invalid time zone.",
+      "locale": "Invalid language.",
+      "fee": "Invalid delivery fee.",
+      "min": "Invalid minimum order.",
+      "eta": "Enter the estimated time (up to 60 characters).",
+      "no_fulfillment": "Turn on at least one way to receive.",
+      "no_payment": "Choose at least one payment method.",
+      "no_payment_for_delivery": "Delivery needs a payment method other than “Pay in store”.",
+      "hours": "Invalid hours: closing time must be after opening time.",
+      "forbidden": "You don't have permission to change settings.",
+      "generic": "Could not save. Please try again."
     }
   }
 }

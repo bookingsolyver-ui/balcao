@@ -8,6 +8,7 @@ import { decimalsFor } from '@/lib/money';
 import { toE164Digits } from '@/lib/phone';
 import { isValidSlug, slugify } from '@/lib/slug';
 import { dbErrorKey } from '@/lib/errors';
+import { suggestedPayments } from '@/lib/payments';
 import type { ModuleId } from '@/lib/types';
 
 interface Props {
@@ -57,11 +58,20 @@ export function OnboardingForm({ niches, countries, currencies, timezones, defau
     if (whatsapp.trim() && !phone) return setError('whatsappInvalid');
     setBusy(true);
     try {
-      const { error } = await createClient().rpc('create_tenant', {
+      const sb = createClient();
+      const { data: newId, error } = await sb.rpc('create_tenant', {
         p_slug: slug, p_name: name.trim(), p_niche: niche, p_currency: currency, p_currency_decimals: decimalsFor(currency),
         p_locale: storeLocale, p_timezone: timezone, p_country: country, p_whatsapp: phone,
       });
       if (error) return setError(`errors.${dbErrorKey(error)}`);
+      // o negócio já nasce com os pagamentos habituais do país (ex.: Angola → Express, transferência, pagar na loja); não bloqueia se falhar
+      try {
+        const { data: row } = await sb.from('tenants').select('settings').eq('id', newId as string).single();
+        const settings = (row?.settings ?? {}) as Record<string, unknown>;
+        const pay = suggestedPayments(country);
+        const withPay = (m: string) => ({ ...((settings[m] as object) ?? {}), payments: pay });
+        await sb.from('tenants').update({ settings: { ...settings, menu: withPay('menu'), catalog: withPay('catalog') } }).eq('id', newId as string);
+      } catch { /* o dono pode ajustar nas Definições */ }
       router.replace('/app'); router.refresh();
     } catch { setError('errors.generic'); } finally { setBusy(false); }
   }

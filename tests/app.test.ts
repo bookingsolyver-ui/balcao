@@ -98,4 +98,10 @@ for (const l of ['pt-PT', 'pt-BR', 'en', 'es']) {
   for (const mod of ['menu', 'catalog'] as const) for (const st of FLOW[mod].slice(0, -1)) assert.ok(m.orders.actions[mod][st], `${l}: orders.actions.${mod}.${st}`);
   for (const st of ['new', 'preparing', 'ready', 'confirmed', 'shipped', 'completed', 'cancelled']) for (const f of FULFILLMENTS) assert.ok(m.orders.wa[waStatusKey(st, f)], `${l}: orders.wa.${waStatusKey(st, f)}`);
 }
+// definições: todos os erros que o ecrã pode mostrar têm tradução
+for (const l of ['pt-PT', 'pt-BR', 'en', 'es']) {
+  const m = load(l);
+  for (const k of ['name', 'whatsapp', 'country', 'timezone', 'locale', 'fee', 'min', 'eta', 'no_fulfillment', 'no_payment', 'no_payment_for_delivery', 'hours', 'forbidden', 'generic']) assert.ok(m.settings.errors[k], `${l}: settings.errors.${k}`);
+  assert.ok(m.dashboard.editSettings, `${l}: dashboard.editSettings`);
+}
 console.log('✔ lógica da aplicação OK (slug, países, horário, erros, traduções)');

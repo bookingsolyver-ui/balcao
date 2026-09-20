@@ -3,8 +3,8 @@ import { toMinor } from './money';
 
 export type OrderModule = 'menu' | 'catalog';
 export type Fulfillment = 'pickup' | 'delivery' | 'dine_in';
-export type PayMethod = 'cash' | 'card' | 'online' | 'pix' | 'mbway' | 'transfer' | 'other';
-export const PAY_METHODS: PayMethod[] = ['cash', 'card', 'online', 'pix', 'mbway', 'transfer', 'other'];
+export type PayMethod = 'cash' | 'card' | 'online' | 'pix' | 'mbway' | 'transfer' | 'express' | 'store' | 'other';
+export const PAY_METHODS: PayMethod[] = ['cash', 'card', 'online', 'pix', 'mbway', 'transfer', 'express', 'store', 'other'];
 export const FULFILLMENTS: Fulfillment[] = ['pickup', 'delivery', 'dine_in'];
 
 /* ---------- estados ---------- */

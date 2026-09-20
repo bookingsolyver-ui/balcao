@@ -17,6 +17,7 @@ import { MODULE_IDS, type Category, type Item, type LoyaltyProgram, type ModuleI
 const hue = (s: string) => { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h % 360; };
 const dayName = (d: number, locale: string) => new Intl.DateTimeFormat(locale, { weekday: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(2023, 0, 1 + d)));
 const hm = (t: string) => t.slice(0, 5);
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 export default async function Store({ params, searchParams }: { params: Promise<{ locale: string; slug: string }>; searchParams: Promise<{ tab?: string }> }) {
   const { locale, slug } = await params;
@@ -150,7 +151,7 @@ export default async function Store({ params, searchParams }: { params: Promise<
             <div className="list">
               {[1, 2, 3, 4, 5, 6, 0].map((d) => {
                 const r = hourRows.find((h) => h.weekday === d);
-                return <div className="row" key={d} style={{ minHeight: 44, padding: '8px 18px' }}><div className="g"><strong style={{ fontWeight: 500, textTransform: 'capitalize' }}>{dayName(d, locale)}</strong></div>
+                return <div className="row" key={d} style={{ minHeight: 44, padding: '8px 18px' }}><div className="g"><strong style={{ fontWeight: 500 }}>{cap(dayName(d, locale))}</strong></div>
                   <span className="muted tnum">{r?.is_open ? `${hm(r.opens)} – ${hm(r.closes)}` : t('closed')}</span></div>;
               })}
             </div>
