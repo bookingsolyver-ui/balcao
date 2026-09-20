@@ -144,7 +144,8 @@
     "switch": "Switch business",
     "another": "Create another business",
     "phase": "This dashboard is at phase 1. Managing items, orders and bookings arrives in the next phases.",
-    "country": "Country"
+    "country": "Country",
+    "manage": "Manage"
   },
   "store": {
     "open": "Open",
@@ -180,5 +181,61 @@
     "generic": "Something went wrong. Please try again.",
     "configTitle": "Missing configuration",
     "configText": "Fill in NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local and restart the server."
+  },
+  "items": {
+    "title": {
+      "menu": "Menu items",
+      "catalog": "Catalog products"
+    },
+    "back": "Back to dashboard",
+    "newItem": {
+      "menu": "New item",
+      "catalog": "New product"
+    },
+    "editTitle": {
+      "menu": "Edit item",
+      "catalog": "Edit product"
+    },
+    "newCategory": "New category",
+    "renameCategory": "Rename category",
+    "empty": {
+      "menu": "No items yet. Create a category and your first item.",
+      "catalog": "No products yet. Create a category and your first product."
+    },
+    "emptyCategory": "No items in this category.",
+    "noCategory": "No category",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDelete": "Delete “{name}”? This cannot be undone.",
+    "confirmDeleteCategory": "Delete the category “{name}”? Its items will have no category.",
+    "noStock": "Stock not tracked",
+    "soldOut": "Sold out",
+    "lowStock": "Low",
+    "available": "Available to customers",
+    "viewOnly": "Only the owner and admins can change items.",
+    "fName": "Name",
+    "fCategory": "Category",
+    "fNewCategory": "Or create a new category",
+    "fPrice": "Price ({currency})",
+    "fPromo": "Sale price (optional)",
+    "fStock": "Stock (empty = not tracked)",
+    "fDescription": "Description",
+    "fIcon": "Icon",
+    "fPhoto": "Photo (optional)",
+    "choosePhoto": "Choose photo",
+    "removePhoto": "Remove photo",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "errors": {
+      "name": "Enter a name.",
+      "price": "Invalid price.",
+      "promo": "The sale price must be a valid amount lower than the price.",
+      "stock": "Stock must be a whole number (or empty).",
+      "upload": "Could not upload the photo. Use an image up to 8 MB.",
+      "forbidden": "You don't have permission for this action.",
+      "invalid_data": "Check the details and try again.",
+      "generic": "Could not save. Please try again."
+    }
   }
 }

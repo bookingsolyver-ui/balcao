@@ -8,6 +8,7 @@ import { getSession } from '@/lib/session';
 import { isValidSlug } from '@/lib/slug';
 import { formatMoney, moneyLocale } from '@/lib/money';
 import { waLink } from '@/lib/phone';
+import { imageUrl } from '@/lib/storage';
 import { openStatus, type HourRow } from '@/lib/hours';
 import { MODULE_IDS, type Category, type Item, type LoyaltyProgram, type ModuleId, type Service, type Tenant } from '@/lib/types';
 
@@ -71,7 +72,7 @@ export default async function Store({ params, searchParams }: { params: Promise<
             const out = !i.active || i.stock === 0;
             return (
               <div className="row" key={i.id} style={{ opacity: out ? .55 : 1, alignItems: 'flex-start' }}>
-                <span className="th" style={{ ['--h' as string]: hue(i.name) }}>{i.emoji ?? '•'}</span>
+                <span className="th" style={{ ['--h' as string]: hue(i.name) }}>{i.image_path ? <img src={imageUrl(i.image_path)} alt="" loading="lazy" /> : (i.emoji ?? '•')}</span>
                 <div className="g"><strong>{i.name}</strong>{i.description && <small style={{ whiteSpace: 'normal' }}>{i.description}</small>}<div style={{ marginTop: 4 }}>{price(i)}</div></div>
                 {out ? <span className="badge">{i.stock === 0 ? t('soldOut') : t('unavailable')}</span>
                   : mod === 'catalog' && i.stock != null && i.stock <= lowStock ? <span className="badge warn">{t('lastUnits', { n: i.stock })}</span> : null}

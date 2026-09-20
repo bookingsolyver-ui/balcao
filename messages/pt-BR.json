@@ -144,7 +144,8 @@
     "switch": "Trocar de negócio",
     "another": "Criar outro negócio",
     "phase": "Este painel está na fase 1. O gerenciamento de itens, pedidos e agendamentos chega nas próximas fases.",
-    "country": "País"
+    "country": "País",
+    "manage": "Gerenciar"
   },
   "store": {
     "open": "Aberto",
@@ -180,5 +181,61 @@
     "generic": "Ocorreu um erro. Tente novamente.",
     "configTitle": "Configuração em falta",
     "configText": "Preencha NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY em .env.local e reinicie o servidor."
+  },
+  "items": {
+    "title": {
+      "menu": "Itens do cardápio",
+      "catalog": "Produtos do catálogo"
+    },
+    "back": "Voltar ao painel",
+    "newItem": {
+      "menu": "Novo item",
+      "catalog": "Novo produto"
+    },
+    "editTitle": {
+      "menu": "Editar item",
+      "catalog": "Editar produto"
+    },
+    "newCategory": "Nova categoria",
+    "renameCategory": "Renomear categoria",
+    "empty": {
+      "menu": "Ainda não tem itens. Crie uma categoria e o primeiro item.",
+      "catalog": "Ainda não tem produtos. Crie uma categoria e o primeiro produto."
+    },
+    "emptyCategory": "Nenhum item nesta categoria.",
+    "noCategory": "Sem categoria",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "confirmDelete": "Excluir “{name}”? Esta ação não pode ser desfeita.",
+    "confirmDeleteCategory": "Excluir a categoria “{name}”? Os itens ficam sem categoria.",
+    "noStock": "Sem controle de estoque",
+    "soldOut": "Esgotado",
+    "lowStock": "Baixo",
+    "available": "Disponível para clientes",
+    "viewOnly": "Só o proprietário e os administradores podem alterar itens.",
+    "fName": "Nome",
+    "fCategory": "Categoria",
+    "fNewCategory": "Ou crie uma categoria nova",
+    "fPrice": "Preço ({currency})",
+    "fPromo": "Preço promocional (opcional)",
+    "fStock": "Estoque (vazio = sem controle)",
+    "fDescription": "Descrição",
+    "fIcon": "Ícone",
+    "fPhoto": "Foto (opcional)",
+    "choosePhoto": "Escolher foto",
+    "removePhoto": "Remover foto",
+    "save": "Salvar",
+    "saving": "Salvando…",
+    "cancel": "Cancelar",
+    "errors": {
+      "name": "Indique o nome.",
+      "price": "Preço inválido.",
+      "promo": "A promoção tem de ser um valor válido e menor que o preço.",
+      "stock": "O estoque tem de ser um número inteiro (ou ficar vazio).",
+      "upload": "Não foi possível enviar a foto. Use uma imagem até 8 MB.",
+      "forbidden": "Não tem permissão para esta ação.",
+      "invalid_data": "Verifique os dados e tente novamente.",
+      "generic": "Não foi possível guardar. Tente novamente."
+    }
   }
 }

@@ -144,7 +144,8 @@
     "switch": "Cambiar de negocio",
     "another": "Crear otro negocio",
     "phase": "Este panel está en la fase 1. La gestión de artículos, pedidos y reservas llega en las próximas fases.",
-    "country": "País"
+    "country": "País",
+    "manage": "Gestionar"
   },
   "store": {
     "open": "Abierto",
@@ -180,5 +181,61 @@
     "generic": "Ocurrió un error. Inténtalo de nuevo.",
     "configTitle": "Falta configuración",
     "configText": "Rellena NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY en .env.local y reinicia el servidor."
+  },
+  "items": {
+    "title": {
+      "menu": "Artículos de la carta",
+      "catalog": "Productos del catálogo"
+    },
+    "back": "Volver al panel",
+    "newItem": {
+      "menu": "Nuevo artículo",
+      "catalog": "Nuevo producto"
+    },
+    "editTitle": {
+      "menu": "Editar artículo",
+      "catalog": "Editar producto"
+    },
+    "newCategory": "Nueva categoría",
+    "renameCategory": "Renombrar categoría",
+    "empty": {
+      "menu": "Todavía no tienes artículos. Crea una categoría y tu primer artículo.",
+      "catalog": "Todavía no tienes productos. Crea una categoría y tu primer producto."
+    },
+    "emptyCategory": "No hay artículos en esta categoría.",
+    "noCategory": "Sin categoría",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "confirmDelete": "¿Eliminar «{name}»? Esta acción no se puede deshacer.",
+    "confirmDeleteCategory": "¿Eliminar la categoría «{name}»? Sus artículos quedarán sin categoría.",
+    "noStock": "Sin control de stock",
+    "soldOut": "Agotado",
+    "lowStock": "Bajo",
+    "available": "Disponible para clientes",
+    "viewOnly": "Solo el propietario y los administradores pueden cambiar artículos.",
+    "fName": "Nombre",
+    "fCategory": "Categoría",
+    "fNewCategory": "O crea una categoría nueva",
+    "fPrice": "Precio ({currency})",
+    "fPromo": "Precio de oferta (opcional)",
+    "fStock": "Stock (vacío = sin control)",
+    "fDescription": "Descripción",
+    "fIcon": "Icono",
+    "fPhoto": "Foto (opcional)",
+    "choosePhoto": "Elegir foto",
+    "removePhoto": "Quitar foto",
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "cancel": "Cancelar",
+    "errors": {
+      "name": "Indica el nombre.",
+      "price": "Precio no válido.",
+      "promo": "La oferta debe ser un importe válido y menor que el precio.",
+      "stock": "El stock debe ser un número entero (o quedar vacío).",
+      "upload": "No se pudo subir la foto. Usa una imagen de hasta 8 MB.",
+      "forbidden": "No tienes permiso para esta acción.",
+      "invalid_data": "Revisa los datos e inténtalo de nuevo.",
+      "generic": "No se pudo guardar. Inténtalo de nuevo."
+    }
   }
 }
