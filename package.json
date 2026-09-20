@@ -1,0 +1,19 @@
+{
+  "name": "balcao",
+  "version": "0.1.0",
+  "description": "Plataforma multi-inquilino para negócios locais: cardápio, agenda, catálogo e fidelidade.",
+  "scripts": {
+    "test": "npm run test:lib && npm run test:db",
+    "test:db": "node tests/db.test.mjs",
+    "test:lib": "tsx tests/lib.test.ts",
+    "typecheck": "tsc"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "@types/node": "^26.6.2",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2"
+  },
+  "private": true,
+  "type": "module"
+}

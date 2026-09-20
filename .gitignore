@@ -1,0 +1,13 @@
+node_modules/
+.next/
+.vercel/
+dist/
+.env
+.env.*
+!.env.example
+.DS_Store
+supabase/.branches/
+supabase/.temp/
+# Claude Code: configuração pessoal (a partilhada é .mcp.json.example)
+.claude/settings.local.json
+.mcp.json

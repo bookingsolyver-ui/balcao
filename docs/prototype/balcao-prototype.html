@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="auto" data-accent="blue">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Balcão — pedidos, agenda, catálogo e fidelidade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --acc-light:#0071e3;--acc-dark:#0a84ff;--accent:var(--acc-light);
+  --bg:#fff;--bg2:#f5f5f7;--bg3:#e8e8ed;--card:#f5f5f7;--sheet:#fff;--seg-on:#fff;
+  --fg:#1d1d1f;--fg2:#6e6e73;--fg3:#86868b;
+  --line:rgba(0,0,0,.12);--line2:rgba(0,0,0,.07);--glass:rgba(255,255,255,.74);
+  --ok:#248a3d;--warn:#b25000;--bad:#d70015;--wa:#178a49;
+  --tint:color-mix(in srgb,var(--accent) 12%,transparent);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Inter","Helvetica Neue",Helvetica,Arial,sans-serif;
+  color-scheme:light;
+}
+[data-accent=blue]{--acc-light:#0071e3;--acc-dark:#0a84ff}
+[data-accent=indigo]{--acc-light:#5856d6;--acc-dark:#6d6bea}
+[data-accent=purple]{--acc-light:#8944ab;--acc-dark:#a24bd6}
+[data-accent=pink]{--acc-light:#d30f45;--acc-dark:#e02a58}
+[data-accent=red]{--acc-light:#d70015;--acc-dark:#e5352b}
+[data-accent=green]{--acc-light:#248a3d;--acc-dark:#28993f}
+[data-accent=teal]{--acc-light:#007d8c;--acc-dark:#1594a6}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --accent:var(--acc-dark);--bg:#000;--bg2:#161617;--bg3:#2c2c2e;--card:#1d1d1f;--sheet:#1c1c1e;--seg-on:#636366;
+    --fg:#f5f5f7;--fg2:#a1a1a6;--fg3:#86868b;--line:rgba(255,255,255,.16);--line2:rgba(255,255,255,.09);--glass:rgba(22,22,23,.74);
+    --ok:#30d158;--warn:#ff9f0a;--bad:#ff453a;--wa:#1f9d55;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --accent:var(--acc-dark);--bg:#000;--bg2:#161617;--bg3:#2c2c2e;--card:#1d1d1f;--sheet:#1c1c1e;--seg-on:#636366;
+  --fg:#f5f5f7;--fg2:#a1a1a6;--fg3:#86868b;--line:rgba(255,255,255,.16);--line2:rgba(255,255,255,.09);--glass:rgba(22,22,23,.74);
+  --ok:#30d158;--warn:#ff9f0a;--bad:#ff453a;--wa:#1f9d55;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 72px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 17px/1.47 var(--font);letter-spacing:-.022em;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+button,input,select,textarea{font:inherit;letter-spacing:inherit;color:inherit}
+button{cursor:pointer}
+h1,h2,h3,h4,p{margin:0}
+ul{margin:0;padding:0;list-style:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+svg.i{width:1em;height:1em;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- navegação ---------- */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:var(--glass);backdrop-filter:saturate(180%) blur(22px);-webkit-backdrop-filter:saturate(180%) blur(22px);border-bottom:1px solid var(--line2)}
+.nav-in{max-width:1180px;margin:0 auto;padding:0 clamp(16px,4vw,32px);min-height:52px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:9px;border:0;background:none;padding:0;font-weight:700;font-size:19px;letter-spacing:-.03em}
+.logo{width:26px;height:26px;border-radius:8px;background:var(--accent);display:grid;place-items:center;color:#fff}
+.logo svg{width:15px;height:15px}
+.nav-links{display:flex;gap:2px;flex:1;min-width:0}
+.nav-links button{position:relative;border:0;background:none;padding:7px 12px;border-radius:999px;font-size:14px;font-weight:500;color:var(--fg2);white-space:nowrap}
+.nav-links button:hover{color:var(--fg)}
+.nav-links button[aria-current=page]{color:var(--fg);background:var(--bg3)}
+.nav-links .n{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;margin-left:6px;border-radius:9px;background:var(--bad);color:#fff;font-size:11px;font-weight:700}
+.nav-r{display:flex;align-items:center;gap:6px;margin-left:auto}
+.ic{width:36px;height:36px;border-radius:50%;border:0;background:none;display:grid;place-items:center;font-size:19px;color:var(--fg2)}
+.ic:hover{background:var(--bg3);color:var(--fg)}
+@media (max-width:860px){.nav-links{order:3;flex:0 0 100%;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}.nav-in{gap:8px 12px}}
+
+/* ---------- páginas ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 clamp(16px,4vw,32px)}
+.hero{padding:clamp(40px,7vw,88px) 0 clamp(28px,4vw,44px)}
+.hero h1{font-size:clamp(38px,6vw,64px);line-height:1.04;font-weight:700;letter-spacing:-.035em;max-width:16em;text-wrap:balance}
+.hero .lead{margin-top:18px;font-size:clamp(19px,2.2vw,24px);line-height:1.33;color:var(--fg2);max-width:34em;letter-spacing:-.02em;text-wrap:pretty}
+.hero .links{display:flex;flex-wrap:wrap;gap:8px 26px;margin-top:22px}
+.page-head{padding:clamp(28px,5vw,56px) 0 22px}
+.page-head h1{font-size:clamp(32px,4.6vw,48px);line-height:1.08;font-weight:700;letter-spacing:-.032em}
+.page-head .lead{margin-top:10px;font-size:19px;color:var(--fg2);max-width:36em;line-height:1.4}
+.page-head .seg{margin-top:22px}
+.link{display:inline-flex;align-items:center;gap:3px;color:var(--accent);background:none;border:0;padding:0;font-size:17px;font-weight:400}
+.link:hover{text-decoration:underline}
+.link svg{font-size:15px;stroke-width:2.2}
+h2.sec{font-size:clamp(24px,3vw,32px);font-weight:700;letter-spacing:-.028em;line-height:1.12;margin:0 0 6px}
+.sec-sub{color:var(--fg2);font-size:17px;margin-bottom:20px}
+section.blk{margin:0 0 clamp(36px,5vw,64px)}
+.grid2,.grid3,.grid4{display:grid;gap:16px}
+.grid2{grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}
+.grid3{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
+.grid4{grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr))}
+.card{background:var(--card);border-radius:28px;padding:clamp(20px,3vw,32px)}
+.card.sm{border-radius:20px;padding:20px}
+.card h3{font-size:22px;font-weight:700;letter-spacing:-.025em;line-height:1.15}
+.mod{display:flex;flex-direction:column;gap:6px;min-height:250px;text-align:left;border:0;width:100%;position:relative}
+.mod .mi{width:52px;height:52px;border-radius:15px;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:26px;margin-bottom:auto}
+.mod h3{margin-top:26px}
+.mod p{color:var(--fg2);font-size:16px;line-height:1.38;max-width:22em}
+.mod .stat{margin-top:10px;font-size:14px;font-weight:600;color:var(--fg)}
+.mod .go{margin-top:12px;color:var(--accent);display:inline-flex;align-items:center;gap:3px;font-size:16px}
+.mod.off{opacity:.62}
+.kpi{display:flex;flex-direction:column;gap:2px}
+.kpi small{font-size:14px;color:var(--fg2)}
+.kpi b{font-size:34px;font-weight:700;letter-spacing:-.03em;line-height:1.1}
+.kpi span{font-size:13px;color:var(--fg3)}
+.split{display:grid;grid-template-columns:minmax(0,1fr);gap:40px;align-items:start;padding-bottom:64px}
+.pv{display:none}
+@media (min-width:1180px){.split{grid-template-columns:minmax(0,1fr) 380px}.pv{display:block;position:sticky;top:76px}}
+.foot{border-top:1px solid var(--line);margin-top:24px;padding:28px 0 44px;color:var(--fg3);font-size:13px}
+.foot .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* ---------- controles ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 22px;border-radius:999px;border:0;background:var(--accent);color:#fff;font-size:16px;font-weight:600;white-space:nowrap;transition:filter .15s,transform .1s;text-decoration:none}
+.btn:hover{filter:brightness(1.07)}
+.btn:active{transform:scale(.98)}
+.btn[disabled],.btn.dis{opacity:.4;pointer-events:none}
+.btn.ghost{background:var(--tint);color:var(--accent)}
+.btn.gray{background:var(--bg3);color:var(--fg)}
+.btn.bad{background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad)}
+.btn.wa{background:var(--wa);color:#fff}
+.btn.sm{height:34px;padding:0 15px;font-size:14px}
+.btn.block{width:100%}
+.btn svg{font-size:1.15em}
+.seg{display:inline-flex;background:var(--bg3);border-radius:11px;padding:2px;gap:2px;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.seg button{border:0;background:none;padding:7px 16px;border-radius:9px;font-size:14px;font-weight:500;white-space:nowrap;color:var(--fg)}
+.seg button[aria-pressed=true]{background:var(--seg-on);box-shadow:0 1px 4px rgba(0,0,0,.14);font-weight:600}
+.seg.sm button{padding:5px 12px;font-size:13px}
+.field{display:grid;gap:6px;min-width:0}
+.field>label,.lbl{font-size:13px;font-weight:500;color:var(--fg2)}
+.field .hint{font-size:12px;color:var(--fg3)}
+input[type=text],input[type=tel],input[type=number],input[type=date],input[type=time],input[type=search],select,textarea{width:100%;min-height:44px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font-size:16px;line-height:1.3;outline:none;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none;appearance:none}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%2386868b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m1 1 5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+textarea{resize:vertical;min-height:76px}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--tint)}
+input::placeholder,textarea::placeholder{color:var(--fg3)}
+.frow{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:14px}
+.form{display:grid;gap:16px}
+.err{color:var(--bad);font-size:14px;font-weight:500}
+.sw{position:relative;display:inline-block;width:51px;height:31px;flex:none}
+.sw input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:1}
+.sw i{position:absolute;inset:0;border-radius:16px;background:var(--bg3);transition:background .2s}
+.sw i::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.25);transition:transform .2s}
+.sw input:checked+i{background:var(--ok)}
+.sw input:checked+i::after{transform:translateX(20px)}
+.sw input:focus-visible+i{outline:2px solid var(--accent);outline-offset:2px}
+.sw.sm{width:42px;height:26px}.sw.sm i{border-radius:13px}.sw.sm i::after{width:22px;height:22px}.sw.sm input:checked+i::after{transform:translateX(16px)}
+.badge{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:999px;background:var(--bg3);color:var(--fg2);font-size:12px;font-weight:600;white-space:nowrap}
+.badge.ok{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}
+.badge.warn{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn)}
+.badge.bad{background:color-mix(in srgb,var(--bad) 13%,transparent);color:var(--bad)}
+.badge.acc{background:var(--tint);color:var(--accent)}
+.search{position:relative;flex:1;min-width:180px}
+.search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--fg3);font-size:17px}
+.search input{padding-left:38px;border-radius:999px;background:var(--bg3);border-color:transparent}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.list{background:var(--card);border-radius:20px;overflow:hidden}
+.list.line{background:none;border:1px solid var(--line);}
+.row{display:flex;align-items:center;gap:14px;padding:14px 18px;min-height:56px}
+.row+.row{border-top:1px solid var(--line2)}
+.row .g{flex:1;min-width:0}
+.row .g strong{display:block;font-weight:600;font-size:16px;line-height:1.25}
+.row .g small{display:block;color:var(--fg2);font-size:14px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .r{display:flex;align-items:center;gap:8px;flex:none}
+.row.head{background:var(--bg3);min-height:40px;padding:8px 18px;font-size:13px;font-weight:600;color:var(--fg2)}
+.row.head+.row{border-top:0}
+.group-t{font-size:13px;font-weight:600;color:var(--fg2);margin:26px 4px 8px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.group-t:first-child{margin-top:0}
+.iconbtn{width:34px;height:34px;border-radius:50%;border:0;background:none;color:var(--fg2);display:grid;place-items:center;font-size:17px}
+.iconbtn:hover{background:var(--bg3);color:var(--fg)}
+.iconbtn.bad:hover{color:var(--bad)}
+.empty{padding:48px 24px;text-align:center;background:var(--card);border-radius:24px;color:var(--fg2)}
+.empty h3{color:var(--fg);font-size:21px;margin-bottom:6px}
+.empty p{max-width:26em;margin:0 auto 18px;font-size:16px}
+.th{display:grid;place-items:center;width:var(--s,56px);height:var(--s,56px);flex:none;border-radius:calc(var(--s,56px)*.28);background:hsl(var(--h,210) 70% 93%);overflow:hidden;font-size:calc(var(--s,56px)*.5);line-height:1}
+.th img{width:100%;height:100%;object-fit:cover}
+.th.fill{width:100%;height:auto;aspect-ratio:1/1;font-size:54px;border-radius:18px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .th{background:hsl(var(--h,210) 22% 22%)}}
+:root[data-theme="dark"] .th{background:hsl(var(--h,210) 22% 22%)}
+.stepper{display:inline-flex;align-items:center;gap:2px;background:var(--bg3);border-radius:999px;padding:2px}
+.stepper button{width:30px;height:30px;border-radius:50%;border:0;background:none;display:grid;place-items:center;font-size:16px}
+.stepper button:hover{background:var(--bg)}
+.stepper b{min-width:26px;text-align:center;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+.swatches{display:flex;gap:10px;flex-wrap:wrap}
+.swatch{width:34px;height:34px;border-radius:50%;border:0;background:var(--c);position:relative}
+.swatch[aria-pressed=true]::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid var(--c)}
+.emojis{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:6px;max-height:132px;overflow:auto;padding:8px;border:1px solid var(--line);border-radius:12px}
+.emojis button{height:40px;border-radius:10px;border:0;background:none;font-size:22px}
+.emojis button[aria-pressed=true]{background:var(--tint);box-shadow:inset 0 0 0 2px var(--accent)}
+.hr{height:1px;background:var(--line2);margin:4px 0}
+.muted{color:var(--fg2)}.small{font-size:14px}.xs{font-size:12px}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* ---------- pedidos ---------- */
+.board{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;align-items:start}
+.col-t{display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:600;color:var(--fg2);margin:0 4px 10px}
+.col{display:grid;gap:12px}
+.oc{background:var(--card);border-radius:20px;padding:16px;display:grid;gap:10px}
+.oc header{display:flex;align-items:center;gap:8px}
+.oc header strong{font-size:17px;letter-spacing:-.02em}
+.oc header time{margin-left:auto;font-size:12px;color:var(--fg3)}
+.oc .who{font-size:14px;color:var(--fg2)}
+.oc ul li{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:3px 0}
+.oc ul li span:last-child{color:var(--fg2);flex:none}
+.oc .note{font-size:13px;color:var(--fg2);background:var(--bg);border-radius:10px;padding:8px 10px}
+.oc .meta{font-size:13px;color:var(--fg2)}
+.oc footer{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--line2)}
+.oc footer .acts{display:flex;gap:6px;flex-wrap:wrap}
+.oc footer b{font-size:17px}
+
+/* ---------- agenda ---------- */
+.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-bottom:18px}
+.day{border:0;background:var(--card);border-radius:14px;padding:9px 4px;text-align:center;display:grid;gap:1px}
+.day small{font-size:12px;color:var(--fg2);text-transform:none}
+.day b{font-size:19px;font-weight:600}
+.day i{font-style:normal;font-size:11px;color:var(--fg3);min-height:14px}
+.day[aria-pressed=true]{background:var(--accent);color:#fff}
+.day[aria-pressed=true] small,.day[aria-pressed=true] i{color:rgba(255,255,255,.8)}
+.bk{display:flex;gap:16px;align-items:flex-start;padding:16px 18px}
+.bk+.bk{border-top:1px solid var(--line2)}
+.bk .t{width:64px;flex:none;font-size:22px;font-weight:700;letter-spacing:-.03em;line-height:1.2}
+.bk .t small{display:block;font-size:12px;font-weight:500;color:var(--fg3);letter-spacing:0}
+.bk .g{flex:1;min-width:0}
+.bk .g strong{display:block;font-weight:600}
+.bk .g span{display:block;font-size:14px;color:var(--fg2)}
+.bk .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.hours{display:grid;gap:0}
+.hrow{display:grid;grid-template-columns:110px auto 1fr;gap:12px;align-items:center;padding:10px 0}
+.hrow+.hrow{border-top:1px solid var(--line2)}
+.hrow .tt{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.hrow input[type=time]{width:112px;min-height:38px;padding:6px 10px}
+@media (max-width:520px){.hrow{grid-template-columns:1fr auto}.hrow .tt{grid-column:1/-1}}
+
+/* ---------- fidelidade (painel) ---------- */
+.av{width:40px;height:40px;border-radius:50%;background:var(--tint);color:var(--accent);display:grid;place-items:center;font-weight:700;font-size:16px;flex:none}
+.bar{height:6px;border-radius:3px;background:var(--bg3);overflow:hidden;min-width:70px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.chart{width:100%;height:auto;display:block}
+.chart text{font:500 12px var(--font);fill:var(--fg3)}
+.chart .v{fill:var(--fg2);font-weight:600}
+.check{display:grid;gap:0}
+.check li{display:flex;align-items:center;gap:12px;padding:12px 0}
+.check li+li{border-top:1px solid var(--line2)}
+.check .ok{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;color:#fff;font-size:14px;flex:none}
+.check li.done .ok{background:var(--ok);border-color:var(--ok)}
+.check li.done span{color:var(--fg3);text-decoration:line-through}
+.feed li{display:flex;gap:12px;align-items:flex-start;padding:11px 0;font-size:15px}
+.feed li+li{border-top:1px solid var(--line2)}
+.feed .d{width:34px;height:34px;border-radius:50%;background:var(--tint);color:var(--accent);display:grid;place-items:center;font-size:17px;flex:none}
+.feed small{display:block;color:var(--fg3);font-size:12px}
+.plan{display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center}
+.plan .mi{width:48px;height:48px;border-radius:14px;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:24px}
+.plan .pr{font-size:22px;font-weight:700;letter-spacing:-.025em;text-align:right}
+.plan .pr small{display:block;font-size:13px;font-weight:500;color:var(--fg2);letter-spacing:0}
+.range{width:100%;accent-color:var(--accent)}
+.big{font-size:clamp(40px,6vw,60px);font-weight:700;letter-spacing:-.035em;line-height:1.05}
+
+/* ---------- modal / toast ---------- */
+.mbg{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.42);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;animation:fade .2s}
+.modal{width:min(560px,100%);max-height:calc(100dvh - 40px);overflow:auto;background:var(--sheet);border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.35);animation:pop .22s cubic-bezier(.2,.9,.3,1.1)}
+.modal.wide{width:min(680px,100%)}
+.modal.alert{width:min(340px,100%);text-align:center}
+.mh{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:22px 24px 6px}
+.mh h3{font-size:24px;font-weight:700;letter-spacing:-.028em}
+.mb{padding:14px 24px 24px}
+.mf{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;flex-wrap:wrap}
+.alert .mb{padding:26px 22px 18px}
+.alert h3{font-size:19px;font-weight:700;margin-bottom:6px}
+.alert p{font-size:15px;color:var(--fg2)}
+.alert .mf{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:20px}
+@keyframes fade{from{opacity:0}}
+@keyframes pop{from{opacity:0;transform:scale(.94) translateY(8px)}}
+.toast{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:200;background:rgba(29,29,31,.94);color:#fff;padding:12px 20px;border-radius:999px;font-size:15px;font-weight:500;box-shadow:0 10px 30px rgba(0,0,0,.3);animation:toast .3s cubic-bezier(.2,.9,.3,1.1);max-width:calc(100vw - 32px)}
+@keyframes toast{from{opacity:0;transform:translate(-50%,14px)}}
+
+/* ---------- iPhone ---------- */
+.phone{width:372px;height:min(780px,calc(100dvh - 150px));min-height:560px;padding:10px;border-radius:58px;background:#0b0b0c;box-shadow:inset 0 0 0 2px #3a3a3c,0 0 0 1px rgba(0,0,0,.4),0 40px 80px -30px rgba(0,0,0,.45);position:relative}
+.phone-screen{position:relative;width:100%;height:100%;border-radius:48px;overflow:hidden;background:var(--bg)}
+.phone-screen::before{content:"";position:absolute;top:11px;left:50%;transform:translateX(-50%);width:108px;height:31px;border-radius:20px;background:#000;z-index:30}
+.pv-cap{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:16px 6px 0;font-size:13px;color:var(--fg2)}
+.pv-cap b{color:var(--fg);font-weight:600;display:flex;align-items:center;gap:7px}
+.live{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px color-mix(in srgb,var(--ok) 22%,transparent)}
+
+/* ---------- loja do cliente ---------- */
+.sf-full{position:fixed;inset:0;background:var(--bg2);display:flex;justify-content:center;z-index:50}
+.sf-col{width:100%;max-width:480px;height:100%;background:var(--bg);position:relative;display:flex;flex-direction:column;box-shadow:0 0 0 1px var(--line2)}
+.sf-bar{display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 8px;background:var(--bg2);font-size:13px;color:var(--fg2);flex:none}
+.sf-col .sf{flex:1;min-height:0}
+.sf{position:relative;display:flex;flex-direction:column;height:100%;background:var(--bg);color:var(--fg);font-size:15px;line-height:1.35;overflow:hidden}
+.sf-top{height:0;flex:none}
+.phone-screen .sf-top{height:50px}
+.sf-scroll{flex:1;min-height:0;overflow-y:auto;padding:0 18px 150px;overscroll-behavior:contain;scrollbar-width:none}
+.sf-scroll::-webkit-scrollbar{display:none}
+.sf-head{padding:14px 0 10px}
+.sf-brand{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sf-brand h1{font-size:30px;font-weight:700;letter-spacing:-.03em;line-height:1.1}
+.sf-sub{display:flex;align-items:center;gap:7px;margin-top:4px;font-size:13px;color:var(--fg2);flex-wrap:wrap}
+.sf-sub .dot{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.sf-sub .dot.bad{background:var(--bad)}
+.sf-ic{width:36px;height:36px;border-radius:50%;border:0;background:var(--bg3);display:grid;place-items:center;font-size:18px;flex:none}
+.sf-search{position:relative;margin:8px 0 12px}
+.sf-search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--fg3);font-size:16px}
+.sf-search input{min-height:38px;padding:7px 12px 7px 34px;border-radius:11px;background:var(--bg3);border-color:transparent;font-size:16px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;scrollbar-width:none;margin:0 -18px;padding-left:18px;padding-right:18px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:0;border-radius:999px;background:var(--bg3);padding:7px 15px;font-size:14px;font-weight:500;color:var(--fg)}
+.chip[aria-pressed=true]{background:var(--accent);color:#fff}
+.chip:disabled{opacity:.35}
+.sf-h2{font-size:21px;font-weight:700;letter-spacing:-.025em;margin:18px 0 8px}
+.sf-row{display:flex;gap:14px;align-items:center;padding:12px 0;cursor:pointer}
+.sf-row+.sf-row{border-top:1px solid var(--line2)}
+.sf-row .b{flex:1;min-width:0}
+.sf-row .b strong{display:block;font-size:16px;font-weight:600;line-height:1.25}
+.sf-row .b p{font-size:13px;color:var(--fg2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.3;margin:2px 0 4px}
+.sf-row.off{opacity:.5}
+.price{font-weight:600;font-size:15px}
+.price s{color:var(--fg3);font-weight:400;margin-right:5px;font-size:13px}
+.sf-add{width:34px;height:34px;border-radius:50%;border:0;background:var(--tint);color:var(--accent);display:grid;place-items:center;font-size:18px;flex:none}
+.sf-add:active{transform:scale(.92)}
+.sf-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 14px}
+.sf-card{position:relative;cursor:pointer;display:grid;gap:3px;align-content:start}
+.sf-card.off{opacity:.5}
+.sf-card strong{font-size:15px;font-weight:600;line-height:1.25;margin-top:6px}
+.sf-card small{font-size:12px;color:var(--fg3)}
+.sf-card .sf-add{position:absolute;right:8px;top:8px;width:32px;height:32px;background:var(--bg);box-shadow:0 2px 8px rgba(0,0,0,.18);color:var(--accent)}
+.sf-card .badge{position:absolute;left:8px;top:8px}
+.sf-cartbar{position:absolute;left:14px;right:14px;bottom:calc(74px + env(safe-area-inset-bottom,0px));z-index:6;display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 20px;border:0;border-radius:26px;background:var(--accent);color:#fff;font-size:16px;font-weight:600;box-shadow:0 10px 30px color-mix(in srgb,var(--accent) 40%,transparent)}
+.sf-cartbar span{display:flex;align-items:center;gap:9px}
+.sf-cartbar .q{background:rgba(255,255,255,.25);min-width:24px;height:24px;border-radius:12px;display:grid;place-items:center;font-size:13px;padding:0 6px}
+.sf-tabs{position:absolute;left:0;right:0;bottom:0;z-index:5;display:flex;background:var(--glass);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-top:1px solid var(--line2);padding:7px 6px calc(10px + env(safe-area-inset-bottom,0px))}
+.phone-screen .sf-tabs{padding-bottom:22px}
+.sf-tabs button{flex:1;border:0;background:none;display:grid;justify-items:center;gap:2px;font-size:10.5px;font-weight:500;color:var(--fg3);padding:3px 0}
+.sf-tabs button svg{font-size:24px}
+.sf-tabs button[aria-current=true]{color:var(--accent)}
+.sf-bg{position:absolute;inset:0;z-index:20;background:rgba(0,0,0,.4);animation:fade .2s}
+.sf-sheet{position:absolute;left:0;right:0;bottom:0;z-index:21;max-height:90%;overflow-y:auto;background:var(--sheet);border-radius:28px 28px 0 0;padding:8px 20px calc(24px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 40px rgba(0,0,0,.2);scrollbar-width:none}
+.sf-sheet.in{animation:up .32s cubic-bezier(.2,.9,.25,1)}
+@keyframes up{from{transform:translateY(100%)}}
+.grab{width:38px;height:5px;border-radius:3px;background:var(--bg3);margin:0 auto 14px}
+.sf-sheet h2{font-size:24px;font-weight:700;letter-spacing:-.028em;line-height:1.15}
+.sf-sheet .form{gap:12px;margin-top:14px}
+.sf-hero{display:grid;place-items:center;margin:4px 0 14px}
+.sf-hero .th{--s:132px;border-radius:32px}
+.sf-line{display:flex;align-items:center;gap:12px;padding:10px 0}
+.sf-line+.sf-line{border-top:1px solid var(--line2)}
+.sf-line .g{flex:1;min-width:0}
+.sf-line .g strong{display:block;font-size:15px;font-weight:600}
+.sf-line .g small{color:var(--fg2);font-size:13px}
+.sf-sum{display:grid;gap:6px;padding:12px 0;border-top:1px solid var(--line2);margin-top:6px;font-size:15px}
+.sf-sum div{display:flex;justify-content:space-between}
+.sf-sum .t{font-size:18px;font-weight:700}
+.opts{display:flex;gap:8px;flex-wrap:wrap}
+.opt{flex:1 1 auto;border:1.5px solid var(--line);background:none;border-radius:12px;padding:10px 12px;font-size:14px;font-weight:500;text-align:center}
+.opt[aria-pressed=true]{border-color:var(--accent);background:var(--tint);color:var(--accent);font-weight:600}
+.done-i{width:68px;height:68px;border-radius:50%;background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok);display:grid;place-items:center;font-size:36px;margin:8px auto 14px}
+.done-i svg{stroke-width:2.4}
+.sf-svc{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;border:1.5px solid var(--line);background:none;border-radius:16px;padding:13px 15px;margin-bottom:10px}
+.sf-svc span{display:grid}
+.sf-svc small{color:var(--fg2);font-size:13px}
+.sf-svc.sel{border-color:var(--accent);background:var(--tint)}
+.dates{display:flex;gap:8px;overflow-x:auto;margin:0 -18px;padding:2px 18px 10px;scrollbar-width:none}
+.dates::-webkit-scrollbar{display:none}
+.dt{flex:none;width:58px;border:0;border-radius:16px;background:var(--bg3);padding:9px 0;display:grid;justify-items:center;gap:1px}
+.dt small{font-size:11px;color:var(--fg2)}
+.dt b{font-size:20px;font-weight:600}
+.dt:disabled{opacity:.35}
+.dt[aria-pressed=true]{background:var(--accent);color:#fff}
+.dt[aria-pressed=true] small{color:rgba(255,255,255,.85)}
+.times{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tm{border:0;border-radius:12px;background:var(--bg3);padding:10px 0;font-size:15px;font-weight:500;font-variant-numeric:tabular-nums}
+.tm[aria-pressed=true]{background:var(--accent);color:#fff}
+.sf-note{background:var(--bg3);border-radius:14px;padding:12px 14px;font-size:14px;color:var(--fg2)}
+.sf-empty{text-align:center;padding:60px 10px;color:var(--fg2)}
+.sf-empty h3{font-size:20px;color:var(--fg);margin-bottom:6px}
+.pass{position:relative;border-radius:22px;padding:20px;color:#fff;background:var(--accent);box-shadow:0 14px 34px color-mix(in srgb,var(--accent) 35%,transparent);overflow:hidden}
+.pass::after{content:"";position:absolute;right:-40px;top:-40px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.1)}
+.pass-h{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;position:relative;z-index:1}
+.pass-h b{font-size:18px;letter-spacing:-.02em}
+.pass-h small{display:block;opacity:.8;font-size:12px}
+.pass-h .who{text-align:right}
+.stamps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0 14px;position:relative;z-index:1}
+.stamp{aspect-ratio:1;border-radius:50%;border:2px dashed rgba(255,255,255,.55);display:grid;place-items:center;font-size:20px}
+.stamp.on{background:#fff;border:0;color:var(--accent)}
+.stamp.on svg{stroke-width:2.6}
+.stamp.gift{border-style:solid}
+.pass-f{position:relative;z-index:1;font-size:14px;display:flex;justify-content:space-between;gap:10px;align-items:flex-end}
+.pass-f b{font-size:15px}
+.pass .bar{background:rgba(255,255,255,.3);height:10px;border-radius:5px;margin:22px 0 12px;position:relative;z-index:1}
+.pass .bar i{background:#fff}
+.pass .big{font-size:40px;position:relative;z-index:1;margin-top:18px}
+.ready{margin-top:14px;padding:14px 16px;border-radius:16px;background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok);font-weight:600;font-size:15px}
+@media (max-width:1179px){.phone{display:none}}
+.oc .meta svg{vertical-align:-2px;margin-right:3px}
+#sf-full-root .sf{height:100%}
+.row input[type=text],.row input[type=tel],.row input[type=number],.row select{min-height:38px;padding:6px 12px;text-align:right}
+.row .g input[type=date]{min-height:38px}
+@media (max-width:560px){.row{flex-wrap:wrap}.row .r{width:100%;justify-content:flex-end}.oc footer{flex-direction:column;align-items:stretch}}
+.sf-row:focus-visible,.sf-card:focus-visible{outline-offset:4px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="nav"></div>
+  <main id="view"></main>
+  <footer id="foot"></footer>
+  <div id="full"></div>
+</div>
+<div id="modal-root"></div>
+<div id="toast-root"></div>
+<script>
+'use strict';
+/* =====================================================================
+   Balcão — plataforma única: Cardápio digital · Agendamento · Catálogo + WhatsApp · Fidelidade
+   Dados: localStorage (camada "Persist" isolada para trocar por um backend depois).
+   ===================================================================== */
+const KEY='balcao:v1', CKEY='balcao:cliente', TKEY='balcao:tema';
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4);
+const brl=n=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(+n||0);
+const digits=s=>String(s||'').replace(/\D/g,'');
+const norm=s=>{const d=digits(s);return d.length>11&&d.startsWith('55')?d.slice(2):d;};
+const fmtPhone=s=>{const d=norm(s);if(d.length===11)return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;if(d.length===10)return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;return String(s||'');};
+const maskPhone=v=>{const d=digits(v).slice(0,11);if(d.length<3)return d;if(d.length<8)return `(${d.slice(0,2)}) ${d.slice(2)}`;if(d.length<11)return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;};
+const pad=n=>String(n).padStart(2,'0');
+const dstr=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const pdate=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
+const today=()=>dstr(new Date());
+const addDays=(s,n)=>{const d=pdate(s);d.setDate(d.getDate()+n);return dstr(d);};
+const tmin=t=>{const [h,m]=t.split(':').map(Number);return h*60+m;};
+const mtime=m=>`${pad(Math.floor(m/60))}:${pad(m%60)}`;
+const nowIso=()=>new Date().toISOString();
+const isoDay=iso=>dstr(new Date(iso));
+const fmtDay=(s,o)=>pdate(s).toLocaleDateString('pt-BR',o||{weekday:'short',day:'numeric',month:'short'}).replace('.','');
+const fmtDayLong=s=>pdate(s).toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+const DIAS=['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
+const DIAS_C=['dom','seg','ter','qua','qui','sex','sáb'];
+const hash=s=>{let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))>>>0;return h;};
+const plural=(n,a,b)=>`${n} ${n===1?a:b}`;
+const ago=iso=>{const m=Math.round((Date.now()-new Date(iso))/60000);if(m<1)return 'agora';if(m<60)return `há ${m} min`;const h=Math.round(m/60);if(h<24)return `há ${h} h`;const d=Math.round(h/24);return d===1?'ontem':`há ${d} dias`;};
+const joinPt=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' e '+a[a.length-1];
+const initials=n=>String(n||'?').trim().split(/\s+/).slice(0,2).map(p=>p[0]).join('').toUpperCase();
+
+/* ---------- ícones (traço 1.8, estilo SF Symbols) ---------- */
+const P={
+plus:'<path d="M5 12h14"/><path d="M12 5v14"/>',minus:'<path d="M5 12h14"/>',x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+check:'<path d="M20 6 9 17l-5-5"/>',chevR:'<path d="m9 18 6-6-6-6"/>',chevL:'<path d="m15 18-6-6 6-6"/>',
+search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+trash:'<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
+pencil:'<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/>',
+clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+calendar:'<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
+bag:'<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>',
+utensils:'<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
+gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>',
+users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+sliders:'<path d="M21 4h-7"/><path d="M10 4H3"/><path d="M21 12h-9"/><path d="M8 12H3"/><path d="M21 20h-5"/><path d="M12 20H3"/><path d="M14 2v4"/><path d="M8 10v4"/><path d="M16 18v4"/>',
+home:'<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+wa:'<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M9 10c0 3 2 5 5 5l1.2-1.4-2-1-.8.7c-.8-.4-1.5-1.1-1.9-1.9l.7-.8-1-2Z"/>',
+pin:'<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+star:'<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>',
+pkg:'<path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>',
+ext:'<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+dl:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',
+img:'<rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>',
+receipt:'<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/>',
+user:'<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+alert:'<circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>',
+phone:'<rect width="14" height="20" x="5" y="2" rx="2"/><path d="M12 18h.01"/>',
+coffee:'<path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/><path d="M6 2v2"/>',
+trend:'<path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/>',
+sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/>'
+};
+const icon=n=>`<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${P[n]||''}</svg>`;
+
+/* ---------- persistência (isolada para trocar por backend) ---------- */
+const Persist={
+  read(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}},
+  write(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true;}catch(e){return false;}}
+};
+const merge=(a,b)=>{if(!b||typeof b!=='object'||Array.isArray(b))return b===undefined?a:b;const o=Array.isArray(a)?[]:{...a};for(const k in b){o[k]=(a&&typeof a[k]==='object'&&!Array.isArray(a[k])&&a[k]!==null)?merge(a[k],b[k]):b[k];}return o;};
+
+/* ---------- modelo ---------- */
+const defaultHours=()=>({0:{open:false,start:'09:00',end:'13:00'},1:{open:true,start:'08:00',end:'19:00'},2:{open:true,start:'08:00',end:'19:00'},3:{open:true,start:'08:00',end:'19:00'},4:{open:true,start:'08:00',end:'19:00'},5:{open:true,start:'08:00',end:'19:00'},6:{open:true,start:'09:00',end:'15:00'}});
+const blankState=()=>({
+  v:1,seq:{order:1000},
+  business:{name:'Meu negócio',whatsapp:'',address:'',accent:'blue',hours:defaultHours()},
+  modules:{menu:true,agenda:true,catalog:true,loyalty:true},
+  cats:[],items:[],orders:[],services:[],pros:[],bookings:[],blocked:[],
+  menuCfg:{pickup:true,delivery:true,dine:true,fee:6,min:0,eta:'30–45 min',pay:{pix:true,card:true,cash:true}},
+  catCfg:{pickup:true,delivery:true,fee:12,min:0,eta:'1 a 2 dias úteis',pay:{pix:true,card:true,cash:false},low:3},
+  agCfg:{step:30,ahead:21,minHours:2,auto:true},
+  loy:{mode:'stamps',goal:8,reward:'1 café grátis',rate:1,minPurchase:0,auto:true,customers:[]}
+});
+
+function seedDemo(){
+  const s=blankState();
+  s.business={name:'Café Aurora',whatsapp:'11999990000',address:'Rua das Acácias, 120 · Centro',accent:'blue',hours:defaultHours()};
+  const cat=(mod,name)=>{const c={id:uid(),mod,name};s.cats.push(c);return c.id;};
+  const item=(mod,cat,name,price,emoji,desc,extra)=>s.items.push({id:uid(),mod,cat,name,price,emoji,desc:desc||'',active:true,stock:null,promo:0,img:'',...extra});
+  const cf=cat('menu','Cafés'),cg=cat('menu','Gelados'),cs=cat('menu','Salgados'),cd=cat('menu','Doces');
+  item('menu',cf,'Espresso',7,'☕','Dose simples, grão Aurora Blend.');
+  item('menu',cf,'Cappuccino',14,'☕','Espresso, leite vaporizado e espuma cremosa.');
+  item('menu',cf,'Latte de baunilha',16,'🥛','Leite vaporizado com xarope de baunilha.');
+  item('menu',cf,'Coado V60',16,'☕','Café coado na hora, notas de chocolate e caramelo.');
+  item('menu',cg,'Cold brew',16,'🧊','Extração a frio por 18 horas. Servido com gelo.');
+  item('menu',cg,'Limonada suíça',13,'🍋','Limão, leite condensado e gelo batido.');
+  item('menu',cg,'Suco de laranja',12,'🍊','Espremido na hora, 400 ml.');
+  item('menu',cs,'Pão de queijo (6 un.)',14,'🧀','Assado a cada 40 minutos.');
+  item('menu',cs,'Croissant de presunto e queijo',19,'🥐','Massa folhada, presunto e muçarela.');
+  item('menu',cs,'Sanduíche natural',21,'🥪','Frango desfiado, cenoura e requeijão.');
+  item('menu',cs,'Torrada com ricota',18,'🍞','Pão de fermentação natural, ricota e mel.');
+  item('menu',cd,'Bolo de cenoura',13,'🍰','Fatia com cobertura de chocolate.');
+  item('menu',cd,'Cookie de chocolate',9,'🍪','Com gotas de chocolate meio amargo.');
+  item('menu',cd,'Brownie',12,'🍫','Úmido, com nozes.',{active:false});
+  const kg=cat('catalog','Grãos'),ka=cat('catalog','Acessórios'),kp=cat('catalog','Presentes');
+  item('catalog',kg,'Aurora Blend 250 g',38,'☕','Torra média, notas de chocolate. Moído ou em grãos.',{stock:24});
+  item('catalog',kg,'Microlote Cerrado 250 g',52,'🌱','Torra clara, notas florais e frutas amarelas.',{stock:3,promo:47});
+  item('catalog',ka,'Prensa francesa 600 ml',89,'🫖','Vidro borossilicato e aço inox.',{stock:8});
+  item('catalog',ka,'Filtro V60 + 40 papéis',74,'⏳','Cerâmica branca, tamanho 02.',{stock:0});
+  item('catalog',ka,'Moedor manual',149,'⚙️','Lâminas cônicas de aço, ajuste de 15 posições.',{stock:4});
+  item('catalog',kp,'Caneca de cerâmica',42,'🍵','Esmaltada, 300 ml.',{stock:15});
+  item('catalog',kp,'Kit presente',79,'🎁','Aurora Blend 250 g + caneca, em caixa.',{stock:6});
+  s.services=[
+    {id:uid(),name:'Degustação guiada',duration:60,price:45,desc:'Cinco cafés de origens diferentes com uma barista.'},
+    {id:uid(),name:'Curso de barista — iniciação',duration:90,price:120,desc:'Espresso, leite vaporizado e limpeza de equipamento.'},
+    {id:uid(),name:'Aula de latte art',duration:60,price:80,desc:'Técnica de coração, tulipa e rosetta.'}
+  ];
+  s.pros=[{id:uid(),name:'Marina'},{id:uid(),name:'Diego'}];
+  s.loy.customers=[
+    ['Ana Beatriz Rocha','11988810001',5,9],['Carlos Souza','11988810002',7,12],['Fernanda Lima','11988810003',8,15],
+    ['Rafael Costa','11988810004',2,3],['Juliana Alves','11988810005',4,6],['Marcos Tavares','11988810006',1,1]
+  ].map(([name,phone,balance,visits],i)=>({id:uid(),name,phone,balance,visits,rewards:i===1?1:0,total:visits*24,createdAt:new Date(Date.now()-(30-i*3)*864e5).toISOString(),history:[{t:new Date(Date.now()-(i+1)*864e5).toISOString(),type:'earn',delta:1,note:'Visita no balcão'}]}));
+  // histórico de pedidos (7 dias)
+  let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
+  const menuItems=s.items.filter(i=>i.mod==='menu'&&i.active),catItems=s.items.filter(i=>i.mod==='catalog'&&i.stock>0);
+  const people=s.loy.customers;
+  const mk=(mod,daysAgo,hour,status,type)=>{
+    const pool=mod==='menu'?menuItems:catItems;const n=1+Math.floor(rnd()*3);const lines=[];
+    for(let k=0;k<n;k++){const it=pool[Math.floor(rnd()*pool.length)];if(lines.find(l=>l.id===it.id))continue;lines.push({id:it.id,name:it.name,price:it.promo&&it.promo<it.price?it.promo:it.price,qty:1+Math.floor(rnd()*2),note:''});}
+    const sub=lines.reduce((a,l)=>a+l.price*l.qty,0),cfg=mod==='menu'?s.menuCfg:s.catCfg,fee=type==='entrega'?cfg.fee:0,p=people[Math.floor(rnd()*people.length)];
+    const d=new Date();d.setDate(d.getDate()-daysAgo);d.setHours(hour,Math.floor(rnd()*50),0,0);
+    if(daysAgo===0&&d>new Date())d.setTime(Date.now()-Math.floor(rnd()*40+3)*60000);
+    const at=d.toISOString();
+    s.seq.order++;
+    s.orders.push({id:uid(),num:s.seq.order,mod,items:lines,subtotal:sub,fee,total:sub+fee,name:p.name,phone:p.phone,type,address:type==='entrega'?'Rua das Flores, 45 · ap. 12':'',table:type==='mesa'?String(1+Math.floor(rnd()*8)):'',pay:['pix','card','cash'][Math.floor(rnd()*3)],change:'',note:'',status,createdAt:at,history:[{s:status,t:at}],loyaltyDone:true});
+  };
+  for(let dd=6;dd>=1;dd--){const n=2+Math.floor(rnd()*3);for(let k=0;k<n;k++)mk(rnd()>.75?'catalog':'menu',dd,9+Math.floor(rnd()*9),'concluido',['retirada','entrega','mesa'][Math.floor(rnd()*3)]);}
+  mk('menu',0,8,'concluido','retirada');
+  mk('menu',0,9,'preparo','entrega');
+  mk('menu',0,9,'novo','mesa');
+  mk('catalog',0,9,'novo','retirada');
+  // agendamentos
+  s._demoBookings=true;
+  return s;
+}
+function seedBookings(){
+  const plan=[[-3,'09:00',0,0,'Ana Beatriz Rocha','11988810001','concluido'],[-2,'14:00',1,1,'Carlos Souza','11988810002','concluido'],[-1,'10:00',2,0,'Juliana Alves','11988810005','concluido'],[-1,'15:30',0,1,'Rafael Costa','11988810004','faltou'],
+    [0,'15:00',0,0,'Fernanda Lima','11988810003','confirmado'],[0,'16:30',2,1,'Marcos Tavares','11988810006','pendente'],[1,'10:00',1,0,'Ana Beatriz Rocha','11988810001','confirmado'],[2,'14:00',0,1,'Carlos Souza','11988810002','confirmado'],[4,'09:30',2,0,'Juliana Alves','11988810005','pendente']];
+  plan.forEach(([off,time,si,pi,name,phone,status])=>{
+    let date=addDays(today(),off);
+    for(let g=0;g<7&&!(S.business.hours[pdate(date).getDay()].open);g++)date=addDays(date,1);
+    const svc=S.services[si],pro=S.pros[pi];if(!svc||!pro)return;
+    if(busy(pro.id,date,tmin(time),svc.duration))return;
+    S.bookings.push({id:uid(),svc:svc.id,svcName:svc.name,dur:svc.duration,price:svc.price,pro:pro.id,proName:pro.name,date,time,name,phone,note:'',status,createdAt:new Date(Date.now()-864e5).toISOString(),loyaltyDone:true});
+  });
+}
+
+let S=Persist.read(KEY);
+if(!S||S.v!==1){S=seedDemo();seedBookings();Persist.write(KEY,S);}else S=merge(blankState(),S);
+delete S._demoBookings;
+
+/* =====================================================================
+   Regras de negócio
+   ===================================================================== */
+const persist=()=>{if(!Persist.write(KEY,S))toast('Sem espaço para salvar neste navegador. Remova fotos grandes.');};
+const cfgOf=m=>m==='menu'?S.menuCfg:S.catCfg;
+const priceOf=i=>(i.promo>0&&i.promo<i.price)?i.promo:i.price;
+const avail=i=>i.active!==false&&(i.stock==null||i.stock>0);
+const catName=id=>(S.cats.find(c=>c.id===id)||{}).name||'Sem categoria';
+const MODS=[
+  {id:'menu',name:'Cardápio digital',short:'Cardápio',icon:'utensils',price:39.90,desc:'Pedidos de mesa, retirada e entrega com aviso no WhatsApp.',feats:['Cardápio com categorias e fotos','Fila de pedidos em tempo real','Taxa de entrega e pedido mínimo']},
+  {id:'agenda',name:'Agendamento automático',short:'Agenda',icon:'calendar',price:49.90,desc:'Horários livres calculados na hora, sem troca de mensagens.',feats:['Serviços, equipe e horários','Sem conflito de horário','Confirmação e lembrete no WhatsApp']},
+  {id:'catalog',name:'Catálogo + pedido no WhatsApp',short:'Catálogo',icon:'bag',price:69.90,desc:'Produtos com estoque e pedido pronto para o WhatsApp.',feats:['Estoque com baixa automática','Preço promocional','Retirada ou entrega']},
+  {id:'loyalty',name:'Programa de fidelidade',short:'Fidelidade',icon:'gift',price:79.90,desc:'Carimbos ou pontos por telefone, sem cartão de papel.',feats:['Carimbos ou pontos por compra','Cartão digital para o cliente','Pontuação automática ao concluir']}
+];
+const enabledMods=()=>MODS.filter(m=>S.modules[m.id]);
+
+/* ---- horário de funcionamento ---- */
+function openStatus(){
+  const now=new Date(),m=now.getHours()*60+now.getMinutes(),h=S.business.hours[now.getDay()];
+  if(h&&h.open&&m>=tmin(h.start)&&m<tmin(h.end))return{open:true,text:`Aberto até ${h.end}`};
+  for(let i=0;i<8;i++){
+    const d=(now.getDay()+i)%7,hh=S.business.hours[d];
+    if(!hh||!hh.open)continue;
+    if(i===0){if(m<tmin(hh.start))return{open:false,text:`Abre hoje às ${hh.start}`};continue;}
+    return{open:false,text:`Abre ${i===1?'amanhã':DIAS[d]} às ${hh.start}`};
+  }
+  return{open:false,text:'Fechado'};
+}
+
+/* ---- pedidos ---- */
+const FLOW={menu:['novo','preparo','pronto','concluido'],catalog:['novo','confirmado','enviado','concluido']};
+const SLBL={novo:'Novo',preparo:'Em preparo',pronto:'Pronto',confirmado:'Confirmado',enviado:'Enviado',concluido:'Concluído',cancelado:'Cancelado'};
+function slabel(o,st){
+  st=st||o.status;
+  if(st==='pronto')return o.type==='entrega'?'Saiu para entrega':o.type==='mesa'?'Pronto para servir':'Pronto para retirar';
+  if(st==='enviado')return o.type==='entrega'?'Enviado':'Pronto para retirar';
+  return SLBL[st]||st;
+}
+const nextOf=o=>{const f=FLOW[o.mod],i=f.indexOf(o.status);return i>=0?f[i+1]:null;};
+const nextLabel=o=>({novo:o.mod==='menu'?'Aceitar pedido':'Confirmar pedido',preparo:'Marcar como pronto',pronto:'Concluir',confirmado:'Marcar como enviado',enviado:'Concluir'})[o.status];
+const TYPE={retirada:'Retirada',entrega:'Entrega',mesa:'Mesa'};
+const PAY={pix:'Pix',card:'Cartão',cash:'Dinheiro'};
+function restock(o){o.items.forEach(l=>{const it=S.items.find(i=>i.id===l.id);if(it&&it.stock!=null)it.stock+=l.qty;});}
+function setOrderStatus(id,st){
+  const o=S.orders.find(x=>x.id===id);if(!o||o.status===st)return;
+  if(st==='cancelado'&&o.status!=='cancelado')restock(o);
+  o.status=st;o.history.push({s:st,t:nowIso()});
+  let msg=`Pedido #${o.num}: ${slabel(o).toLowerCase()}`;
+  if(st==='concluido'&&!o.loyaltyDone&&S.modules.loyalty&&S.loy.auto&&o.phone){
+    o.loyaltyDone=true;const r=loyEarn(o.phone,o.name,o.total,`Pedido #${o.num}`);
+    if(r.ok)msg+=` · cliente ganhou ${r.text}`;
+  }
+  save();toast(msg);
+}
+function orderText(o){
+  const b=S.business.name;
+  let t=`*Pedido #${o.num}* — ${b}\nCliente: ${o.name} (${fmtPhone(o.phone)})\nTipo: ${TYPE[o.type]}${o.type==='entrega'?' — '+o.address:o.type==='mesa'?' '+o.table:''}\n\n`;
+  t+=o.items.map(l=>`${l.qty}x ${l.name}${l.note?' ('+l.note+')':''} — ${brl(l.price*l.qty)}`).join('\n');
+  t+=`\n\nSubtotal: ${brl(o.subtotal)}`;if(o.fee)t+=`\nEntrega: ${brl(o.fee)}`;
+  t+=`\n*Total: ${brl(o.total)}*\nPagamento: ${PAY[o.pay]}${o.pay==='cash'&&o.change?' (troco para '+brl(o.change)+')':''}`;
+  if(o.note)t+=`\nObs.: ${o.note}`;
+  return t;
+}
+function statusText(o){
+  const n=o.name.split(' ')[0],b=S.business.name;
+  const m={novo:`Recebemos seu pedido #${o.num}. Já vamos confirmar!`,preparo:`Seu pedido #${o.num} foi confirmado e já está em preparo.`,pronto:o.type==='entrega'?`Seu pedido #${o.num} saiu para entrega.`:`Seu pedido #${o.num} está pronto para retirar.`,confirmado:`Seu pedido #${o.num} foi confirmado. Vamos separar os itens.`,enviado:o.type==='entrega'?`Seu pedido #${o.num} foi enviado.`:`Seu pedido #${o.num} está pronto para retirar.`,concluido:`Pedido #${o.num} concluído. Obrigado pela preferência!`,cancelado:`Seu pedido #${o.num} foi cancelado. Se precisar, é só responder aqui.`};
+  return `Olá, ${n}! ${m[o.status]||''} Total: ${brl(o.total)}. — ${b}`;
+}
+const waLink=(phone,text)=>{let d=digits(phone);if(d.length<=11&&d.length>=10)d='55'+d;return `https://wa.me/${d}?text=${encodeURIComponent(text)}`;};
+
+/* ---- agenda ---- */
+const getPros=()=>S.pros.length?S.pros:[{id:'_',name:'Atendimento'}];
+const ACTIVE_BK=['pendente','confirmado','concluido'];
+function busy(proId,date,t,dur,ignore){
+  return S.bookings.some(b=>b.id!==ignore&&b.pro===proId&&b.date===date&&ACTIVE_BK.includes(b.status)&&t<tmin(b.time)+b.dur&&t+dur>tmin(b.time));
+}
+function daySlots(date,svc,proId){
+  const h=S.business.hours[pdate(date).getDay()];
+  if(!h||!h.open||S.blocked.includes(date)||date<today())return[];
+  const step=Math.max(5,+S.agCfg.step||30),dur=svc.duration,start=tmin(h.start),end=tmin(h.end);
+  const pros=proId&&proId!=='any'?getPros().filter(p=>p.id===proId):getPros();
+  const now=new Date(),limit=now.getHours()*60+now.getMinutes()+(+S.agCfg.minHours||0)*60,out=[];
+  for(let t=start;t+dur<=end;t+=step){
+    if(date===today()&&t<limit)continue;
+    const p=pros.find(p=>!busy(p.id,date,t,dur));
+    if(p)out.push({time:mtime(t),pro:p.id});
+  }
+  return out;
+}
+const bkLabel={pendente:'Pendente',confirmado:'Confirmado',concluido:'Concluído',cancelado:'Cancelado',faltou:'Não compareceu'};
+function bkText(b,kind){
+  const n=b.name.split(' ')[0],when=`${fmtDayLong(b.date)} às ${b.time}`;
+  if(kind==='lembrete')return `Olá, ${n}! Lembrete do seu horário: ${b.svcName} com ${b.proName}, ${when}. Até já! — ${S.business.name}`;
+  if(kind==='cliente')return `Olá! Quero confirmar meu agendamento na ${S.business.name}:\n*${b.svcName}* com ${b.proName}\n${when}\nNome: ${b.name}${b.note?'\nObs.: '+b.note:''}`;
+  return `Olá, ${n}! Seu agendamento (${b.svcName}, ${when}) está ${bkLabel[b.status].toLowerCase()}. — ${S.business.name}`;
+}
+function calLink(b){
+  const s=b.date.replace(/-/g,'')+'T'+b.time.replace(':','')+'00',e=tmin(b.time)+b.dur,ed=b.date.replace(/-/g,'')+'T'+mtime(e).replace(':','')+'00';
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(b.svcName+' — '+S.business.name)}&dates=${s}/${ed}&details=${encodeURIComponent('Com '+b.proName)}&location=${encodeURIComponent(S.business.address||'')}`;
+}
+function setBookingStatus(id,st){
+  const b=S.bookings.find(x=>x.id===id);if(!b)return;
+  b.status=st;let msg=`Agendamento de ${b.name.split(' ')[0]}: ${bkLabel[st].toLowerCase()}`;
+  if(st==='concluido'&&!b.loyaltyDone&&S.modules.loyalty&&S.loy.auto){b.loyaltyDone=true;const r=loyEarn(b.phone,b.name,b.price,`Atendimento: ${b.svcName}`);if(r.ok)msg+=` · cliente ganhou ${r.text}`;}
+  save();toast(msg);
+}
+
+/* ---- fidelidade ---- */
+const lcust=phone=>S.loy.customers.find(c=>norm(c.phone)===norm(phone)&&norm(phone).length>=10);
+const loyUnit=n=>S.loy.mode==='stamps'?(n===1?'carimbo':'carimbos'):(n===1?'ponto':'pontos');
+function loyEnsure(phone,name){
+  let c=lcust(phone);
+  if(!c){c={id:uid(),name:name||'Cliente',phone:norm(phone),balance:0,visits:0,rewards:0,total:0,createdAt:nowIso(),history:[]};S.loy.customers.push(c);}
+  else if(name&&(!c.name||c.name==='Cliente'))c.name=name;
+  return c;
+}
+function loyEarn(phone,name,amount,note){
+  const L=S.loy;amount=+amount||0;let delta;
+  if(L.mode==='stamps'){if(amount<(+L.minPurchase||0))return{ok:false,msg:`Compra abaixo do mínimo de ${brl(L.minPurchase)} para ganhar carimbo.`};delta=1;}
+  else{delta=Math.floor(amount*(+L.rate||0));if(delta<1)return{ok:false,msg:'Informe o valor da compra para calcular os pontos.'};}
+  const c=loyEnsure(phone,name);c.balance+=delta;c.visits++;c.total+=amount;
+  c.history.unshift({t:nowIso(),type:'earn',delta,note:note||'Compra no balcão'});
+  return{ok:true,c,delta,text:`${delta} ${loyUnit(delta)}`};
+}
+function loyRedeem(c){
+  if(c.balance<S.loy.goal)return false;
+  c.balance-=S.loy.goal;c.rewards++;c.history.unshift({t:nowIso(),type:'redeem',delta:-S.loy.goal,note:`Resgate: ${S.loy.reward}`});return true;
+}
+
+/* ---- clientes (visão unificada por telefone) ---- */
+function allCustomers(){
+  const m=new Map();
+  const get=(phone,name)=>{const k=norm(phone);if(k.length<10)return null;let c=m.get(k);if(!c){c={phone:k,name:name||'Cliente',orders:0,spent:0,bookings:0,balance:null,last:'',tl:[]};m.set(k,c);}if(name&&c.name==='Cliente')c.name=name;return c;};
+  S.orders.forEach(o=>{const c=get(o.phone,o.name);if(!c)return;c.orders++;if(o.status==='concluido')c.spent+=o.total;if(o.createdAt>c.last)c.last=o.createdAt;c.tl.push({t:o.createdAt,icon:o.mod==='menu'?'utensils':'bag',text:`Pedido #${o.num} · ${brl(o.total)}`,tag:slabel(o)});});
+  S.bookings.forEach(b=>{const c=get(b.phone,b.name);if(!c)return;c.bookings++;if(b.status==='concluido')c.spent+=b.price;const t=b.createdAt||b.date;if(t>c.last)c.last=t;c.tl.push({t:b.date+'T'+b.time,icon:'calendar',text:`${b.svcName} · ${fmtDay(b.date)} ${b.time}`,tag:bkLabel[b.status]});});
+  S.loy.customers.forEach(l=>{const c=get(l.phone,l.name);if(!c)return;c.balance=l.balance;c.loy=l;const t=(l.history[0]&&l.history[0].t)||l.createdAt;if(t>c.last)c.last=t;l.history.slice(0,6).forEach(h=>c.tl.push({t:h.t,icon:'gift',text:h.note,tag:(h.delta>0?'+':'')+h.delta+' '+loyUnit(Math.abs(h.delta))}));});
+  return[...m.values()].map(c=>({...c,tl:c.tl.sort((a,b)=>b.t.localeCompare(a.t))})).sort((a,b)=>b.last.localeCompare(a.last));
+}
+
+/* ---- estatísticas ---- */
+function revenueByDay(n){
+  const out=[];
+  for(let i=n-1;i>=0;i--){
+    const d=addDays(today(),-i);
+    const v=S.orders.filter(o=>o.status==='concluido'&&isoDay(o.createdAt)===d).reduce((a,o)=>a+o.total,0)+S.bookings.filter(b=>b.status==='concluido'&&b.date===d).reduce((a,b)=>a+(+b.price||0),0);
+    out.push({d,v});
+  }
+  return out;
+}
+const countNew=mod=>S.orders.filter(o=>o.mod===mod&&o.status==='novo').length;
+const countPending=()=>S.bookings.filter(b=>b.status==='pendente'&&b.date>=today()).length;
+const lowStock=()=>S.items.filter(i=>i.mod==='catalog'&&i.stock!=null&&i.stock<=S.catCfg.low);
+const readyRewards=()=>S.loy.customers.filter(c=>c.balance>=S.loy.goal).length;
+
+/* =====================================================================
+   Estado de interface, tema, modais e avisos
+   ===================================================================== */
+const UI={tab:{menu:'fila',catalog:'fila',agenda:'dia',loyalty:'clientes'},q:{},agDate:today(),agPro:'all',route:'home',sim:{menu:50,agenda:50,catalog:50,loyalty:50}};
+const ROUTES=['home','menu','agenda','catalog','loyalty','customers','plans','settings','loja'];
+let DL=null;
+
+function applyTheme(){
+  const t=Persist.read(TKEY)||'auto';document.documentElement.dataset.theme=t;
+}
+const setTheme=t=>{Persist.write(TKEY,t);applyTheme();renderFoot();};
+
+let toastT;
+function toast(msg){
+  const r=$('#toast-root');r.innerHTML=`<div class="toast" role="status">${esc(msg)}</div>`;
+  clearTimeout(toastT);toastT=setTimeout(()=>{r.innerHTML='';},3200);
+}
+
+let MOD=null,askResolve=null;
+function openModal(html,cls){$('#modal-root').innerHTML=`<div class="mbg" data-act="modal-bg"><div class="modal ${cls||''}" role="dialog" aria-modal="true">${html}</div></div>`;MOD=true;const f=$('#modal-root input:not([type=hidden]),#modal-root select');if(f&&!('ontouchstart' in window))setTimeout(()=>f.focus(),30);}
+function closeModal(){$('#modal-root').innerHTML='';MOD=null;if(askResolve){askResolve(false);askResolve=null;}}
+function ask(title,msg,ok,danger){
+  return new Promise(res=>{
+    askResolve=res;
+    openModal(`<div class="mb"><h3>${esc(title)}</h3><p>${esc(msg)}</p><div class="mf"><button class="btn gray" data-act="ask-no">Cancelar</button><button class="btn ${danger?'bad':''}" data-act="ask-yes">${esc(ok||'Confirmar')}</button></div></div>`,'alert');
+  });
+}
+function modalShell(title,body,foot){
+  return `<div class="mh"><h3>${esc(title)}</h3><button class="iconbtn" data-act="modal-close" aria-label="Fechar">${icon('x')}</button></div><div class="mb">${body}${foot?`<div class="mf">${foot}</div>`:''}</div>`;
+}
+async function copyText(t){
+  try{await navigator.clipboard.writeText(t);return true;}catch(e){}
+  try{const a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();const ok=document.execCommand('copy');a.remove();return ok;}catch(e){return false;}
+}
+async function saveFile(filename,data){
+  if(!DL)return toast('Download indisponível neste ambiente.');
+  try{await DL.save({filename,data});toast('Arquivo salvo.');}catch(e){if(e&&e.code!=='declined')toast('Não foi possível salvar o arquivo.');}
+}
+// reduz foto enviada para caber no armazenamento local
+function readImage(file,max=420){
+  return new Promise((res,rej)=>{
+    const fr=new FileReader();
+    fr.onerror=rej;
+    fr.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>{
+      const k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
+      c.getContext('2d').drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.72));};im.src=fr.result;};
+    fr.readAsDataURL(file);
+  });
+}
+
+/* =====================================================================
+   LOJA DO CLIENTE (o que o cliente vê — usada na prévia e em tela cheia)
+   ===================================================================== */
+const SF={
+  tab:null,cat:{menu:'all',catalog:'all'},q:{menu:'',catalog:''},cart:{menu:[],catalog:[]},
+  sheet:null,fresh:false,err:'',focus:null,
+  form:{name:'',phone:'',type:'retirada',address:'',table:'',pay:'pix',change:'',note:''},
+  book:{svc:null,pro:'any',date:null,time:null,name:'',phone:'',note:''},
+  me:{name:'',phone:''},login:{name:'',phone:''}
+};
+Object.assign(SF.me,Persist.read(CKEY)||{});
+SF.form.name=SF.book.name=SF.me.name||'';SF.form.phone=SF.book.phone=SF.me.phone||'';
+const STABS=[['menu','Cardápio','utensils'],['catalog','Catálogo','bag'],['agenda','Agendar','calendar'],['loyalty','Fidelidade','gift']];
+const sfEnabled=()=>STABS.filter(t=>S.modules[t[0]]);
+function sfCurrent(){const en=sfEnabled();if(!en.length)return null;return en.some(t=>t[0]===SF.tab)?SF.tab:en[0][0];}
+const cartLines=m=>SF.cart[m].map(l=>({...l,item:S.items.find(i=>i.id===l.id)})).filter(l=>l.item);
+const cartQty=m=>cartLines(m).reduce((a,l)=>a+l.qty,0);
+const cartSub=m=>cartLines(m).reduce((a,l)=>a+priceOf(l.item)*l.qty,0);
+const thumb=(i,size)=>i.img?`<span class="th ${size==='fill'?'fill':''}" style="--s:${size==='fill'?'100%':size+'px'}"><img src="${i.img}" alt=""></span>`:`<span class="th ${size==='fill'?'fill':''}" style="--h:${hash(i.name)%360};--s:${size==='fill'?'100%':size+'px'}"><b aria-hidden="true">${i.emoji||'🍽️'}</b></span>`;
+const priceHtml=i=>(i.promo>0&&i.promo<i.price)?`<span class="price"><s>${brl(i.price)}</s>${brl(i.promo)}</span>`:`<span class="price">${brl(i.price)}</span>`;
+const stockNote=i=>i.stock===0?'Esgotado':i.stock!=null&&i.stock<=S.catCfg.low?`Restam ${i.stock}`:'';
+const myOrders=m=>norm(SF.me.phone).length>=10?S.orders.filter(o=>o.mod===m&&norm(o.phone)===norm(SF.me.phone)).sort((a,b)=>b.createdAt.localeCompare(a.createdAt)):[];
+const myBookings=()=>norm(SF.me.phone).length>=10?S.bookings.filter(b=>norm(b.phone)===norm(SF.me.phone)&&b.date>=today()&&['pendente','confirmado'].includes(b.status)).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)):[];
+
+function storeHtml(ctx){
+  const cur=sfCurrent(),st=openStatus();
+  let body;
+  if(!cur)body=`<div class="sf-empty"><h3>Loja em preparação</h3><p>Nenhum módulo está ativo neste negócio.</p></div>`;
+  else if(cur==='menu'||cur==='catalog')body=sfShop(cur);
+  else if(cur==='agenda')body=sfAgenda();
+  else body=sfLoyalty(ctx);
+  const showOrders=(cur==='menu'||cur==='catalog')&&myOrders(cur).length>0;
+  return `<div class="sf">
+    <div class="sf-top"></div>
+    <div class="sf-scroll" id="sf-scroll">
+      <header class="sf-head">
+        <div class="sf-brand"><h1>${esc(S.business.name)}</h1>${showOrders?`<button class="sf-ic" data-act="sf-orders" aria-label="Meus pedidos">${icon('receipt')}</button>`:''}</div>
+        <p class="sf-sub"><span class="dot ${st.open?'':'bad'}"></span>${esc(st.text)}${S.business.address?` · ${esc(S.business.address)}`:''}</p>
+      </header>
+      ${body}
+    </div>
+    ${cur&&(cur==='menu'||cur==='catalog')&&cartQty(cur)?`<button class="sf-cartbar" data-act="sf-cart"><span><i class="q">${cartQty(cur)}</i>Ver sacola</span><b>${brl(cartSub(cur))}</b></button>`:''}
+    <nav class="sf-tabs" aria-label="Seções">${sfEnabled().map(t=>`<button data-act="sf-tab" data-t="${t[0]}" ${cur===t[0]?'aria-current="true"':''}>${icon(t[2])}${t[1]}</button>`).join('')}</nav>
+    ${sfSheet(ctx)}
+  </div>`;
+}
+
+/* ---- cardápio / catálogo ---- */
+function sfShop(mod){
+  const its=S.items.filter(i=>i.mod===mod),cats=S.cats.filter(c=>c.mod===mod&&its.some(i=>i.cat===c.id));
+  if(!its.length)return `<div class="sf-empty"><h3>${mod==='menu'?'Cardápio':'Catálogo'} vazio</h3><p>Nenhum item cadastrado ainda.</p></div>`;
+  const q=(SF.q[mod]||'').trim().toLowerCase(),cur=SF.cat[mod];
+  const list=its.filter(i=>(cur==='all'||i.cat===cur)&&(!q||(i.name+' '+i.desc).toLowerCase().includes(q)));
+  let h=`<div class="sf-search">${icon('search')}<input type="search" id="sf-q" data-bind="sf-q" data-mod="${mod}" placeholder="Buscar em ${mod==='menu'?'cardápio':'catálogo'}" value="${esc(SF.q[mod])}"></div>`;
+  h+=`<div class="chips"><button class="chip" data-act="sf-cat" data-mod="${mod}" data-id="all" aria-pressed="${cur==='all'}">Tudo</button>${cats.map(c=>`<button class="chip" data-act="sf-cat" data-mod="${mod}" data-id="${c.id}" aria-pressed="${cur===c.id}">${esc(c.name)}</button>`).join('')}</div>`;
+  if(!list.length)return h+`<div class="sf-empty"><h3>Nada encontrado</h3><p>Tente outra busca ou categoria.</p></div>`;
+  if(mod==='menu'){
+    const groups=(cur==='all'&&!q)?cats:[{id:null,name:null}];
+    h+=groups.map(g=>{const rows=g.id?list.filter(i=>i.cat===g.id):list;return rows.length?`${g.name?`<h2 class="sf-h2">${esc(g.name)}</h2>`:''}${rows.map(sfRow).join('')}`:'';}).join('');
+  }else{
+    h+=`<div class="sf-grid">${list.map(sfCard).join('')}</div>`;
+  }
+  return h;
+}
+function sfRow(i){
+  const a=avail(i);
+  return `<div class="sf-row ${a?'':'off'}" role="button" tabindex="0" data-act="sf-item" data-id="${i.id}">${thumb(i,68)}<div class="b"><strong>${esc(i.name)}</strong><p>${esc(i.desc)}</p>${priceHtml(i)}</div>${a?`<button class="sf-add" data-act="sf-add" data-id="${i.id}" aria-label="Adicionar ${esc(i.name)}">${icon('plus')}</button>`:`<span class="badge">${i.stock===0?'Esgotado':'Indisponível'}</span>`}</div>`;
+}
+function sfCard(i){
+  const a=avail(i),sn=stockNote(i);
+  return `<div class="sf-card ${a?'':'off'}" role="button" tabindex="0" data-act="sf-item" data-id="${i.id}">${thumb(i,'fill')}${sn?`<span class="badge ${i.stock===0?'':'warn'}">${sn}</span>`:''}${a?`<button class="sf-add" data-act="sf-add" data-id="${i.id}" aria-label="Adicionar ${esc(i.name)}">${icon('plus')}</button>`:''}<strong>${esc(i.name)}</strong>${priceHtml(i)}</div>`;
+}
+
+/* ---- agendamento ---- */
+function sfAgenda(){
+  const b=SF.book;
+  if(!S.services.length)return `<div class="sf-empty"><h3>Sem serviços</h3><p>Nenhum serviço está disponível para agendar.</p></div>`;
+  let h=`<h2 class="sf-h2" style="margin-top:6px">Escolha o serviço</h2>`+S.services.map(s=>`<button class="sf-svc ${b.svc===s.id?'sel':''}" data-act="bk-svc" data-id="${s.id}"><span><strong>${esc(s.name)}</strong><small>${s.duration} min${s.desc?' · '+esc(s.desc):''}</small></span><b>${s.price?brl(s.price):'Grátis'}</b></button>`).join('');
+  const svc=S.services.find(s=>s.id===b.svc);
+  if(svc){
+    if(S.pros.length>1)h+=`<h2 class="sf-h2">Com quem?</h2><div class="chips"><button class="chip" data-act="bk-pro" data-id="any" aria-pressed="${b.pro==='any'}">Qualquer pessoa</button>${S.pros.map(p=>`<button class="chip" data-act="bk-pro" data-id="${p.id}" aria-pressed="${b.pro===p.id}">${esc(p.name)}</button>`).join('')}</div>`;
+    h+=`<h2 class="sf-h2">Quando?</h2><div class="dates">`;
+    let anyDay=false;
+    for(let i=0;i<Math.max(1,+S.agCfg.ahead||14);i++){
+      const d=addDays(today(),i),n=daySlots(d,svc,b.pro).length;if(n)anyDay=true;
+      h+=`<button class="dt" data-act="bk-date" data-d="${d}" ${n?'':'disabled'} aria-pressed="${b.date===d}"><small>${i===0?'hoje':DIAS_C[pdate(d).getDay()]}</small><b>${pdate(d).getDate()}</b><small>${pdate(d).toLocaleDateString('pt-BR',{month:'short'}).replace('.','')}</small></button>`;
+    }
+    h+=`</div>`;
+    if(!anyDay)h+=`<p class="sf-note">Não há horários livres nos próximos dias para este serviço.</p>`;
+    if(b.date){
+      const sl=daySlots(b.date,svc,b.pro);
+      h+=`<h2 class="sf-h2">Horários de ${esc(fmtDay(b.date,{weekday:'long',day:'numeric',month:'long'}))}</h2>`;
+      h+=sl.length?`<div class="times">${sl.map(x=>`<button class="tm" data-act="bk-time" data-t="${x.time}" aria-pressed="${b.time===x.time}">${x.time}</button>`).join('')}</div>`:`<p class="sf-note">Sem horários livres neste dia.</p>`;
+    }
+    if(b.date&&b.time){
+      const slot=daySlots(b.date,svc,b.pro).find(x=>x.time===b.time);
+      const who=slot?(getPros().find(p=>p.id===slot.pro)||{}).name:'';
+      h+=`<h2 class="sf-h2">Seus dados</h2><div class="form">
+        <div class="sf-note"><b style="color:var(--fg)">${esc(svc.name)}</b><br>${esc(fmtDayLong(b.date))} às ${b.time} · ${svc.duration} min${who&&S.pros.length?` · com ${esc(who)}`:''}<br>${svc.price?brl(svc.price):'Grátis'}</div>
+        <div class="field"><label for="bk-name">Nome</label><input type="text" id="bk-name" data-bind="sf-book" data-k="name" autocomplete="name" value="${esc(b.name)}"></div>
+        <div class="field"><label for="bk-phone">WhatsApp</label><input type="tel" id="bk-phone" data-bind="sf-book" data-k="phone" data-mask="1" inputmode="tel" autocomplete="tel" placeholder="(11) 99999-0000" value="${esc(b.phone)}"></div>
+        <div class="field"><label for="bk-note">Observação (opcional)</label><input type="text" id="bk-note" data-bind="sf-book" data-k="note" value="${esc(b.note)}"></div>
+        ${SF.err?`<p class="err">${esc(SF.err)}</p>`:''}
+        <button class="btn block" data-act="bk-confirm">${S.agCfg.auto?'Confirmar agendamento':'Solicitar agendamento'}</button></div>`;
+    }
+  }
+  const mine=myBookings();
+  if(mine.length)h+=`<h2 class="sf-h2">Seus horários</h2>`+mine.map(x=>`<div class="sf-line"><div class="g"><strong>${esc(x.svcName)}</strong><small>${esc(fmtDay(x.date))} às ${x.time} · ${bkLabel[x.status]}</small></div><button class="btn sm bad" data-act="sf-bk-cancel" data-id="${x.id}">Cancelar</button></div>`).join('');
+  return h;
+}
+
+/* ---- fidelidade (cartão estilo Wallet) ---- */
+function sfLoyalty(ctx){
+  const L=S.loy,c=lcust(SF.me.phone);
+  if(!c){
+    const demo=ctx&&ctx.preview&&L.customers[0];
+    return `<h2 class="sf-h2" style="margin-top:6px">Cartão fidelidade</h2><p class="muted" style="margin-bottom:14px">${L.mode==='stamps'?`Junte ${L.goal} carimbos e ganhe ${esc(L.reward)}.`:`Junte ${L.goal} pontos e ganhe ${esc(L.reward)}.`} Entre com seu WhatsApp para ver ou criar seu cartão.</p>
+      <div class="form">
+        <div class="field"><label for="lg-name">Nome</label><input type="text" id="lg-name" data-bind="sf-login" data-k="name" autocomplete="name" value="${esc(SF.login.name)}"></div>
+        <div class="field"><label for="lg-phone">WhatsApp</label><input type="tel" id="lg-phone" data-bind="sf-login" data-k="phone" data-mask="1" inputmode="tel" placeholder="(11) 99999-0000" value="${esc(SF.login.phone)}"></div>
+        ${SF.err?`<p class="err">${esc(SF.err)}</p>`:''}
+        <button class="btn block" data-act="sf-login">Ver meu cartão</button>
+        ${demo?`<button class="btn ghost block" data-act="sf-demo-login" data-p="${demo.phone}">Testar como ${esc(demo.name.split(' ')[0])}</button>`:''}
+      </div>`;
+  }
+  const ready=c.balance>=L.goal;
+  let inner;
+  if(L.mode==='stamps'&&L.goal<=12){
+    const shown=Math.min(c.balance,L.goal);
+    inner=`<div class="stamps">${Array.from({length:L.goal},(_,k)=>k<shown?`<div class="stamp on">${icon('check')}</div>`:k===L.goal-1?`<div class="stamp gift">${icon('gift')}</div>`:`<div class="stamp"></div>`).join('')}</div>`;
+  }else{
+    inner=`<div class="big">${c.balance}</div><div class="bar"><i style="width:${Math.min(100,c.balance/L.goal*100)}%"></i></div>`;
+  }
+  return `<div class="pass" style="margin-top:8px">
+    <div class="pass-h"><div><b>${esc(S.business.name)}</b><small>Cartão fidelidade</small></div><div class="who"><b>${esc(c.name.split(' ')[0])}</b><small>${fmtPhone(c.phone)}</small></div></div>
+    ${inner}
+    <div class="pass-f"><span>${ready?'Prêmio liberado':`Faltam ${Math.max(0,L.goal-c.balance)} ${loyUnit(Math.max(0,L.goal-c.balance))}`}</span><b>${c.balance} / ${L.goal}</b></div>
+  </div>
+  ${ready?`<div class="ready">${icon('gift')} Você ganhou: ${esc(L.reward)}. Mostre este cartão no balcão para resgatar.</div>`:`<p class="muted small" style="margin-top:14px">Prêmio: <b style="color:var(--fg)">${esc(L.reward)}</b>${L.mode==='points'?` · ${L.rate} ponto por R$ 1 gasto`:L.minPurchase?` · compra mínima de ${brl(L.minPurchase)}`:''}</p>`}
+  <h2 class="sf-h2">Atividade</h2>
+  ${c.history.length?c.history.slice(0,8).map(h=>`<div class="sf-line"><div class="g"><strong>${esc(h.note)}</strong><small>${esc(ago(h.t))}</small></div>${h.delta?`<span class="badge ${h.delta>0?'ok':'acc'}">${h.delta>0?'+':''}${h.delta}</span>`:''}</div>`).join(''):`<p class="muted">Sua primeira pontuação aparece aqui.</p>`}
+  <p style="margin-top:18px"><button class="link small" data-act="sf-logout">Não é você? Sair</button></p>`;
+}
+
+/* ---- folhas (bottom sheets) ---- */
+function sfSheet(ctx){
+  const sh=SF.sheet;if(!sh)return '';
+  const cls=SF.fresh?'in':'';let body='';
+  if(sh.t==='item'){
+    const i=S.items.find(x=>x.id===sh.id);if(!i)return '';
+    const a=avail(i),max=i.stock==null?99:i.stock;
+    body=`<div class="sf-hero">${thumb(i,132)}</div><h2>${esc(i.name)}</h2><p class="muted" style="margin:6px 0 10px">${esc(i.desc)}</p><div style="display:flex;align-items:center;gap:10px">${priceHtml(i)}${stockNote(i)?`<span class="badge warn">${stockNote(i)}</span>`:''}</div>
+    ${a?`${i.mod==='menu'?`<div class="field" style="margin-top:14px"><label for="sf-inote">Observação</label><input type="text" id="sf-inote" data-bind="sf-inote" placeholder="Ex.: sem cebola" value="${esc(sh.note||'')}"></div>`:''}
+    <div style="display:flex;align-items:center;gap:14px;margin-top:18px"><div class="stepper"><button data-act="sf-iq" data-d="-1" aria-label="Diminuir">${icon('minus')}</button><b>${sh.qty}</b><button data-act="sf-iq" data-d="1" aria-label="Aumentar" ${sh.qty>=max?'disabled':''}>${icon('plus')}</button></div><button class="btn" style="flex:1" data-act="sf-iadd">Adicionar · ${brl(priceOf(i)*sh.qty)}</button></div>`:`<p class="sf-note" style="margin-top:14px">${i.stock===0?'Produto esgotado.':'Item indisponível no momento.'}</p>`}`;
+  }else if(sh.t==='cart'){
+    const m=sh.mod,c=cfgOf(m),lines=cartLines(m),f=SF.form,sub=cartSub(m),fee=f.type==='entrega'?(+c.fee||0):0;
+    const types=[['retirada','Retirada',c.pickup],['entrega','Entrega',c.delivery],['mesa','Na mesa',m==='menu'&&c.dine]].filter(t=>t[2]);
+    if(!types.some(t=>t[0]===f.type)&&types[0])f.type=types[0][0];
+    const pays=Object.entries(PAY).filter(([k])=>c.pay[k]);
+    if(!pays.some(p=>p[0]===f.pay)&&pays[0])f.pay=pays[0][0];
+    body=`<h2>Sua sacola</h2>
+    <div style="margin-top:8px">${lines.map(l=>`<div class="sf-line">${thumb(l.item,46)}<div class="g"><strong>${esc(l.item.name)}</strong><small>${l.note?esc(l.note)+' · ':''}${brl(priceOf(l.item))}</small></div><div class="stepper"><button data-act="sf-cq" data-m="${m}" data-id="${l.id}" data-d="-1" aria-label="Diminuir">${icon('minus')}</button><b>${l.qty}</b><button data-act="sf-cq" data-m="${m}" data-id="${l.id}" data-d="1" aria-label="Aumentar">${icon('plus')}</button></div></div>`).join('')}</div>
+    <div class="form">
+      <div class="field"><span class="lbl">Como você quer receber?</span><div class="opts">${types.map(t=>`<button class="opt" data-act="sf-type" data-v="${t[0]}" aria-pressed="${f.type===t[0]}">${t[1]}</button>`).join('')}</div><span class="hint">Previsão: ${esc(c.eta)}</span></div>
+      ${f.type==='entrega'?`<div class="field"><label for="sf-addr">Endereço de entrega</label><input type="text" id="sf-addr" data-bind="sf-form" data-k="address" autocomplete="street-address" placeholder="Rua, número, complemento" value="${esc(f.address)}"></div>`:''}
+      ${f.type==='mesa'?`<div class="field"><label for="sf-table">Número da mesa</label><input type="text" id="sf-table" data-bind="sf-form" data-k="table" inputmode="numeric" value="${esc(f.table)}"></div>`:''}
+      <div class="frow"><div class="field"><label for="sf-name">Seu nome</label><input type="text" id="sf-name" data-bind="sf-form" data-k="name" autocomplete="name" value="${esc(f.name)}"></div>
+      <div class="field"><label for="sf-phone">WhatsApp</label><input type="tel" id="sf-phone" data-bind="sf-form" data-k="phone" data-mask="1" inputmode="tel" autocomplete="tel" placeholder="(11) 99999-0000" value="${esc(f.phone)}"></div></div>
+      <div class="field"><span class="lbl">Pagamento</span><div class="opts">${pays.map(([k,v])=>`<button class="opt" data-act="sf-pay" data-v="${k}" aria-pressed="${f.pay===k}">${k==='card'?'Cartão':v}</button>`).join('')}</div>${f.pay==='card'?'<span class="hint">Maquininha na entrega ou retirada.</span>':''}</div>
+      ${f.pay==='cash'?`<div class="field"><label for="sf-change">Troco para quanto? (opcional)</label><input type="number" id="sf-change" data-bind="sf-form" data-k="change" inputmode="decimal" min="0" step="0.01" value="${esc(f.change)}"></div>`:''}
+      <div class="field"><label for="sf-note">Observações do pedido</label><input type="text" id="sf-note" data-bind="sf-form" data-k="note" value="${esc(f.note)}"></div>
+    </div>
+    <div class="sf-sum"><div><span>Subtotal</span><span>${brl(sub)}</span></div>${f.type==='entrega'?`<div><span>Entrega</span><span>${brl(fee)}</span></div>`:''}<div class="t"><span>Total</span><span>${brl(sub+fee)}</span></div></div>
+    ${c.min>0&&sub<c.min?`<p class="sf-note" style="margin-bottom:12px">Pedido mínimo de ${brl(c.min)}. Faltam ${brl(c.min-sub)}.</p>`:''}
+    ${SF.err?`<p class="err" style="margin-bottom:10px">${esc(SF.err)}</p>`:''}
+    <button class="btn block" data-act="sf-order" data-m="${m}">Fazer pedido · ${brl(sub+fee)}</button>`;
+  }else if(sh.t==='done'){
+    if(sh.kind==='order'){
+      const o=S.orders.find(x=>x.id===sh.id);if(!o)return '';
+      body=`<div class="done-i">${icon('check')}</div><h2 style="text-align:center">Pedido #${o.num} enviado</h2><p class="muted" style="text-align:center;margin:8px 0 18px">${esc(S.business.name)} vai confirmar em instantes. Previsão: ${esc(cfgOf(o.mod).eta)}.</p>
+      <div class="sf-sum" style="margin-top:0"><div><span>${plural(o.items.reduce((a,l)=>a+l.qty,0),'item','itens')} · ${TYPE[o.type]}</span><span>${brl(o.total)}</span></div></div>
+      ${digits(S.business.whatsapp).length>=10?`<a class="btn wa block" target="_blank" rel="noopener" href="${waLink(S.business.whatsapp,orderText(o))}">${icon('wa')} Enviar pedido pelo WhatsApp</a>`:`<p class="sf-note">O WhatsApp do negócio ainda não foi cadastrado (Ajustes).</p>`}
+      <button class="btn gray block" style="margin-top:10px" data-act="sf-close">Fechar</button>`;
+    }else{
+      const b=S.bookings.find(x=>x.id===sh.id);if(!b)return '';
+      body=`<div class="done-i">${icon('check')}</div><h2 style="text-align:center">${b.status==='confirmado'?'Agendamento confirmado':'Solicitação enviada'}</h2><p class="muted" style="text-align:center;margin:8px 0 18px">${esc(b.svcName)}<br>${esc(fmtDayLong(b.date))} às ${b.time}${S.pros.length?` · com ${esc(b.proName)}`:''}</p>
+      ${digits(S.business.whatsapp).length>=10?`<a class="btn wa block" target="_blank" rel="noopener" href="${waLink(S.business.whatsapp,bkText(b,'cliente'))}">${icon('wa')} Confirmar pelo WhatsApp</a>`:''}
+      <a class="btn ghost block" style="margin-top:10px" target="_blank" rel="noopener" href="${calLink(b)}">${icon('calendar')} Adicionar ao calendário</a>
+      <button class="btn gray block" style="margin-top:10px" data-act="sf-close">Fechar</button>`;
+    }
+  }else if(sh.t==='orders'){
+    const list=myOrders(sh.mod);
+    body=`<h2>Meus pedidos</h2><div style="margin-top:8px">${list.length?list.map(o=>`<div class="sf-line"><div class="g"><strong>#${o.num} · ${brl(o.total)}</strong><small>${o.items.map(l=>l.qty+'× '+esc(l.name)).join(', ')}</small></div><span class="badge ${o.status==='cancelado'?'bad':o.status==='concluido'?'ok':'acc'}">${slabel(o)}</span></div>`).join(''):`<p class="muted">Nenhum pedido ainda.</p>`}</div><button class="btn gray block" style="margin-top:14px" data-act="sf-close">Fechar</button>`;
+  }
+  return `<div class="sf-bg" data-act="sf-close"></div><div class="sf-sheet ${cls}" role="dialog" aria-modal="true"><div class="grab"></div>${body}</div>`;
+}
+
+/* ---- ações da loja ---- */
+function sfOpen(sheet){SF.sheet=sheet;SF.fresh=true;SF.err='';renderStores();}
+function sfCartAdd(id,qty,note){
+  const i=S.items.find(x=>x.id===id);if(!i||!avail(i))return false;
+  const cart=SF.cart[i.mod],max=i.stock==null?99:i.stock;
+  const l=cart.find(x=>x.id===id&&(x.note||'')===(note||''));
+  const total=cart.filter(x=>x.id===id).reduce((a,x)=>a+x.qty,0);
+  if(total+qty>max){toast(`Só restam ${max} de ${i.name}.`);return false;}
+  if(l)l.qty+=qty;else cart.push({id,qty,note:note||''});
+  return true;
+}
+function sfCreateOrder(mod){
+  const f=SF.form,c=cfgOf(mod),lines=cartLines(mod);if(!lines.length)return;
+  const name=f.name.trim(),ph=norm(f.phone),sub=cartSub(mod);let err='';
+  if(name.length<2)err='Informe seu nome.';
+  else if(ph.length<10)err='Informe um WhatsApp com DDD.';
+  else if(f.type==='entrega'&&f.address.trim().length<5)err='Informe o endereço de entrega.';
+  else if(f.type==='mesa'&&!f.table.trim())err='Informe o número da mesa.';
+  else if(sub<(+c.min||0))err=`O pedido mínimo é ${brl(c.min)}.`;
+  else for(const l of lines){if(!avail(l.item)||(l.item.stock!=null&&l.qty>l.item.stock)){err=`${l.item.name} não está mais disponível na quantidade escolhida.`;break;}}
+  if(err){SF.err=err;renderStores();return;}
+  const fee=f.type==='entrega'?(+c.fee||0):0;
+  S.seq.order++;
+  const o={id:uid(),num:S.seq.order,mod,items:lines.map(l=>({id:l.id,name:l.item.name,price:priceOf(l.item),qty:l.qty,note:l.note})),subtotal:sub,fee,total:sub+fee,name,phone:ph,type:f.type,address:f.type==='entrega'?f.address.trim():'',table:f.type==='mesa'?f.table.trim():'',pay:f.pay,change:f.pay==='cash'?(+f.change||''):'',note:f.note.trim(),status:'novo',createdAt:nowIso(),history:[{s:'novo',t:nowIso()}],loyaltyDone:false};
+  lines.forEach(l=>{if(l.item.stock!=null)l.item.stock-=l.qty;});
+  S.orders.push(o);SF.cart[mod]=[];SF.me={name,phone:ph};Persist.write(CKEY,SF.me);SF.book.name=SF.login.name=name;SF.book.phone=SF.login.phone=fmtPhone(ph);
+  SF.err='';SF.form.note='';SF.sheet={t:'done',kind:'order',id:o.id};SF.fresh=true;
+  save();toast(`Novo pedido #${o.num} · ${brl(o.total)}`);
+}
+function sfBookConfirm(){
+  const b=SF.book,svc=S.services.find(s=>s.id===b.svc);if(!svc||!b.date||!b.time)return;
+  const name=b.name.trim(),ph=norm(b.phone);
+  if(name.length<2){SF.err='Informe seu nome.';return renderStores();}
+  if(ph.length<10){SF.err='Informe um WhatsApp com DDD.';return renderStores();}
+  const slot=daySlots(b.date,svc,b.pro).find(x=>x.time===b.time);
+  if(!slot){SF.err='Esse horário acabou de ser ocupado. Escolha outro.';b.time=null;return renderStores();}
+  const pro=getPros().find(p=>p.id===slot.pro);
+  const bk={id:uid(),svc:svc.id,svcName:svc.name,dur:svc.duration,price:svc.price,pro:slot.pro,proName:pro.name,date:b.date,time:b.time,name,phone:ph,note:b.note.trim(),status:S.agCfg.auto?'confirmado':'pendente',createdAt:nowIso(),loyaltyDone:false};
+  S.bookings.push(bk);SF.me={name,phone:ph};Persist.write(CKEY,SF.me);SF.form.name=SF.login.name=name;SF.form.phone=SF.login.phone=fmtPhone(ph);
+  SF.book={...SF.book,svc:null,pro:'any',date:null,time:null,note:''};SF.err='';SF.sheet={t:'done',kind:'booking',id:bk.id};SF.fresh=true;
+  save();toast(`Novo agendamento: ${bk.name.split(' ')[0]}, ${fmtDay(bk.date)} ${bk.time}`);
+}
+function sfLogin(phone,name){
+  const p=norm(phone);
+  if(p.length<10){SF.err='Informe um WhatsApp com DDD.';return renderStores();}
+  let c=lcust(p);
+  if(!c){if((name||'').trim().length<2){SF.err='Informe seu nome para criar o cartão.';return renderStores();}c=loyEnsure(p,name.trim());c.history.unshift({t:nowIso(),type:'join',delta:0,note:'Cartão criado'});}
+  SF.me={name:c.name,phone:p};Persist.write(CKEY,SF.me);SF.form.name=SF.book.name=c.name;SF.form.phone=SF.book.phone=fmtPhone(p);SF.err='';
+  save();
+}
+
+/* ---- montagem no DOM (prévia no celular ou tela cheia) ---- */
+function renderStores(ctxOverride){
+  const el=$('#pv-screen')||$('#sf-full-root');if(!el)return;
+  const sc=$('#sf-scroll',el),top=sc?sc.scrollTop:0,fk=document.activeElement&&document.activeElement.id&&el.contains(document.activeElement)?{id:document.activeElement.id,s:document.activeElement.selectionStart}:null;
+  const keepTab=el.dataset.tab,shEl=$('.sf-sheet',el),shTop=shEl?shEl.scrollTop:0,wasFresh=SF.fresh;
+  el.innerHTML=storeHtml({preview:el.id==='pv-screen'});
+  SF.fresh=false;
+  const shNew=$('.sf-sheet',el);if(shNew&&!wasFresh)shNew.scrollTop=shTop;
+  const sc2=$('#sf-scroll',el);if(sc2&&keepTab===sfCurrent())sc2.scrollTop=top;
+  el.dataset.tab=sfCurrent()||'';
+  if(fk){const n=document.getElementById(fk.id);if(n){n.focus();try{n.setSelectionRange(fk.s,fk.s);}catch(e){}}}
+}
+
+/* =====================================================================
+   PAINEL DO LOJISTA — estrutura, início, pedidos, agenda
+   ===================================================================== */
+const first=n=>String(n||'').trim().split(/\s+/)[0]||'Cliente';
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const dayName=d=>cap(DIAS[d])+(d>0&&d<6?'-feira':'');
+
+function renderNav(){
+  const links=[['home','Visão geral'],...enabledMods().map(m=>[m.id,m.short]),['customers','Clientes']];
+  const badge={menu:countNew('menu'),catalog:countNew('catalog'),agenda:countPending()};
+  $('#nav').innerHTML=`<div class="nav"><div class="nav-in">
+    <button class="brand" data-go="home" aria-label="Balcão, ir para a visão geral"><span class="logo">${icon('bag')}</span>Balcão</button>
+    <nav class="nav-links" aria-label="Principal">${links.map(([id,l])=>`<button data-go="${id}" ${UI.route===id?'aria-current="page"':''}>${l}${badge[id]?`<span class="n">${badge[id]}</span>`:''}</button>`).join('')}</nav>
+    <div class="nav-r"><button class="btn sm" data-go="loja">${icon('phone')} Ver loja</button><button class="ic" data-go="plans" title="Módulos e planos" aria-label="Módulos e planos">${icon('pkg')}</button><button class="ic" data-go="settings" title="Ajustes" aria-label="Ajustes">${icon('sliders')}</button></div>
+  </div></div>`;
+}
+function renderFoot(){
+  const t=Persist.read(TKEY)||'auto';
+  $('#foot').innerHTML=UI.route==='loja'?'':`<div class="foot"><div class="wrap"><span>Balcão · Os dados ficam salvos neste navegador.</span><div class="seg sm" role="group" aria-label="Aparência">${[['light','Claro'],['dark','Escuro'],['auto','Automático']].map(([k,l])=>`<button data-act="theme" data-v="${k}" aria-pressed="${t===k}">${l}</button>`).join('')}</div></div></div>`;
+}
+const pageHead=(title,lead,extra)=>`<div class="wrap"><div class="page-head"><h1>${title}</h1>${lead?`<p class="lead">${lead}</p>`:''}${extra||''}</div></div>`;
+const segTabs=(mod,list)=>`<div class="seg" role="group">${list.map(([id,label])=>`<button data-act="tab" data-m="${mod}" data-t="${id}" aria-pressed="${UI.tab[mod]===id}">${label}</button>`).join('')}</div>`;
+const withPreview=inner=>`<div class="wrap"><div class="split"><div class="main">${inner}</div><aside class="pv" aria-label="Prévia da loja do cliente"><div class="phone"><div class="phone-screen" id="pv-screen"></div></div><div class="pv-cap"><b><i class="live"></i>Prévia ao vivo</b><button class="link small" data-go="loja">Abrir em tela cheia</button></div></aside></div></div>`;
+const emptyBox=(h,p,btn)=>`<div class="empty"><h3>${h}</h3><p>${p}</p>${btn||''}</div>`;
+const sw=(path,checked,extra)=>`<label class="sw"><input type="checkbox" data-set="${path}" data-kind="bool" ${extra||''} ${checked?'checked':''}><i></i></label>`;
+
+/* ---------- Início ---------- */
+function pageHome(){
+  const hr=new Date().getHours(),greet=hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite';
+  const nNew=(S.modules.menu?countNew('menu'):0)+(S.modules.catalog?countNew('catalog'):0);
+  const nBk=S.modules.agenda?S.bookings.filter(b=>b.date===today()&&ACTIVE_BK.includes(b.status)).length:0;
+  const nRw=S.modules.loyalty?readyRewards():0;
+  const parts=[];
+  if(nNew)parts.push(plural(nNew,'pedido novo','pedidos novos'));
+  if(nBk)parts.push(plural(nBk,'agendamento hoje','agendamentos hoje'));
+  if(nRw)parts.push(plural(nRw,'prêmio de fidelidade para entregar','prêmios de fidelidade para entregar'));
+  const lead=parts.length?`Você tem ${joinPt(parts)}.`:'Tudo em dia. Nenhum pedido ou agendamento esperando por você.';
+  const stats={
+    menu:`${countNew('menu')} novos · ${S.orders.filter(o=>o.mod==='menu'&&isoDay(o.createdAt)===today()&&o.status!=='cancelado').length} hoje`,
+    agenda:`${S.bookings.filter(b=>b.date===today()&&ACTIVE_BK.includes(b.status)).length} hoje · ${S.bookings.filter(b=>b.date>today()&&b.date<=addDays(today(),7)&&ACTIVE_BK.includes(b.status)).length} nos próximos 7 dias`,
+    catalog:`${countNew('catalog')} novos · ${plural(lowStock().length,'produto com estoque baixo','produtos com estoque baixo')}`,
+    loyalty:`${S.loy.customers.length} clientes · ${plural(readyRewards(),'prêmio liberado','prêmios liberados')}`
+  };
+  const days=revenueByDay(7),cur=days.reduce((a,x)=>a+x.v,0),prev=revenueByDay(14).slice(0,7).reduce((a,x)=>a+x.v,0);
+  const delta=prev>0?Math.round((cur-prev)/prev*100):null;
+  const feed=activity();
+  const steps=setupSteps(),doneN=steps.filter(s=>s.done).length;
+  return `<div class="wrap"><section class="hero"><h1>${greet}, ${esc(S.business.name)}.</h1><p class="lead">${lead}</p>
+    <div class="links"><button class="link" data-go="loja">Abrir a loja do cliente ${icon('chevR')}</button><button class="link" data-go="plans">Módulos e planos ${icon('chevR')}</button></div></section>
+  <section class="blk"><div class="grid2">${MODS.map(m=>S.modules[m.id]?`<button class="card mod" data-go="${m.id}"><span class="mi">${icon(m.icon)}</span><h3>${m.name}</h3><p>${m.desc}</p><span class="stat">${stats[m.id]}</span><span class="go">Abrir ${icon('chevR')}</span></button>`:`<button class="card mod off" data-go="plans"><span class="mi" style="background:var(--fg3)">${icon(m.icon)}</span><h3>${m.name}</h3><p>${m.desc}</p><span class="go">Ativar módulo ${icon('chevR')}</span></button>`).join('')}</div></section>
+  <section class="blk"><div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr))">
+    <div class="card"><h3>Faturamento dos últimos 7 dias</h3><p class="muted small" style="margin:4px 0 14px">Pedidos e atendimentos concluídos.</p><div class="kpi" style="margin-bottom:12px"><b class="tnum">${brl(cur)}</b><span>${delta===null?'Sem semana anterior para comparar':`${delta>=0?'+':''}${delta}% em relação aos 7 dias anteriores`}</span></div>${cur>0?chartSvg(days):`<p class="muted">Conclua um pedido ou atendimento para ver o gráfico.</p>`}</div>
+    <div class="card"><h3>Atividade recente</h3>${feed.length?`<ul class="feed" style="margin-top:8px">${feed.map(e=>`<li><span class="d">${icon(e.icon)}</span><div><b style="font-weight:600">${esc(e.text)}</b><small>${esc(e.sub)} · ${esc(ago(e.t))}</small></div></li>`).join('')}</ul>`:`<p class="muted" style="margin-top:8px">Nada por aqui ainda. Faça um pedido de teste na loja.</p>`}</div>
+  </div></section>
+  ${doneN<steps.length?`<section class="blk"><div class="card"><h3>Primeiros passos</h3><p class="muted small" style="margin:4px 0 10px">${doneN} de ${steps.length} concluídos</p><ul class="check">${steps.map(s=>`<li class="${s.done?'done':''}"><span class="ok">${s.done?icon('check'):''}</span><span style="flex:1">${s.text}</span>${s.done?'':`<button class="link small" data-go="${s.go}">${s.cta} ${icon('chevR')}</button>`}</li>`).join('')}</ul></div></section>`:''}
+  </div>`;
+}
+function setupSteps(){
+  const st=[
+    {text:'Cadastre o WhatsApp do negócio',done:digits(S.business.whatsapp).length>=10,go:'settings',cta:'Ajustes'},
+    ...(S.modules.menu?[{text:'Monte o cardápio',done:S.items.some(i=>i.mod==='menu'),go:'menu',cta:'Adicionar itens'}]:[]),
+    ...(S.modules.catalog?[{text:'Cadastre os produtos do catálogo',done:S.items.some(i=>i.mod==='catalog'),go:'catalog',cta:'Adicionar produtos'}]:[]),
+    ...(S.modules.agenda?[{text:'Crie ao menos um serviço para agendar',done:S.services.length>0,go:'agenda',cta:'Criar serviço'}]:[]),
+    {text:'Faça um pedido ou agendamento de teste na loja',done:S.orders.length+S.bookings.length>0,go:'loja',cta:'Abrir loja'}
+  ];
+  return st;
+}
+function activity(){
+  const ev=[];
+  S.orders.slice(-25).forEach(o=>ev.push({t:o.createdAt,icon:o.mod==='menu'?'utensils':'bag',text:`Pedido #${o.num} de ${first(o.name)}`,sub:`${brl(o.total)} · ${slabel(o)}`}));
+  S.bookings.slice(-25).forEach(b=>ev.push({t:b.createdAt||b.date,icon:'calendar',text:`${b.svcName} · ${first(b.name)}`,sub:`${fmtDay(b.date)} às ${b.time} · ${bkLabel[b.status]}`}));
+  S.loy.customers.forEach(c=>c.history.slice(0,2).forEach(h=>{if(h.type!=='join')ev.push({t:h.t,icon:'gift',text:`${first(c.name)} ${h.delta>0?'ganhou':'resgatou'} ${Math.abs(h.delta)} ${loyUnit(Math.abs(h.delta))}`,sub:h.note});}));
+  return ev.sort((a,b)=>b.t.localeCompare(a.t)).slice(0,7);
+}
+function chartSvg(days){
+  const W=640,H=200,pb=26,pt=22,bw=52,gap=(W-bw*days.length)/(days.length+1),max=Math.max(1,...days.map(x=>x.v));
+  let g='';
+  days.forEach((x,i)=>{const h=x.v?Math.max(6,(H-pb-pt)*x.v/max):0,xx=gap+i*(bw+gap),yy=H-pb-h;
+    g+=`<g><title>${esc(fmtDay(x.d))}: ${brl(x.v)}</title>${h?`<rect x="${xx.toFixed(1)}" y="${yy.toFixed(1)}" width="${bw}" height="${h.toFixed(1)}" rx="10" fill="var(--accent)" opacity="${i===days.length-1?1:.5}"/><text class="v" x="${(xx+bw/2).toFixed(1)}" y="${(yy-7).toFixed(1)}" text-anchor="middle">${Math.round(x.v)}</text>`:''}<text x="${(xx+bw/2).toFixed(1)}" y="${H-7}" text-anchor="middle">${i===days.length-1?'hoje':DIAS_C[pdate(x.d).getDay()]}</text></g>`;});
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Faturamento por dia, em reais">${g}<line x1="0" x2="${W}" y1="${H-pb}" y2="${H-pb}" stroke="var(--line)"/></svg>`;
+}
+
+/* ---------- Cardápio e Catálogo (pedidos + itens) ---------- */
+function pageShop(mod){
+  const isMenu=mod==='menu',t=UI.tab[mod],nNew=countNew(mod);
+  const tabs=segTabs(mod,[['fila',`Fila${nNew?` (${nNew})`:''}`],['hist','Histórico'],['itens',isMenu?'Itens':'Produtos'],['ajustes','Ajustes']]);
+  const body=t==='fila'?shopQueue(mod):t==='hist'?shopHistory(mod):t==='itens'?shopItems(mod):shopSettings(mod);
+  return pageHead(isMenu?'Cardápio digital':'Catálogo + pedido no WhatsApp',isMenu?'Receba pedidos de mesa, retirada e entrega. Cada pedido chega na fila e vira mensagem pronta para o WhatsApp.':'Publique produtos com estoque e receba pedidos organizados, prontos para confirmar no WhatsApp.',tabs)+withPreview(body);
+}
+function orderCard(o){
+  const active=!['concluido','cancelado'].includes(o.status);
+  return `<article class="oc"><header><strong>#${o.num}</strong><span class="badge acc">${TYPE[o.type]}${o.type==='mesa'?' '+esc(o.table):''}</span><time>${esc(ago(o.createdAt))}</time></header>
+    <div class="who">${esc(o.name)} · ${fmtPhone(o.phone)}</div>
+    <ul>${o.items.map(l=>`<li><span>${l.qty}× ${esc(l.name)}${l.note?`<br><small class="muted">${esc(l.note)}</small>`:''}</span><span>${brl(l.price*l.qty)}</span></li>`).join('')}</ul>
+    ${o.type==='entrega'?`<div class="meta">${icon('pin')} ${esc(o.address)}</div>`:''}${o.note?`<div class="note">${esc(o.note)}</div>`:''}
+    <div class="meta">${PAY[o.pay]}${o.pay==='cash'&&o.change?` · troco para ${brl(o.change)}`:''}${o.fee?` · entrega ${brl(o.fee)}`:''}</div>
+    <footer><b class="tnum">${brl(o.total)}</b><div class="acts"><a class="btn sm wa" target="_blank" rel="noopener" href="${waLink(o.phone,statusText(o))}" aria-label="Avisar ${esc(first(o.name))} no WhatsApp">${icon('wa')}</a>${active?`<button class="btn sm bad" data-act="o-cancel" data-id="${o.id}">Cancelar</button><button class="btn sm" data-act="o-next" data-id="${o.id}">${nextLabel(o)}</button>`:`<span class="badge ${o.status==='cancelado'?'bad':'ok'}">${slabel(o)}</span>`}</div></footer></article>`;
+}
+function shopQueue(mod){
+  const flow=FLOW[mod].slice(0,3),os=S.orders.filter(o=>o.mod===mod);
+  const act=os.filter(o=>flow.includes(o.status));
+  if(!act.length)return emptyBox('Nenhum pedido na fila',`Quando um cliente fizer um pedido, ele aparece aqui na hora. Experimente pela prévia ${'ao lado'}, ou abra a loja em tela cheia.`,`<button class="btn" data-go="loja">Abrir a loja</button>`);
+  return `<div class="board">${flow.map(st=>{const l=act.filter(o=>o.status===st).sort((a,b)=>a.createdAt.localeCompare(b.createdAt));return `<div><div class="col-t"><span>${mod==='menu'||st==='novo'?SLBL[st]:SLBL[st]}</span><span>${l.length}</span></div><div class="col">${l.map(orderCard).join('')||`<div class="muted small" style="padding:6px 4px">Vazio</div>`}</div></div>`;}).join('')}</div>`;
+}
+function shopHistory(mod){
+  const q=(UI.q['h'+mod]||'').toLowerCase();
+  const os=S.orders.filter(o=>o.mod===mod&&['concluido','cancelado'].includes(o.status)&&(!q||(`#${o.num} ${o.name} ${o.phone}`).toLowerCase().includes(q))).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
+  const tot=os.filter(o=>o.status==='concluido').reduce((a,o)=>a+o.total,0);
+  return `<div class="toolbar"><label class="search">${icon('search')}<input type="search" id="hq-${mod}" data-bind="q" data-k="h${mod}" placeholder="Buscar por nome, telefone ou número" value="${esc(UI.q['h'+mod]||'')}"></label><span class="muted small">${plural(os.length,'pedido','pedidos')} · ${brl(tot)} concluídos</span></div>`+
+  (os.length?`<div class="list">${os.slice(0,60).map(o=>`<div class="row"><div class="g"><strong>#${o.num} · ${esc(o.name)}</strong><small>${o.items.map(l=>l.qty+'× '+esc(l.name)).join(', ')}</small></div><div class="r"><span class="muted small">${esc(fmtDay(isoDay(o.createdAt)))}</span><span class="badge ${o.status==='cancelado'?'bad':'ok'}">${SLBL[o.status]}</span><b class="tnum" style="min-width:78px;text-align:right">${brl(o.total)}</b></div></div>`).join('')}</div>`:emptyBox('Sem histórico','Pedidos concluídos e cancelados aparecem aqui.'));
+}
+const EMO={menu:['☕','🥛','🍵','🧊','🍋','🍊','🥤','🍺','🍷','🧃','🥐','🍞','🥪','🍔','🍟','🌭','🍕','🌮','🥗','🍝','🍜','🍣','🍰','🧁','🍪','🍫','🍩','🍦','🧀','🥩','🍗','🍳'],
+  catalog:['☕','🌱','🫖','⏳','⚙️','🍵','🎁','👕','👟','👜','📦','🧴','💄','💍','📱','🎧','🔌','🧸','📚','✏️','🕯️','🌿','🧼','🛠️','🪴','🍯','🥫','🧺','🖼️','⌚','🕶️','🚲']};
+function shopItems(mod){
+  const isMenu=mod==='menu',q=(UI.q['i'+mod]||'').toLowerCase();
+  const cats=S.cats.filter(c=>c.mod===mod),its=S.items.filter(i=>i.mod===mod&&(!q||(i.name+' '+i.desc).toLowerCase().includes(q)));
+  const orphan=its.filter(i=>!cats.some(c=>c.id===i.cat));
+  const groups=[...cats.map(c=>({c,l:its.filter(i=>i.cat===c.id)})),...(orphan.length?[{c:null,l:orphan}]:[])];
+  const tb=`<div class="toolbar"><label class="search">${icon('search')}<input type="search" id="iq-${mod}" data-bind="q" data-k="i${mod}" placeholder="Buscar ${isMenu?'item':'produto'}" value="${esc(UI.q['i'+mod]||'')}"></label><button class="btn sm gray" data-act="cat-new" data-m="${mod}">${icon('plus')} Categoria</button><button class="btn sm" data-act="item-new" data-m="${mod}">${icon('plus')} ${isMenu?'Novo item':'Novo produto'}</button></div>`;
+  if(!S.items.some(i=>i.mod===mod))return tb+emptyBox(isMenu?'Cardápio vazio':'Catálogo vazio',isMenu?'Cadastre pratos e bebidas para os clientes pedirem.':'Cadastre produtos com preço e estoque.',`<button class="btn" data-act="item-new" data-m="${mod}">${isMenu?'Adicionar o primeiro item':'Adicionar o primeiro produto'}</button>`);
+  return tb+groups.map(g=>`<div class="group-t"><span>${esc(g.c?g.c.name:'Sem categoria')} · ${g.l.length}</span>${g.c?`<span><button class="iconbtn" data-act="cat-edit" data-id="${g.c.id}" aria-label="Renomear categoria">${icon('pencil')}</button><button class="iconbtn bad" data-act="cat-del" data-id="${g.c.id}" aria-label="Excluir categoria">${icon('trash')}</button></span>`:''}</div>${g.l.length?`<div class="list">${g.l.map(i=>`<div class="row" ${i.active===false?'style="opacity:.62"':''}>${thumb(i,48)}<div class="g"><strong>${esc(i.name)}</strong><small>${priceHtml(i).replace(/<[^>]+>/g,'')}${i.desc?' · '+esc(i.desc):''}</small></div><div class="r">${!isMenu?(i.stock==null?`<span class="badge">Sem controle</span>`:`${i.stock<=S.catCfg.low?`<span class="badge ${i.stock===0?'bad':'warn'}">${i.stock===0?'Esgotado':'Baixo'}</span>`:''}<div class="stepper"><button data-act="stock" data-id="${i.id}" data-d="-1" aria-label="Diminuir estoque">${icon('minus')}</button><b>${i.stock}</b><button data-act="stock" data-id="${i.id}" data-d="1" aria-label="Aumentar estoque">${icon('plus')}</button></div>`):''}<label class="sw sm" title="Disponível"><input type="checkbox" data-change="item-active" data-id="${i.id}" ${i.active!==false?'checked':''} aria-label="Disponível"><i></i></label><button class="iconbtn" data-act="item-edit" data-id="${i.id}" aria-label="Editar">${icon('pencil')}</button><button class="iconbtn bad" data-act="item-del" data-id="${i.id}" aria-label="Excluir">${icon('trash')}</button></div></div>`).join('')}</div>`:`<div class="muted small" style="padding:0 4px">Nenhum item nesta categoria.</div>`}`).join('');
+}
+function itemForm(mod,id){
+  const isMenu=mod==='menu',it=id?S.items.find(i=>i.id===id):{mod,cat:(S.cats.find(c=>c.mod===mod)||{}).id,name:'',price:'',promo:'',stock:isMenu?null:10,desc:'',emoji:EMO[mod][0],img:'',active:true};
+  const cats=S.cats.filter(c=>c.mod===mod);
+  return modalShell(id?(isMenu?'Editar item':'Editar produto'):(isMenu?'Novo item':'Novo produto'),`<form class="form" data-submit="item" id="item-form"><input type="hidden" name="id" value="${id||''}"><input type="hidden" name="mod" value="${mod}"><input type="hidden" name="emoji" value="${esc(it.emoji)}"><input type="hidden" name="img" value="${esc(it.img||'')}">
+    <div class="field"><label for="f-name">Nome</label><input type="text" id="f-name" name="name" required value="${esc(it.name)}"></div>
+    <div class="frow"><div class="field"><label for="f-cat">Categoria</label><select id="f-cat" name="cat">${cats.map(c=>`<option value="${c.id}" ${c.id===it.cat?'selected':''}>${esc(c.name)}</option>`).join('')||'<option value="">Sem categorias</option>'}</select></div><div class="field"><label for="f-newcat">Ou crie uma categoria</label><input type="text" id="f-newcat" name="newcat" placeholder="Ex.: Promoções"></div></div>
+    <div class="frow"><div class="field"><label for="f-price">Preço (R$)</label><input type="number" id="f-price" name="price" required min="0" step="0.01" inputmode="decimal" value="${it.price}"></div><div class="field"><label for="f-promo">Preço promocional</label><input type="number" id="f-promo" name="promo" min="0" step="0.01" inputmode="decimal" value="${it.promo||''}"></div>${!isMenu?`<div class="field"><label for="f-stock">Estoque</label><input type="number" id="f-stock" name="stock" min="0" step="1" inputmode="numeric" placeholder="Sem controle" value="${it.stock==null?'':it.stock}"></div>`:''}</div>
+    <div class="field"><label for="f-desc">Descrição</label><textarea id="f-desc" name="desc" rows="2">${esc(it.desc)}</textarea></div>
+    <div class="field"><span class="lbl">Ícone</span><div class="emojis">${EMO[mod].map(e=>`<button type="button" data-act="pick-emoji" data-e="${e}" aria-pressed="${e===it.emoji}">${e}</button>`).join('')}</div></div>
+    <div class="field"><span class="lbl">Foto (opcional)</span><div style="display:flex;align-items:center;gap:12px"><span id="img-prev">${it.img?thumb(it,56):''}</span><label class="btn sm gray" style="cursor:pointer">${icon('img')} Escolher foto<input type="file" accept="image/*" data-change="img-file" class="sr"></label><button type="button" class="link small" data-act="img-clear">Remover</button></div></div>
+    <div class="row" style="padding:0;min-height:0"><div class="g"><strong>Disponível para pedido</strong></div><label class="sw"><input type="checkbox" name="active" ${it.active!==false?'checked':''}><i></i></label></div>
+    <div class="mf"><button type="button" class="btn gray" data-act="modal-close">Cancelar</button><button type="submit" class="btn">Salvar</button></div></form>`);
+}
+function shopSettings(mod){
+  const k=mod==='menu'?'menuCfg':'catCfg',c=cfgOf(mod),isMenu=mod==='menu';
+  const num=(path,v,w)=>`<input type="number" style="width:${w||120}px" data-set="${path}" data-kind="num" min="0" step="0.01" inputmode="decimal" value="${v}">`;
+  return `<div class="group-t">Como o cliente recebe</div><div class="list">
+    <div class="row"><div class="g"><strong>Retirada no local</strong></div>${sw(k+'.pickup',c.pickup,'data-rerender="1"')}</div>
+    <div class="row"><div class="g"><strong>Entrega</strong></div>${sw(k+'.delivery',c.delivery,'data-rerender="1"')}</div>
+    ${isMenu?`<div class="row"><div class="g"><strong>Pedido na mesa</strong></div>${sw(k+'.dine',c.dine)}</div>`:''}</div>
+  <div class="group-t">Valores e prazo</div><div class="list">
+    <div class="row"><div class="g"><strong>Taxa de entrega</strong><small>Em reais. Use 0 para entrega grátis.</small></div>${num(k+'.fee',c.fee)}</div>
+    <div class="row"><div class="g"><strong>Pedido mínimo</strong><small>Em reais. Use 0 para não exigir.</small></div>${num(k+'.min',c.min)}</div>
+    <div class="row"><div class="g"><strong>Previsão de atendimento</strong><small>Aparece para o cliente ao pedir.</small></div><input type="text" style="width:170px" data-set="${k}.eta" data-kind="text" value="${esc(c.eta)}"></div>
+    ${!isMenu?`<div class="row"><div class="g"><strong>Aviso de estoque baixo</strong><small>Alerta quando restar esta quantidade ou menos.</small></div><input type="number" style="width:100px" data-set="catCfg.low" data-kind="num" min="0" step="1" value="${c.low}"></div>`:''}</div>
+  <div class="group-t">Formas de pagamento</div><div class="list">${Object.entries(PAY).map(([p,l])=>`<div class="row"><div class="g"><strong>${l}</strong></div>${sw(`${k}.pay.${p}`,c.pay[p])}</div>`).join('')}</div>`;
+}
+
+/* ---------- Agenda ---------- */
+function pageAgenda(){
+  const t=UI.tab.agenda,pend=countPending();
+  const tabs=segTabs('agenda',[['dia',`Agenda${pend?` (${pend})`:''}`],['servicos','Serviços'],['equipe','Equipe e regras']]);
+  const body=t==='dia'?agDay():t==='servicos'?agServices():agTeam();
+  return pageHead('Agendamento automático','Os clientes escolhem serviço, profissional e horário. Só aparecem horários realmente livres.',tabs)+withPreview(body);
+}
+function agDay(){
+  const d=UI.agDate,list=S.bookings.filter(b=>b.date===d&&(UI.agPro==='all'||b.pro===UI.agPro)).sort((a,b)=>a.time.localeCompare(b.time));
+  const strip=Array.from({length:7},(_,i)=>addDays(d,i-3));
+  const cnt=x=>S.bookings.filter(b=>b.date===x&&ACTIVE_BK.includes(b.status)).length;
+  const exp=list.filter(b=>ACTIVE_BK.includes(b.status)).reduce((a,b)=>a+(+b.price||0),0);
+  const tb=`<div class="toolbar"><button class="iconbtn" data-act="ag-nav" data-d="-1" aria-label="Dia anterior">${icon('chevL')}</button><b style="font-size:18px;min-width:170px;text-align:center">${esc(cap(fmtDay(d,{weekday:'long',day:'numeric',month:'long'})))}</b><button class="iconbtn" data-act="ag-nav" data-d="1" aria-label="Próximo dia">${icon('chevR')}</button><button class="btn sm gray" data-act="ag-today">Hoje</button><span style="flex:1"></span><button class="btn sm" data-act="bk-new">${icon('plus')} Agendamento</button></div>`;
+  const pros=S.pros.length>1?`<div style="margin-bottom:14px"><div class="seg sm"><button data-act="ag-pro" data-id="all" aria-pressed="${UI.agPro==='all'}">Toda a equipe</button>${S.pros.map(p=>`<button data-act="ag-pro" data-id="${p.id}" aria-pressed="${UI.agPro===p.id}">${esc(p.name)}</button>`).join('')}</div></div>`:'';
+  const h=S.business.hours[pdate(d).getDay()];
+  return tb+`<div class="days">${strip.map(x=>`<button class="day" data-act="ag-set" data-d="${x}" aria-pressed="${x===d}"><small>${x===today()?'hoje':DIAS_C[pdate(x).getDay()]}</small><b>${pdate(x).getDate()}</b><i>${cnt(x)?cnt(x):''}</i></button>`).join('')}</div>${pros}`+
+  (list.length?`<div class="list">${list.map(bkRow).join('')}</div><p class="muted small" style="margin:12px 4px">${plural(list.length,'agendamento','agendamentos')} · ${brl(exp)} previstos</p>`:emptyBox('Dia livre',(!h.open||S.blocked.includes(d))?'O negócio está fechado neste dia.':'Nenhum agendamento para esta data.',`<button class="btn" data-act="bk-new">Criar agendamento</button>`));
+}
+function bkRow(b){
+  const end=mtime(tmin(b.time)+b.dur),act=b.status==='pendente'||b.status==='confirmado';
+  const cls={pendente:'warn',confirmado:'acc',concluido:'ok',cancelado:'bad',faltou:'bad'}[b.status];
+  return `<div class="bk"><div class="t tnum">${b.time}<small>até ${end}</small></div><div class="g"><strong>${esc(b.svcName)} <span class="badge ${cls}" style="margin-left:6px;vertical-align:1px">${bkLabel[b.status]}</span></strong><span>${esc(b.name)} · ${fmtPhone(b.phone)}</span><span>${S.pros.length?`com ${esc(b.proName)} · `:''}${b.price?brl(b.price):'Grátis'}${b.note?` · ${esc(b.note)}`:''}</span>
+    <div class="acts">${b.status==='pendente'?`<button class="btn sm" data-act="bk-st" data-id="${b.id}" data-s="confirmado">Confirmar</button>`:''}${b.status==='confirmado'?`<button class="btn sm" data-act="bk-st" data-id="${b.id}" data-s="concluido">Concluir</button><button class="btn sm gray" data-act="bk-st" data-id="${b.id}" data-s="faltou">Faltou</button>`:''}${act?`<a class="btn sm wa" target="_blank" rel="noopener" href="${waLink(b.phone,bkText(b,b.status==='pendente'?'':'lembrete'))}" aria-label="Avisar ${esc(first(b.name))} no WhatsApp">${icon('wa')}</a><button class="btn sm bad" data-act="bk-st" data-id="${b.id}" data-s="cancelado">Cancelar</button>`:''}</div></div></div>`;
+}
+function bkNewForm(){
+  const sv=S.services;
+  if(!sv.length)return modalShell('Novo agendamento',`<p class="muted">Crie um serviço antes de agendar.</p>`,`<button class="btn" data-act="modal-close">Ok</button>`);
+  return modalShell('Novo agendamento',`<form class="form" data-submit="bk-new" id="bk-form">
+    <div class="frow"><div class="field"><label for="b-svc">Serviço</label><select id="b-svc" name="svc" data-change="bk-refresh">${sv.map(s=>`<option value="${s.id}">${esc(s.name)} · ${s.duration} min</option>`).join('')}</select></div>
+    <div class="field"><label for="b-pro">Profissional</label><select id="b-pro" name="pro" data-change="bk-refresh"><option value="any">Qualquer disponível</option>${S.pros.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></div></div>
+    <div class="frow"><div class="field"><label for="b-date">Data</label><input type="date" id="b-date" name="date" min="${today()}" value="${UI.agDate<today()?today():UI.agDate}" data-change="bk-refresh"></div><div class="field"><label for="b-time">Horário</label><select id="b-time" name="time"></select></div></div>
+    <div class="frow"><div class="field"><label for="b-name">Nome do cliente</label><input type="text" id="b-name" name="name" required></div><div class="field"><label for="b-phone">WhatsApp</label><input type="tel" id="b-phone" name="phone" data-mask="1" inputmode="tel" required placeholder="(11) 99999-0000"></div></div>
+    <div class="field"><label for="b-note">Observação</label><input type="text" id="b-note" name="note"></div>
+    <div class="mf"><button type="button" class="btn gray" data-act="modal-close">Cancelar</button><button type="submit" class="btn">Agendar</button></div></form>`);
+}
+function bkRefresh(){
+  const f=$('#bk-form');if(!f)return;
+  const E=f.elements,svc=S.services.find(s=>s.id===E.svc.value),sel=E.time,prev=sel.value;
+  const sl=svc&&E.date.value?daySlots(E.date.value,svc,E.pro.value):[];
+  sel.innerHTML=sl.length?sl.map(x=>`<option value="${x.time}" ${x.time===prev?'selected':''}>${x.time}</option>`).join(''):'<option value="">Sem horários livres</option>';
+}
+function agServices(){
+  return `<div class="toolbar"><span style="flex:1"></span><button class="btn sm" data-act="svc-new">${icon('plus')} Novo serviço</button></div>`+(S.services.length?`<div class="list">${S.services.map(s=>`<div class="row"><div class="av">${icon('clock')}</div><div class="g"><strong>${esc(s.name)}</strong><small>${s.duration} min${s.desc?' · '+esc(s.desc):''}</small></div><div class="r"><b class="tnum">${s.price?brl(s.price):'Grátis'}</b><button class="iconbtn" data-act="svc-edit" data-id="${s.id}" aria-label="Editar">${icon('pencil')}</button><button class="iconbtn bad" data-act="svc-del" data-id="${s.id}" aria-label="Excluir">${icon('trash')}</button></div></div>`).join('')}</div>`:emptyBox('Nenhum serviço','Cadastre o que os clientes podem agendar, com duração e preço.',`<button class="btn" data-act="svc-new">Criar serviço</button>`));
+}
+function svcForm(id){
+  const s=id?S.services.find(x=>x.id===id):{name:'',duration:60,price:'',desc:''};
+  return modalShell(id?'Editar serviço':'Novo serviço',`<form class="form" data-submit="svc"><input type="hidden" name="id" value="${id||''}">
+    <div class="field"><label for="s-name">Nome</label><input type="text" id="s-name" name="name" required value="${esc(s.name)}"></div>
+    <div class="frow"><div class="field"><label for="s-dur">Duração (minutos)</label><input type="number" id="s-dur" name="duration" required min="5" step="5" inputmode="numeric" value="${s.duration}"></div><div class="field"><label for="s-price">Preço (R$)</label><input type="number" id="s-price" name="price" min="0" step="0.01" inputmode="decimal" placeholder="0 = grátis" value="${s.price}"></div></div>
+    <div class="field"><label for="s-desc">Descrição</label><textarea id="s-desc" name="desc" rows="2">${esc(s.desc||'')}</textarea></div>
+    <div class="mf"><button type="button" class="btn gray" data-act="modal-close">Cancelar</button><button type="submit" class="btn">Salvar</button></div></form>`);
+}
+function hoursEditor(){
+  return `<div class="hours">${[1,2,3,4,5,6,0].map(d=>{const h=S.business.hours[d];return `<div class="hrow"><strong style="font-weight:600;font-size:15px">${dayName(d)}</strong>${sw(`business.hours.${d}.open`,h.open,'data-rerender="1"')}<div class="tt">${h.open?`<input type="time" data-set="business.hours.${d}.start" data-kind="text" value="${h.start}" aria-label="Abre"><span class="muted small">até</span><input type="time" data-set="business.hours.${d}.end" data-kind="text" value="${h.end}" aria-label="Fecha">`:`<span class="muted small">Fechado</span>`}</div></div>`;}).join('')}</div>`;
+}
+function agTeam(){
+  return `<div class="group-t"><span>Equipe</span><button class="btn sm" data-act="pro-new">${icon('plus')} Adicionar</button></div>`+
+  (S.pros.length?`<div class="list">${S.pros.map(p=>`<div class="row"><div class="av">${initials(p.name)}</div><div class="g"><strong>${esc(p.name)}</strong><small>${plural(S.bookings.filter(b=>b.pro===p.id&&b.date>=today()&&ACTIVE_BK.includes(b.status)).length,'agendamento futuro','agendamentos futuros')}</small></div><div class="r"><button class="iconbtn" data-act="pro-edit" data-id="${p.id}" aria-label="Renomear">${icon('pencil')}</button><button class="iconbtn bad" data-act="pro-del" data-id="${p.id}" aria-label="Remover">${icon('trash')}</button></div></div>`).join('')}</div>`:`<div class="card sm muted">Sem equipe cadastrada: os horários usam uma agenda única. Adicione profissionais para agendar em paralelo.</div>`)+
+  `<div class="group-t">Regras de agendamento</div><div class="list">
+    <div class="row"><div class="g"><strong>Intervalo entre horários</strong><small>Espaçamento dos horários oferecidos.</small></div><select style="width:130px" data-set="agCfg.step" data-kind="num">${[15,20,30,45,60].map(v=>`<option value="${v}" ${+S.agCfg.step===v?'selected':''}>${v} min</option>`).join('')}</select></div>
+    <div class="row"><div class="g"><strong>Agendar com até</strong><small>Quantos dias à frente o cliente enxerga.</small></div><input type="number" style="width:100px" data-set="agCfg.ahead" data-kind="num" min="1" max="90" step="1" value="${S.agCfg.ahead}"></div>
+    <div class="row"><div class="g"><strong>Antecedência mínima</strong><small>Horas antes do horário para aceitar reservas hoje.</small></div><input type="number" style="width:100px" data-set="agCfg.minHours" data-kind="num" min="0" step="1" value="${S.agCfg.minHours}"></div>
+    <div class="row"><div class="g"><strong>Confirmar automaticamente</strong><small>Desligado, cada pedido fica pendente até você confirmar.</small></div>${sw('agCfg.auto',S.agCfg.auto)}</div></div>
+  <div class="group-t">Horário de funcionamento</div><div class="card sm">${hoursEditor()}</div>
+  <div class="group-t">Dias bloqueados</div><div class="list">${S.blocked.slice().sort().map(d=>`<div class="row"><div class="g"><strong>${esc(cap(fmtDay(d,{weekday:'long',day:'numeric',month:'long',year:'numeric'})))}</strong></div><button class="iconbtn bad" data-act="blk-del" data-d="${d}" aria-label="Desbloquear">${icon('x')}</button></div>`).join('')}<form class="row" data-submit="blk-add"><div class="g"><input type="date" name="d" min="${today()}" required aria-label="Data a bloquear"></div><button class="btn sm gray" type="submit">Bloquear dia</button></form></div>`;
+}
+
+/* =====================================================================
+   Fidelidade, Clientes, Planos e Ajustes
+   ===================================================================== */
+function pageLoyalty(){
+  const t=UI.tab.loyalty,tabs=segTabs('loyalty',[['clientes','Clientes'],['programa','Programa']]);
+  return pageHead('Programa de fidelidade','Pontue pelo telefone no balcão. O cliente acompanha o cartão digital no próprio celular.',tabs)+withPreview(t==='clientes'?loyClients():loyProgram());
+}
+function loyClients(){
+  const L=S.loy,q=(UI.q.loy||'').toLowerCase(),isSt=L.mode==='stamps';
+  const list=L.customers.filter(c=>!q||(c.name+' '+c.phone).toLowerCase().includes(q)).sort((a,b)=>(b.balance>=L.goal)-(a.balance>=L.goal)||b.balance-a.balance);
+  const rewards=L.customers.reduce((a,c)=>a+c.rewards,0);
+  return `<div class="card sm" style="margin-bottom:16px"><h3 style="font-size:19px">${isSt?'Dar carimbo':'Pontuar compra'}</h3><p class="muted small" style="margin:2px 0 14px">${isSt?`Digite o telefone do cliente${L.minPurchase>0?` e o valor da compra (mínimo ${brl(L.minPurchase)})`:''}.`:`Digite o telefone e o valor da compra. Cada R$ 1 vale ${L.rate} ${loyUnit(+L.rate)}.`}</p>
+    <form class="form" data-submit="loy-earn"><div class="frow"><div class="field"><label for="l-phone">WhatsApp do cliente</label><input type="tel" id="l-phone" name="phone" data-mask="1" data-bind="loy-lookup" inputmode="tel" required placeholder="(11) 99999-0000"></div><div class="field"><label for="l-name">Nome</label><input type="text" id="l-name" name="name" placeholder="Só para cliente novo"></div><div class="field"><label for="l-amt">Valor da compra (R$)</label><input type="number" id="l-amt" name="amount" min="0" step="0.01" inputmode="decimal" ${(!isSt||L.minPurchase>0)?'required':''}></div></div>
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><button class="btn" type="submit">${isSt?'Adicionar carimbo':'Pontuar'}</button><span id="loy-hint" class="muted small"></span></div></form></div>
+  <div class="grid3" style="margin-bottom:8px"><div class="card sm kpi"><small>Clientes no programa</small><b>${L.customers.length}</b></div><div class="card sm kpi"><small>Prêmios liberados</small><b>${readyRewards()}</b></div><div class="card sm kpi"><small>Prêmios resgatados</small><b>${rewards}</b></div></div>
+  <div class="toolbar" style="margin-top:18px"><label class="search">${icon('search')}<input type="search" id="lq" data-bind="q" data-k="loy" placeholder="Buscar cliente" value="${esc(UI.q.loy||'')}"></label><button class="btn sm gray" data-act="loy-add">${icon('plus')} Cliente</button></div>`+
+  (list.length?`<div class="list">${list.map(c=>{const ready=c.balance>=L.goal;return `<div class="row"><div class="av">${esc(initials(c.name))}</div><div class="g"><strong>${esc(c.name)}</strong><small>${fmtPhone(c.phone)} · ${plural(c.visits,'visita','visitas')}</small></div><div class="r"><div style="width:96px;text-align:right"><span class="small tnum" style="font-weight:600">${c.balance} / ${L.goal}</span><div class="bar" style="margin-top:5px"><i style="width:${Math.min(100,c.balance/L.goal*100)}%"></i></div></div>${ready?`<button class="btn sm" data-act="loy-redeem" data-id="${c.id}">Resgatar</button>`:`<button class="btn sm ghost" data-act="loy-quick" data-id="${c.id}">${isSt?'+ Carimbo':'Pontuar'}</button>`}<button class="iconbtn" data-act="loy-open" data-id="${c.id}" aria-label="Detalhes de ${esc(c.name)}">${icon('chevR')}</button></div></div>`;}).join('')}</div>`:emptyBox('Nenhum cliente encontrado','Pontue a primeira compra acima para criar o cartão do cliente.'));
+}
+function loyProgram(){
+  const L=S.loy,isSt=L.mode==='stamps';
+  return `<div class="group-t">Modelo</div><div class="seg"><button data-act="loy-mode" data-v="stamps" aria-pressed="${isSt}">Carimbos por visita</button><button data-act="loy-mode" data-v="points" aria-pressed="${!isSt}">Pontos por valor</button></div>
+  <p class="muted small" style="margin:10px 4px 0">${isSt?'Cada compra vale 1 carimbo. O cartão do cliente mostra as casinhas preenchidas.':'Cada real gasto vira pontos. O cartão do cliente mostra uma barra de progresso.'} Ao trocar o modelo, os saldos atuais são mantidos.</p>
+  <div class="group-t">Regras</div><div class="list">
+    <div class="row"><div class="g"><strong>${isSt?'Carimbos para ganhar o prêmio':'Pontos para ganhar o prêmio'}</strong></div><input type="number" style="width:100px" data-set="loy.goal" data-kind="num" min="1" step="1" value="${L.goal}"></div>
+    <div class="row"><div class="g"><strong>Prêmio</strong><small>Texto que o cliente vê no cartão.</small></div><input type="text" style="width:200px" data-set="loy.reward" data-kind="text" value="${esc(L.reward)}"></div>
+    ${isSt?`<div class="row"><div class="g"><strong>Compra mínima para carimbar</strong><small>Use 0 para carimbar qualquer compra.</small></div><input type="number" style="width:110px" data-set="loy.minPurchase" data-kind="num" min="0" step="0.01" value="${L.minPurchase}"></div>`:`<div class="row"><div class="g"><strong>Pontos por real gasto</strong></div><input type="number" style="width:100px" data-set="loy.rate" data-kind="num" min="0.1" step="0.1" value="${L.rate}"></div>`}
+    <div class="row"><div class="g"><strong>Pontuar ao concluir pedido ou atendimento</strong><small>Pedidos do cardápio, do catálogo e agendamentos concluídos pontuam sozinhos.</small></div>${sw('loy.auto',L.auto)}</div></div>`;
+}
+function loyCustModal(id){
+  const c=S.loy.customers.find(x=>x.id===id);if(!c)return '';const L=S.loy;
+  return modalShell(c.name,`<p class="muted" style="margin:-6px 0 14px">${fmtPhone(c.phone)} · cliente desde ${esc(fmtDay(isoDay(c.createdAt),{day:'numeric',month:'short',year:'numeric'}))}</p>
+    <div class="grid3" style="margin-bottom:16px"><div class="card sm kpi"><small>Saldo</small><b>${c.balance}</b><span>de ${L.goal} ${loyUnit(L.goal)}</span></div><div class="card sm kpi"><small>Visitas</small><b>${c.visits}</b></div><div class="card sm kpi"><small>Resgates</small><b>${c.rewards}</b></div></div>
+    <form class="form" data-submit="loy-adjust" style="margin-bottom:16px"><input type="hidden" name="id" value="${c.id}"><div class="frow"><div class="field"><label for="a-d">Ajustar saldo (+ ou −)</label><input type="number" id="a-d" name="delta" step="1" required placeholder="Ex.: 2 ou -1"></div><div class="field"><label for="a-n">Motivo</label><input type="text" id="a-n" name="note" placeholder="Ex.: correção"></div></div><div><button class="btn sm gray" type="submit">Aplicar ajuste</button></div></form>
+    <div class="group-t" style="margin-top:6px">Histórico</div>${c.history.length?`<div class="list">${c.history.slice(0,10).map(h=>`<div class="row"><div class="g"><strong>${esc(h.note)}</strong><small>${esc(ago(h.t))}</small></div>${h.delta?`<span class="badge ${h.delta>0?'ok':'acc'}">${h.delta>0?'+':''}${h.delta}</span>`:''}</div>`).join('')}</div>`:'<p class="muted">Sem movimentações.</p>'}`,
+    `<button class="btn bad" data-act="loy-del" data-id="${c.id}">Excluir cliente</button><a class="btn wa" target="_blank" rel="noopener" href="${waLink(c.phone,`Olá, ${first(c.name)}! Você tem ${c.balance} de ${L.goal} ${loyUnit(L.goal)} no cartão fidelidade da ${S.business.name}.${c.balance>=L.goal?` Seu prêmio já está liberado: ${L.reward}!`:''}`)}">${icon('wa')} WhatsApp</a>`);
+}
+
+/* ---------- Clientes ---------- */
+function pageCustomers(){
+  const q=(UI.q.cust||'').toLowerCase(),all=allCustomers(),list=all.filter(c=>!q||(c.name+' '+c.phone).toLowerCase().includes(q));
+  const total=all.reduce((a,c)=>a+c.spent,0);
+  return pageHead('Clientes','Uma base única: quem pede, agenda e pontua aparece aqui, reunido pelo telefone.')+`<div class="wrap" style="padding-bottom:64px">
+    <div class="grid3" style="margin-bottom:22px"><div class="card sm kpi"><small>Clientes</small><b>${all.length}</b></div><div class="card sm kpi"><small>Receita concluída</small><b class="tnum">${brl(total)}</b></div><div class="card sm kpi"><small>Ticket médio por cliente</small><b class="tnum">${brl(all.length?total/all.length:0)}</b></div></div>
+    <div class="toolbar"><label class="search">${icon('search')}<input type="search" id="cq" data-bind="q" data-k="cust" placeholder="Buscar por nome ou telefone" value="${esc(UI.q.cust||'')}"></label>${DL&&all.length?`<button class="btn sm gray" data-act="cust-export">${icon('dl')} Exportar CSV</button>`:''}</div>
+    ${list.length?`<div class="list">${list.map(c=>`<div class="row" style="cursor:pointer" role="button" tabindex="0" data-act="cust-open" data-p="${c.phone}"><div class="av">${esc(initials(c.name))}</div><div class="g"><strong>${esc(c.name)}</strong><small>${fmtPhone(c.phone)} · ${plural(c.orders,'pedido','pedidos')} · ${plural(c.bookings,'agendamento','agendamentos')}</small></div><div class="r">${c.balance!=null?`<span class="badge acc">${icon('gift')} ${c.balance}</span>`:''}<b class="tnum" style="min-width:86px;text-align:right">${brl(c.spent)}</b>${icon('chevR')}</div></div>`).join('')}</div>`:emptyBox('Nenhum cliente ainda','Quando alguém pedir, agendar ou entrar no programa de fidelidade, aparece aqui.')}</div>`;
+}
+function custModal(phone){
+  const c=allCustomers().find(x=>x.phone===phone);if(!c)return '';
+  return modalShell(c.name,`<p class="muted" style="margin:-6px 0 14px">${fmtPhone(c.phone)}</p><div class="grid3" style="margin-bottom:16px"><div class="card sm kpi"><small>Pedidos</small><b>${c.orders}</b></div><div class="card sm kpi"><small>Agendamentos</small><b>${c.bookings}</b></div><div class="card sm kpi"><small>Total gasto</small><b class="tnum" style="font-size:24px">${brl(c.spent)}</b></div></div>
+    <div class="group-t" style="margin-top:0">Linha do tempo</div><ul class="feed">${c.tl.slice(0,12).map(e=>`<li><span class="d">${icon(e.icon)}</span><div style="flex:1"><b style="font-weight:600">${esc(e.text)}</b><small>${esc(ago(e.t.length>10?e.t:e.t+'T12:00:00'))}</small></div><span class="badge">${esc(e.tag)}</span></li>`).join('')}</ul>`,
+    `<a class="btn wa" target="_blank" rel="noopener" href="${waLink(c.phone,`Olá, ${first(c.name)}! Aqui é da ${S.business.name}.`)}">${icon('wa')} Chamar no WhatsApp</a>`);
+}
+
+/* ---------- Módulos e planos ---------- */
+function pagePlans(){
+  const total=enabledMods().reduce((a,m)=>a+m.price,0);
+  return pageHead('Módulos e planos','Ative só o que o seu negócio usa. Cada módulo tem assinatura mensal.')+`<div class="wrap" style="padding-bottom:64px">
+  <section class="blk" style="margin-bottom:40px"><div style="display:grid;gap:14px">${MODS.map(m=>`<div class="card plan"><span class="mi">${icon(m.icon)}</span><div><h3>${m.name}</h3><p class="muted" style="margin:4px 0 8px;font-size:16px">${m.desc}</p><p class="muted small">${m.feats.join(' · ')}</p></div><div style="display:grid;gap:10px;justify-items:end"><div class="pr">${brl(m.price)}<small>por mês</small></div><label class="sw"><input type="checkbox" data-change="mod-toggle" data-id="${m.id}" ${S.modules[m.id]?'checked':''} aria-label="Ativar ${m.name}"><i></i></label></div></div>`).join('')}</div>
+  <div class="card" style="margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap"><div><h3>Total mensal do seu negócio</h3><p class="muted small">${plural(enabledMods().length,'módulo ativo','módulos ativos')}</p></div><b class="big tnum" style="font-size:clamp(32px,5vw,44px)">${brl(total)}</b></div>
+  <p class="muted small" style="margin:12px 4px 0">Prévia de preços. A cobrança real exige conectar um meio de pagamento (Pix ou cartão).</p></section>
+  <section class="blk"><h2 class="sec">Simulador de receita</h2><p class="sec-sub">Para quem revende o Balcão: quantos clientes pagantes em cada módulo?</p>
+  <div class="card"><div style="display:grid;gap:22px">${MODS.map(m=>`<div><div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline"><b>${m.name} <span class="muted" style="font-weight:400">· ${brl(m.price)}</span></b><span class="tnum"><span id="sim-n-${m.id}" style="font-weight:600">${UI.sim[m.id]}</span> <span class="muted small">clientes</span> · <b id="sim-v-${m.id}">${brl(UI.sim[m.id]*m.price)}</b></span></div><input class="range" type="range" min="0" max="500" step="5" value="${UI.sim[m.id]}" data-bind="sim" data-m="${m.id}" aria-label="Clientes em ${m.name}"></div>`).join('')}</div>
+  <div class="hr" style="margin:24px 0 18px"></div><div style="display:flex;gap:28px;flex-wrap:wrap;align-items:flex-end"><div class="kpi"><small>Receita recorrente mensal</small><b class="big tnum" id="sim-total">${brl(simTotal())}</b></div><div class="kpi"><small>Projeção em 12 meses</small><b class="tnum" id="sim-year" style="font-size:28px">${brl(simTotal()*12)}</b></div></div></div></section></div>`;
+}
+const simTotal=()=>MODS.reduce((a,m)=>a+UI.sim[m.id]*m.price,0);
+function updateSim(){
+  MODS.forEach(m=>{const n=$('#sim-n-'+m.id),v=$('#sim-v-'+m.id);if(n)n.textContent=UI.sim[m.id];if(v)v.textContent=brl(UI.sim[m.id]*m.price);});
+  const t=$('#sim-total'),y=$('#sim-year');if(t)t.textContent=brl(simTotal());if(y)y.textContent=brl(simTotal()*12);
+}
+
+/* ---------- Ajustes ---------- */
+const ACCENTS=[['blue','Azul','#0071e3'],['indigo','Índigo','#5856d6'],['purple','Roxo','#8944ab'],['pink','Rosa','#d30f45'],['red','Vermelho','#d70015'],['green','Verde','#248a3d'],['teal','Turquesa','#007d8c']];
+function pageSettings(){
+  const b=S.business;
+  return pageHead('Ajustes','Dados do negócio, aparência, horários e backup.')+`<div class="wrap" style="padding-bottom:64px;max-width:820px;margin:0">
+  <div class="group-t">Negócio</div><div class="list">
+    <div class="row"><div class="g"><strong>Nome</strong></div><input type="text" style="width:min(260px,55%)" data-set="business.name" data-kind="text" value="${esc(b.name)}" aria-label="Nome do negócio"></div>
+    <div class="row"><div class="g"><strong>WhatsApp</strong><small>Com DDD. Os pedidos e agendamentos são enviados para este número.</small></div><input type="tel" style="width:min(200px,50%)" data-mask="1" data-set="business.whatsapp" data-kind="phone" inputmode="tel" placeholder="(11) 99999-0000" value="${esc(fmtPhone(b.whatsapp))}" aria-label="WhatsApp do negócio"></div>
+    <div class="row"><div class="g"><strong>Endereço</strong></div><input type="text" style="width:min(300px,55%)" data-set="business.address" data-kind="text" value="${esc(b.address)}" aria-label="Endereço"></div></div>
+  <div class="group-t">Aparência</div><div class="list"><div class="row" style="align-items:flex-start;flex-direction:column;gap:12px"><div class="g"><strong>Cor de destaque</strong><small>Usada no painel e na loja do cliente.</small></div><div class="swatches">${ACCENTS.map(([k,l,c])=>`<button class="swatch" style="--c:${c}" data-act="accent" data-v="${k}" aria-pressed="${b.accent===k}" aria-label="${l}" title="${l}"></button>`).join('')}</div></div></div>
+  <div class="group-t">Horário de funcionamento</div><div class="card sm">${hoursEditor()}</div>
+  <div class="group-t">Dados</div><div class="list">
+    ${DL?`<div class="row"><div class="g"><strong>Exportar backup</strong><small>Baixa um arquivo com todos os dados.</small></div><button class="btn sm gray" data-act="export-json">${icon('dl')} Exportar</button></div>`:''}
+    <div class="row"><div class="g"><strong>Importar backup</strong><small>Restaura um arquivo exportado antes.</small></div><label class="btn sm gray" style="cursor:pointer">Escolher arquivo<input type="file" accept="application/json,.json" data-change="import-file" class="sr"></label></div>
+    <div class="row"><div class="g"><strong>Restaurar dados de exemplo</strong><small>Substitui tudo pelo Café Aurora de demonstração.</small></div><button class="btn sm gray" data-act="reset-demo">Restaurar</button></div>
+    <div class="row"><div class="g"><strong>Começar do zero</strong><small>Apaga pedidos, itens, agenda e clientes.</small></div><button class="btn sm bad" data-act="reset-blank">Apagar tudo</button></div></div></div>`;
+}
+
+/* =====================================================================
+   Roteamento, ações e inicialização
+   ===================================================================== */
+function save(){persist();render();}
+function pageHtml(){
+  switch(UI.route){
+    case 'menu':case 'catalog':return pageShop(UI.route);
+    case 'agenda':return pageAgenda();
+    case 'loyalty':return pageLoyalty();
+    case 'customers':return pageCustomers();
+    case 'plans':return pagePlans();
+    case 'settings':return pageSettings();
+    default:return pageHome();
+  }
+}
+function renderFull(){
+  $('#nav').innerHTML='';$('#view').innerHTML='';$('#foot').innerHTML='';
+  const has=$('#sf-full-root');
+  if(!has)$('#full').innerHTML=`<div class="sf-full"><div class="sf-col"><div class="sf-bar"><button class="link small" data-go="home">${icon('chevL')} Voltar ao painel</button><span>Visão do cliente</span></div><div id="sf-full-root" style="position:relative;flex:1;min-height:0"></div></div></div>`;
+  renderStores();
+}
+function render(){
+  const r=UI.route;
+  if(['menu','agenda','catalog','loyalty'].includes(r)&&!S.modules[r])UI.route='home';
+  document.documentElement.dataset.accent=S.business.accent||'blue';
+  const a=document.activeElement,fk=a&&a.id&&a.closest&&a.closest('#view')&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA')?{id:a.id,s:a.selectionStart,e:a.selectionEnd}:null;
+  if(UI.route==='loja'){renderFull();return;}
+  $('#full').innerHTML='';
+  const old=$('#pv-screen #sf-scroll'),oldTop=old?old.scrollTop:0,oldTab=$('#pv-screen')?$('#pv-screen').dataset.tab:'';
+  renderNav();$('#view').innerHTML=pageHtml();renderFoot();
+  if(['menu','catalog','agenda','loyalty'].includes(UI.route))SF.tab=UI.route;
+  renderStores();
+  const nn=$('#pv-screen #sf-scroll');if(nn&&old&&oldTab===sfCurrent())nn.scrollTop=oldTop;
+  if(fk){const n=document.getElementById(fk.id);if(n){n.focus();try{n.setSelectionRange(fk.s,fk.e);}catch(e){}}}
+}
+function go(r){
+  if(!ROUTES.includes(r))r='home';
+  if(['menu','agenda','catalog','loyalty'].includes(r)&&!S.modules[r])r='home';
+  closeModal();UI.route=r;
+  try{history.replaceState(null,'','#/'+r);}catch(e){}
+  render();window.scrollTo(0,0);
+}
+function setFromEl(el){
+  const kind=el.dataset.kind;let v;
+  if(el.type==='time'&&!el.value)return;
+  if(kind==='bool')v=el.checked;
+  else if(kind==='num'){v=parseFloat(String(el.value).replace(',','.'));if(!isFinite(v))v=0;}
+  else if(kind==='phone')v=norm(el.value);
+  else v=el.value;
+  const keys=el.dataset.set.split('.');let o=S;
+  for(let i=0;i<keys.length-1;i++)o=o[keys[i]];
+  o[keys[keys.length-1]]=v;
+  persist();
+  if(el.dataset.rerender)render();else{renderStores();renderNav();}
+}
+
+/* ---- formulários auxiliares ---- */
+const catForm=(mod,id)=>{const c=id?S.cats.find(x=>x.id===id):{name:''};return modalShell(id?'Renomear categoria':'Nova categoria',`<form class="form" data-submit="cat"><input type="hidden" name="id" value="${id||''}"><input type="hidden" name="mod" value="${mod}"><div class="field"><label for="c-name">Nome</label><input type="text" id="c-name" name="name" required value="${esc(c.name)}"></div><div class="mf"><button type="button" class="btn gray" data-act="modal-close">Cancelar</button><button type="submit" class="btn">Salvar</button></div></form>`);};
+const proForm=id=>{const p=id?S.pros.find(x=>x.id===id):{name:''};return modalShell(id?'Renomear profissional':'Novo profissional',`<form class="form" data-submit="pro"><input type="hidden" name="id" value="${id||''}"><div class="field"><label for="p-name">Nome</label><input type="text" id="p-name" name="name" required value="${esc(p.name)}"></div><div class="mf"><button type="button" class="btn gray" data-act="modal-close">Cancelar</button><button type="submit" class="btn">Salvar</button></div></form>`);};
+const loyNewForm=()=>modalShell('Novo cliente',`<form class="form" data-submit="loy-add"><div class="field"><label for="n-name">Nome</label><input type="text" id="n-name" name="name" required></div><div class="field"><label for="n-phone">WhatsApp</label><input type="tel" id="n-phone" name="phone" data-mask="1" inputmode="tel" required placeholder="(11) 99999-0000"></div><div class="mf"><button type="button" class="btn gray" data-act="modal-close">Cancelar</button><button type="submit" class="btn">Criar cartão</button></div></form>`);
+const loyAmountForm=id=>{const c=S.loy.customers.find(x=>x.id===id);return modalShell(`Pontuar ${first(c.name)}`,`<form class="form" data-submit="loy-amount"><input type="hidden" name="id" value="${id}"><div class="field"><label for="m-amt">Valor da compra (R$)</label><input type="number" id="m-amt" name="amount" required min="0" step="0.01" inputmode="decimal"></div><div class="mf"><button type="button" class="btn gray" data-act="modal-close">Cancelar</button><button type="submit" class="btn">Pontuar</button></div></form>`);};
+const earnToast=r=>`${first(r.c.name)} ganhou ${r.text} (${r.c.balance}/${S.loy.goal})${r.c.balance>=S.loy.goal?' — prêmio liberado!':''}`;
+
+/* ---- ações (cliques) ---- */
+const ACT={
+  'modal-bg':(d,el,e)=>{if(e.target===el)closeModal();},
+  'modal-close':()=>closeModal(),
+  'ask-yes':()=>{const r=askResolve;askResolve=null;closeModal();if(r)r(true);},
+  'ask-no':()=>closeModal(),
+  theme:d=>setTheme(d.v),
+  tab:d=>{UI.tab[d.m]=d.t;render();},
+  accent:d=>{S.business.accent=d.v;save();},
+  /* pedidos */
+  'o-next':d=>{const o=S.orders.find(x=>x.id===d.id),n=o&&nextOf(o);if(n)setOrderStatus(o.id,n);},
+  'o-cancel':async d=>{const o=S.orders.find(x=>x.id===d.id);if(o&&await ask(`Cancelar o pedido #${o.num}?`,'Os itens voltam para o estoque.','Cancelar pedido',true))setOrderStatus(o.id,'cancelado');},
+  /* categorias e itens */
+  'cat-new':d=>openModal(catForm(d.m)),
+  'cat-edit':d=>{const c=S.cats.find(x=>x.id===d.id);if(c)openModal(catForm(c.mod,c.id));},
+  'cat-del':async d=>{const c=S.cats.find(x=>x.id===d.id);if(!c)return;if(S.items.some(i=>i.cat===c.id))return toast('Mova ou exclua os itens desta categoria antes.');if(await ask(`Excluir “${c.name}”?`,'A categoria será removida.','Excluir',true)){S.cats=S.cats.filter(x=>x.id!==c.id);save();}},
+  'item-new':d=>openModal(itemForm(d.m)),
+  'item-edit':d=>{const i=S.items.find(x=>x.id===d.id);if(i)openModal(itemForm(i.mod,i.id));},
+  'item-del':async d=>{const i=S.items.find(x=>x.id===d.id);if(i&&await ask(`Excluir “${i.name}”?`,'O item sai do cardápio e da loja.','Excluir',true)){S.items=S.items.filter(x=>x.id!==i.id);['menu','catalog'].forEach(m=>SF.cart[m]=SF.cart[m].filter(l=>l.id!==i.id));save();}},
+  stock:d=>{const i=S.items.find(x=>x.id===d.id);if(i){i.stock=Math.max(0,(i.stock||0)+ +d.d);save();}},
+  'pick-emoji':(d,el)=>{const f=$('#item-form');if(!f)return;f.elements.emoji.value=d.e;$$('.emojis button',f).forEach(b=>b.setAttribute('aria-pressed',b===el));},
+  'img-clear':()=>{const f=$('#item-form');if(f){f.elements.img.value='';$('#img-prev').innerHTML='';}},
+  /* agenda */
+  'ag-nav':d=>{UI.agDate=addDays(UI.agDate,+d.d);render();},
+  'ag-today':()=>{UI.agDate=today();render();},
+  'ag-set':d=>{UI.agDate=d.d;render();},
+  'ag-pro':d=>{UI.agPro=d.id;render();},
+  'bk-new':()=>{openModal(bkNewForm());bkRefresh();},
+  'bk-st':async d=>{const b=S.bookings.find(x=>x.id===d.id);if(!b)return;if(d.s==='cancelado'&&!(await ask('Cancelar este agendamento?',`${b.svcName} com ${first(b.name)}, ${fmtDay(b.date)} às ${b.time}. O horário volta a ficar livre.`,'Cancelar agendamento',true)))return;setBookingStatus(b.id,d.s);},
+  'svc-new':()=>openModal(svcForm()),
+  'svc-edit':d=>openModal(svcForm(d.id)),
+  'svc-del':async d=>{const s=S.services.find(x=>x.id===d.id);if(s&&await ask(`Excluir “${s.name}”?`,'Agendamentos já feitos são mantidos.','Excluir',true)){S.services=S.services.filter(x=>x.id!==s.id);if(SF.book.svc===s.id)SF.book.svc=null;save();}},
+  'pro-new':()=>openModal(proForm()),
+  'pro-edit':d=>openModal(proForm(d.id)),
+  'pro-del':async d=>{const p=S.pros.find(x=>x.id===d.id);if(p&&await ask(`Remover ${p.name}?`,'Agendamentos já feitos são mantidos.','Remover',true)){S.pros=S.pros.filter(x=>x.id!==p.id);SF.book.pro='any';save();}},
+  'blk-del':d=>{S.blocked=S.blocked.filter(x=>x!==d.d);save();},
+  /* fidelidade */
+  'loy-mode':d=>{S.loy.mode=d.v;save();},
+  'loy-add':()=>openModal(loyNewForm()),
+  'loy-open':d=>openModal(loyCustModal(d.id),'wide'),
+  'loy-quick':d=>{const c=S.loy.customers.find(x=>x.id===d.id);if(!c)return;if(S.loy.mode==='stamps'&&!(S.loy.minPurchase>0)){const r=loyEarn(c.phone,c.name,0,'Visita no balcão');if(r.ok){save();toast(earnToast(r));}else toast(r.msg);}else openModal(loyAmountForm(c.id));},
+  'loy-redeem':async d=>{const c=S.loy.customers.find(x=>x.id===d.id);if(c&&await ask(`Resgatar prêmio de ${first(c.name)}?`,`${S.loy.reward}. O saldo diminui em ${S.loy.goal}.`,'Resgatar')){if(loyRedeem(c)){save();toast(`Prêmio entregue a ${first(c.name)}.`);}}},
+  'loy-del':async d=>{const c=S.loy.customers.find(x=>x.id===d.id);if(c&&await ask(`Excluir ${first(c.name)} do programa?`,'O saldo e o histórico serão apagados.','Excluir',true)){S.loy.customers=S.loy.customers.filter(x=>x.id!==c.id);closeModal();save();}},
+  /* clientes */
+  'cust-open':d=>openModal(custModal(d.p),'wide'),
+  'cust-export':()=>{const rows=[['Nome','Telefone','Pedidos','Agendamentos','Total gasto','Saldo fidelidade'],...allCustomers().map(c=>[c.name,fmtPhone(c.phone),c.orders,c.bookings,c.spent.toFixed(2).replace('.',','),c.balance==null?'':c.balance])];saveFile('clientes-balcao.csv','\ufeff'+rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';')).join('\n'));},
+  /* ajustes */
+  'export-json':()=>saveFile('balcao-backup.json',JSON.stringify(S,null,2)),
+  'reset-demo':async()=>{if(await ask('Restaurar dados de exemplo?','Todos os dados atuais serão substituídos.','Restaurar',true)){S=seedDemo();seedBookings();delete S._demoBookings;SF.cart={menu:[],catalog:[]};save();toast('Dados de exemplo restaurados.');}},
+  'reset-blank':async()=>{if(await ask('Apagar tudo?','Pedidos, itens, agenda e clientes serão removidos. Não dá para desfazer.','Apagar tudo',true)){const b=S.business;S=blankState();S.business={...S.business,name:b.name,accent:b.accent};SF.cart={menu:[],catalog:[]};SF.sheet=null;save();toast('Tudo limpo. Comece cadastrando seus itens.');}},
+  /* loja do cliente */
+  'sf-tab':d=>{SF.tab=d.t;SF.sheet=null;SF.err='';renderStores();},
+  'sf-cat':d=>{SF.cat[d.mod]=d.id;renderStores();},
+  'sf-item':d=>{const i=S.items.find(x=>x.id===d.id);if(i)sfOpen({t:'item',id:i.id,qty:1,note:''});},
+  'sf-add':d=>{if(sfCartAdd(d.id,1,''))renderStores();},
+  'sf-close':()=>{SF.sheet=null;SF.err='';renderStores();},
+  'sf-iq':d=>{const sh=SF.sheet,i=S.items.find(x=>x.id===sh.id),max=i.stock==null?99:i.stock;sh.qty=Math.min(max,Math.max(1,sh.qty+ +d.d));renderStores();},
+  'sf-iadd':()=>{const sh=SF.sheet;if(sfCartAdd(sh.id,sh.qty,(sh.note||'').trim())){SF.sheet=null;renderStores();}},
+  'sf-cart':()=>{const m=sfCurrent();if(m)sfOpen({t:'cart',mod:m});},
+  'sf-cq':d=>{
+    const cart=SF.cart[d.m],l=cart.find(x=>x.id===d.id),i=S.items.find(x=>x.id===d.id);if(!l||!i)return;
+    const nq=l.qty+ +d.d;
+    if(nq<=0)cart.splice(cart.indexOf(l),1);
+    else if(i.stock!=null&&cart.filter(x=>x.id===i.id).reduce((a,x)=>a+x.qty,0)-l.qty+nq>i.stock)return toast(`Só restam ${i.stock} de ${i.name}.`);
+    else l.qty=nq;
+    if(!cart.length)SF.sheet=null;
+    renderStores();
+  },
+  'sf-type':d=>{SF.form.type=d.v;renderStores();},
+  'sf-pay':d=>{SF.form.pay=d.v;renderStores();},
+  'sf-order':d=>sfCreateOrder(d.m),
+  'sf-orders':()=>{const m=sfCurrent();if(m)sfOpen({t:'orders',mod:m});},
+  'bk-svc':d=>{SF.book.svc=d.id;SF.book.date=null;SF.book.time=null;SF.err='';renderStores();},
+  'bk-pro':d=>{SF.book.pro=d.id;SF.book.time=null;renderStores();},
+  'bk-date':d=>{SF.book.date=d.d;SF.book.time=null;renderStores();},
+  'bk-time':d=>{SF.book.time=d.t;renderStores();const sc=$('#sf-scroll');if(sc)sc.scrollTo({top:sc.scrollHeight,behavior:'smooth'});},
+  'bk-confirm':()=>sfBookConfirm(),
+  'sf-bk-cancel':d=>{const b=S.bookings.find(x=>x.id===d.id);if(b){b.status='cancelado';save();toast('Agendamento cancelado.');}},
+  'sf-login':()=>sfLogin(SF.login.phone,SF.login.name),
+  'sf-demo-login':d=>sfLogin(d.p,''),
+  'sf-logout':()=>{SF.me={name:'',phone:''};Persist.write(CKEY,SF.me);SF.login={name:'',phone:''};renderStores();}
+};
+
+/* ---- entradas (digitação) ---- */
+const BIND={
+  'sf-q':el=>{SF.q[el.dataset.mod]=el.value;renderStores();},
+  'sf-form':el=>{SF.form[el.dataset.k]=el.value;},
+  'sf-book':el=>{SF.book[el.dataset.k]=el.value;},
+  'sf-login':el=>{SF.login[el.dataset.k]=el.value;},
+  'sf-inote':el=>{if(SF.sheet)SF.sheet.note=el.value;},
+  q:el=>{UI.q[el.dataset.k]=el.value;render();},
+  sim:el=>{UI.sim[el.dataset.m]=+el.value;updateSim();},
+  'loy-lookup':el=>{
+    const h=$('#loy-hint');if(!h)return;const c=lcust(el.value);
+    h.textContent=c?`${c.name} · ${c.balance}/${S.loy.goal} ${loyUnit(S.loy.goal)}`:(norm(el.value).length>=10?'Cliente novo: informe o nome.':'');
+    const n=$('#l-name');if(n&&c&&!n.value)n.placeholder=c.name;
+  }
+};
+/* ---- alterações (change) ---- */
+const CHG={
+  'item-active':el=>{const i=S.items.find(x=>x.id===el.dataset.id);if(i){i.active=el.checked;save();}},
+  'img-file':el=>{const f=$('#item-form'),file=el.files&&el.files[0];if(!file||!f)return;readImage(file).then(url=>{f.elements.img.value=url;$('#img-prev').innerHTML=`<span class="th" style="--s:56px"><img src="${url}" alt=""></span>`;}).catch(()=>toast('Não foi possível ler a imagem.'));},
+  'bk-refresh':()=>bkRefresh(),
+  'mod-toggle':el=>{S.modules[el.dataset.id]=el.checked;save();},
+  'import-file':el=>{
+    const file=el.files&&el.files[0];if(!file)return;
+    file.text().then(t=>{const o=JSON.parse(t);if(!o||o.v!==1||!Array.isArray(o.orders))throw 0;S=merge(blankState(),o);SF.cart={menu:[],catalog:[]};SF.sheet=null;save();toast('Backup importado.');}).catch(()=>toast('Arquivo inválido. Use um backup exportado pelo Balcão.'));
+  }
+};
+/* ---- envios de formulário ---- */
+const SUB={
+  cat:(f,fd)=>{const name=fd.get('name').trim(),id=fd.get('id');if(!name)return;if(id){S.cats.find(c=>c.id===id).name=name;}else S.cats.push({id:uid(),mod:fd.get('mod'),name});closeModal();save();},
+  item:(f,fd)=>{
+    const mod=fd.get('mod'),name=fd.get('name').trim();if(!name)return;
+    let cat=fd.get('cat');const nc=(fd.get('newcat')||'').trim();
+    if(nc){let c=S.cats.find(c=>c.mod===mod&&c.name.toLowerCase()===nc.toLowerCase());if(!c){c={id:uid(),mod,name:nc};S.cats.push(c);}cat=c.id;}
+    if(!cat){let c=S.cats.find(c=>c.mod===mod);if(!c){c={id:uid(),mod,name:'Geral'};S.cats.push(c);}cat=c.id;}
+    const st=fd.get('stock');
+    const data={mod,cat,name,price:parseFloat(fd.get('price'))||0,promo:parseFloat(fd.get('promo'))||0,stock:mod==='catalog'?(st===''||st==null?null:Math.max(0,parseInt(st,10)||0)):null,desc:(fd.get('desc')||'').trim(),emoji:fd.get('emoji'),img:fd.get('img')||'',active:fd.get('active')==='on'};
+    const id=fd.get('id');if(id)Object.assign(S.items.find(i=>i.id===id),data);else S.items.push({id:uid(),...data});
+    closeModal();save();toast('Salvo.');
+  },
+  svc:(f,fd)=>{const name=fd.get('name').trim();if(!name)return;const data={name,duration:Math.max(5,parseInt(fd.get('duration'),10)||60),price:parseFloat(fd.get('price'))||0,desc:(fd.get('desc')||'').trim()},id=fd.get('id');if(id)Object.assign(S.services.find(s=>s.id===id),data);else S.services.push({id:uid(),...data});closeModal();save();},
+  pro:(f,fd)=>{const name=fd.get('name').trim(),id=fd.get('id');if(!name)return;if(id)S.pros.find(p=>p.id===id).name=name;else S.pros.push({id:uid(),name});closeModal();save();},
+  'blk-add':(f,fd)=>{const d=fd.get('d');if(d&&!S.blocked.includes(d)){S.blocked.push(d);save();}},
+  'bk-new':(f,fd)=>{
+    const svc=S.services.find(s=>s.id===fd.get('svc')),date=fd.get('date'),time=fd.get('time');
+    if(!svc||!date||!time)return toast('Escolha um horário livre.');
+    const slot=daySlots(date,svc,fd.get('pro')).find(x=>x.time===time);if(!slot){toast('Esse horário não está mais livre.');return bkRefresh();}
+    const ph=norm(fd.get('phone'));if(ph.length<10)return toast('Informe o WhatsApp com DDD.');
+    const pro=getPros().find(p=>p.id===slot.pro);
+    S.bookings.push({id:uid(),svc:svc.id,svcName:svc.name,dur:svc.duration,price:svc.price,pro:slot.pro,proName:pro.name,date,time,name:fd.get('name').trim(),phone:ph,note:(fd.get('note')||'').trim(),status:'confirmado',createdAt:nowIso(),loyaltyDone:false});
+    UI.agDate=date;closeModal();save();toast('Agendamento criado.');
+  },
+  'loy-earn':(f,fd)=>{
+    const phone=norm(fd.get('phone'));if(phone.length<10)return toast('Informe o telefone com DDD.');
+    const c=lcust(phone),name=(fd.get('name')||'').trim();if(!c&&name.length<2)return toast('Cliente novo: informe o nome.');
+    const r=loyEarn(phone,name||c.name,fd.get('amount'),'Compra no balcão');if(!r.ok)return toast(r.msg);
+    save();toast(earnToast(r));
+  },
+  'loy-amount':(f,fd)=>{const c=S.loy.customers.find(x=>x.id===fd.get('id'));if(!c)return;const r=loyEarn(c.phone,c.name,fd.get('amount'),'Compra no balcão');if(!r.ok)return toast(r.msg);closeModal();save();toast(earnToast(r));},
+  'loy-adjust':(f,fd)=>{const c=S.loy.customers.find(x=>x.id===fd.get('id')),d=parseInt(fd.get('delta'),10);if(!c||!d)return;c.balance=Math.max(0,c.balance+d);c.history.unshift({t:nowIso(),type:'adjust',delta:d,note:(fd.get('note')||'').trim()||'Ajuste manual'});save();openModal(loyCustModal(c.id),'wide');toast('Saldo ajustado.');},
+  'loy-add':(f,fd)=>{const ph=norm(fd.get('phone')),name=fd.get('name').trim();if(ph.length<10)return toast('Informe o telefone com DDD.');if(lcust(ph))return toast('Esse telefone já tem cartão.');const c=loyEnsure(ph,name);c.history.unshift({t:nowIso(),type:'join',delta:0,note:'Cartão criado'});closeModal();save();toast(`Cartão de ${first(name)} criado.`);}
+};
+
+document.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]');
+  if(g){e.preventDefault();go(g.dataset.go);return;}
+  const el=e.target.closest('[data-act]');if(!el)return;
+  if(e.target!==el&&e.target.closest('input,select,textarea,label')&&!el.matches('input,select,textarea,label'))return;
+  const fn=ACT[el.dataset.act];if(!fn)return;
+  if(el.tagName==='BUTTON'||el.tagName==='A')e.preventDefault();
+  fn(el.dataset,el,e);
+});
+document.addEventListener('input',e=>{
+  const el=e.target;
+  if(el.dataset&&el.dataset.mask){const v=maskPhone(el.value);if(v!==el.value)el.value=v;}
+  const b=el.dataset&&el.dataset.bind;if(b&&BIND[b])BIND[b](el,e);
+});
+document.addEventListener('change',e=>{
+  const el=e.target;if(!el.dataset)return;
+  if(el.dataset.set){setFromEl(el);return;}
+  const c=el.dataset.change;if(c&&CHG[c])CHG[c](el,e);
+});
+document.addEventListener('submit',e=>{
+  const f=e.target.closest('form[data-submit]');if(!f)return;
+  e.preventDefault();const fn=SUB[f.dataset.submit];if(fn)fn(f,new FormData(f));
+});
+document.addEventListener('keydown',e=>{
+  if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('[role=button][data-act]')&&e.target.tagName!=='BUTTON'){e.preventDefault();e.target.click();return;}
+  if(e.key!=='Escape')return;
+  if(MOD)closeModal();else if(SF.sheet){SF.sheet=null;renderStores();}
+});
+window.addEventListener('hashchange',()=>{const h=(location.hash||'').replace(/^#\/?/,'');if(ROUTES.includes(h)&&h!==UI.route)go(h);});
+
+/* ---- início ---- */
+applyTheme();
+SF.login={name:SF.me.name||'',phone:SF.me.phone?fmtPhone(SF.me.phone):''};
+{const h=(location.hash||'').replace(/^#\/?/,'');UI.route=ROUTES.includes(h)?h:'home';}
+render();
+(async()=>{try{if(window.claude&&typeof window.claude.use==='function'){DL=await window.claude.use('downloads');if(DL)render();}}catch(e){DL=null;}})();
+
+</script>
+</body>
+</html>
