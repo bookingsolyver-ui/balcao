@@ -58,7 +58,8 @@ export default async function Dashboard({ params, searchParams }: { params: Prom
                 [t('niche'), niche],
                 [t('currency'), `${tenant.currency} · ${currencyName(tenant.currency, locale)}`],
                 [t('timezone'), tenant.timezone.replace(/_/g, ' ')],
-                [t('language'), `${tenant.locale} · ${countryName(tenant.country, locale)}`],
+                [t('language'), tenant.locale],
+                [t('country'), countryName(tenant.country, locale)],
                 [t('whatsapp'), tenant.whatsapp ? fmtPhoneIntl(tenant.whatsapp) : t('notSet')],
                 [t('role'), t(`roles.${current.role}` as never)],
               ].map(([k, v]) => (

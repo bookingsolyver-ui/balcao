@@ -4,7 +4,7 @@ import { slugify, isValidSlug } from '../src/lib/slug';
 import { COUNTRIES, CURRENCIES, hasCallingCode } from '../src/lib/countries';
 import { openStatus, type HourRow } from '../src/lib/hours';
 import { dbErrorKey, authErrorKey } from '../src/lib/errors';
-import { decimalsFor, formatMoney, toMinor } from '../src/lib/money';
+import { decimalsFor, formatMoney, moneyLocale, toMinor } from '../src/lib/money';
 import { fmtPhoneIntl, toE164Digits } from '../src/lib/phone';
 
 // ---- slug ----
@@ -30,8 +30,17 @@ assert.equal(new Set(COUNTRIES.map((c) => c.code)).size, COUNTRIES.length, 'paí
 assert.equal(decimalsFor('JPY'), 0); assert.equal(decimalsFor('EUR'), 2); assert.equal(decimalsFor('BRL'), 2);
 assert.ok(CURRENCIES.includes('COP'));
 // casas decimais guardadas no negócio mandam sobre o Intl (que varia entre aparelhos)
-assert.match(formatMoney(150000, 'COP', 'es', 2), /1\.?500,00/);
-assert.match(formatMoney(1500, 'COP', 'es', 0), /1\.?500/);
+assert.match(formatMoney(150000, 'COP', 'es', 2), /1\.500,00/);
+assert.match(formatMoney(1500, 'COP', 'es', 0), /1\.500/);
+// milhares sempre agrupados (o pt-PT por defeito não agrupa 4 dígitos: "9900,00")
+assert.match(formatMoney(990000, 'AOA', 'pt-PT', 2), /^9\s900,00/);
+assert.match(formatMoney(1200000, 'AOA', 'pt-PT', 2), /^12\s000,00/);
+// locale monetário do país do negócio (só países lusófonos, em português)
+assert.equal(moneyLocale('pt-PT', 'AO'), 'pt-AO'); assert.equal(moneyLocale('pt-BR', 'PT'), 'pt-PT');
+assert.equal(moneyLocale('pt-PT', 'JP'), 'pt-PT'); assert.equal(moneyLocale('en', 'AO'), 'en'); assert.equal(moneyLocale('es', 'MX'), 'es');
+assert.match(formatMoney(990000, 'AOA', moneyLocale('pt-PT', 'AO'), 2), /9\s900,00\s?Kz/);
+assert.match(formatMoney(1250, 'BRL', moneyLocale('pt-PT', 'BR'), 2), /R\$\s?12,50/);
+assert.match(formatMoney(1250, 'EUR', moneyLocale('pt-PT', 'PT'), 2), /12,50\s?€/);
 assert.equal(toMinor('1500', 'COP', 2), 150000);
 assert.equal(toMinor('1500', 'COP', 0), 1500);
 assert.equal(toE164Digits('912345678', 'PT'), '351912345678');

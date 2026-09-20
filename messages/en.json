@@ -143,7 +143,8 @@
     },
     "switch": "Switch business",
     "another": "Create another business",
-    "phase": "This dashboard is at phase 1. Managing items, orders and bookings arrives in the next phases."
+    "phase": "This dashboard is at phase 1. Managing items, orders and bookings arrives in the next phases.",
+    "country": "Country"
   },
   "store": {
     "open": "Open",
@@ -165,8 +166,8 @@
     "minutes": "{n} min",
     "free": "Free",
     "hours": "Opening hours",
-    "loyaltyStamps": "Collect {goal} stamps and get: {reward}.",
-    "loyaltyPoints": "Collect {goal} points and get: {reward}. Every 1 {currency} spent earns {rate} points.",
+    "loyaltyStamps": "Collect {goal, plural, one {# stamp} other {# stamps}} and get: {reward}.",
+    "loyaltyPoints": "Collect {goal, plural, one {# point} other {# points}} and get: {reward}. Every 1 {currency} spent earns {rate, plural, one {# point} other {# points}}.",
     "whatsappCta": "Chat on WhatsApp",
     "whatsappMsg": "Hi! I found your store {name}.",
     "orderSoon": "Online ordering is coming soon. For now, message us on WhatsApp.",

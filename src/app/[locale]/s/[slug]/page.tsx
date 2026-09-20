@@ -6,7 +6,7 @@ import { Icon } from '@/components/Icon';
 import { LocaleSwitcher } from '@/components/LocaleSwitcher';
 import { getSession } from '@/lib/session';
 import { isValidSlug } from '@/lib/slug';
-import { formatMoney } from '@/lib/money';
+import { formatMoney, moneyLocale } from '@/lib/money';
 import { waLink } from '@/lib/phone';
 import { openStatus, type HourRow } from '@/lib/hours';
 import { MODULE_IDS, type Category, type Item, type LoyaltyProgram, type ModuleId, type Service, type Tenant } from '@/lib/types';
@@ -53,7 +53,7 @@ export default async function Store({ params, searchParams }: { params: Promise<
     statusText = st.next.dayOffset === 0 ? t('opensToday', { time }) : st.next.dayOffset === 1 ? t('opensTomorrow', { time }) : t('opensOn', { day: dayName(st.next.weekday, locale), time });
   } else statusText = t('closed');
 
-  const money = (n: number) => formatMoney(n, tenant.currency, locale, tenant.currency_decimals);
+  const money = (n: number) => formatMoney(n, tenant.currency, moneyLocale(locale, tenant.country), tenant.currency_decimals);
   const price = (i: Item) => (i.promo_minor != null && i.promo_minor < i.price_minor)
     ? <span className="price"><s>{money(i.price_minor)}</s>{money(i.promo_minor)}</span> : <span className="price">{money(i.price_minor)}</span>;
 

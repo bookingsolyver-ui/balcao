@@ -30,7 +30,18 @@ export function toMinor(input: string | number, currency: string, decimals?: num
  */
 export function formatMoney(minor: number, currency: string, locale: string, decimals?: number): string {
   const d = decimals ?? decimalsFor(currency, locale);
-  return new Intl.NumberFormat(locale, { style: 'currency', currency, minimumFractionDigits: d, maximumFractionDigits: d }).format(minor / 10 ** d);
+  // useGrouping 'always': o pt-PT só agrupa milhares a partir de 5 dígitos (9900,00 vs 12 000,00), o que parece inconsistente.
+  const opts: Record<string, unknown> = { style: 'currency', currency, minimumFractionDigits: d, maximumFractionDigits: d, useGrouping: 'always' };
+  return new Intl.NumberFormat(locale, opts as Intl.NumberFormatOptions).format(minor / 10 ** d);
+}
+
+const PT_COUNTRIES = ['PT', 'BR', 'AO', 'MZ', 'CV'];
+/**
+ * Em português, formata o dinheiro à maneira do país do negócio (AO -> "9 900,00 Kz", BR -> "R$ 9.900,00").
+ * Nos outros idiomas mantém o do visitante. Só usa países com locale português próprio (senão o Intl cai no pt-BR).
+ */
+export function moneyLocale(uiLocale: string, country: string): string {
+  return uiLocale.startsWith('pt') && PT_COUNTRIES.includes(country) ? `pt-${country}` : uiLocale;
 }
 
 /** Pontos de fidelidade: floor(valor em unidades × pontos por unidade). */

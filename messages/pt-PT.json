@@ -143,7 +143,8 @@
     },
     "switch": "Trocar de negócio",
     "another": "Criar outro negócio",
-    "phase": "Este painel está na fase 1. A gestão de itens, pedidos e marcações chega nas próximas fases."
+    "phase": "Este painel está na fase 1. A gestão de itens, pedidos e marcações chega nas próximas fases.",
+    "country": "País"
   },
   "store": {
     "open": "Aberto",
@@ -161,12 +162,12 @@
     "empty": "Ainda não há itens.",
     "unavailable": "Indisponível",
     "soldOut": "Esgotado",
-    "lastUnits": "Restam {n}",
+    "lastUnits": "{n, plural, one {Resta #} other {Restam #}}",
     "minutes": "{n} min",
     "free": "Grátis",
     "hours": "Horário",
-    "loyaltyStamps": "Junte {goal} carimbos e ganhe: {reward}.",
-    "loyaltyPoints": "Junte {goal} pontos e ganhe: {reward}. Cada 1 {currency} gasto vale {rate} pontos.",
+    "loyaltyStamps": "Junte {goal, plural, one {# carimbo} other {# carimbos}} e ganhe: {reward}.",
+    "loyaltyPoints": "Junte {goal, plural, one {# ponto} other {# pontos}} e ganhe: {reward}. Cada 1 {currency} gasto vale {rate, plural, one {# ponto} other {# pontos}}.",
     "whatsappCta": "Falar no WhatsApp",
     "whatsappMsg": "Olá! Vi a vossa loja {name}.",
     "orderSoon": "Os pedidos online chegam em breve. Por agora, fale connosco pelo WhatsApp.",
