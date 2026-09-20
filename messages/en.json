@@ -1,0 +1,183 @@
+{
+  "common": {
+    "appName": "Balcão",
+    "loading": "Loading…",
+    "back": "Back",
+    "language": "Language"
+  },
+  "nav": {
+    "login": "Log in",
+    "signup": "Sign up",
+    "dashboard": "Dashboard",
+    "logout": "Log out",
+    "viewStore": "View store"
+  },
+  "landing": {
+    "title": "The digital counter for your business.",
+    "text": "Orders, bookings, catalog and loyalty in one place, in your country's currency and language.",
+    "ctaStart": "Create my business",
+    "ctaLogin": "I already have an account",
+    "nichesTitle": "Built for your kind of business",
+    "niches": {
+      "restaurant": {
+        "name": "Restaurants and cafés",
+        "desc": "Digital menu, pickup or delivery orders and a loyalty card."
+      },
+      "salon": {
+        "name": "Salons and beauty studios",
+        "desc": "Online bookings with no schedule conflicts and a loyalty card."
+      },
+      "beauty_store": {
+        "name": "Beauty stores",
+        "desc": "Catalog with stock, promotions and orders via WhatsApp."
+      },
+      "general": {
+        "name": "Other businesses",
+        "desc": "Start with a catalog and switch on what you need later."
+      }
+    },
+    "features": {
+      "currency": {
+        "title": "Any currency",
+        "desc": "Prices in your country's currency, with the right decimals."
+      },
+      "secure": {
+        "title": "Secure by design",
+        "desc": "Each business only sees its own data."
+      },
+      "whatsapp": {
+        "title": "WhatsApp-ready",
+        "desc": "Ready-made messages to confirm orders and bookings."
+      }
+    },
+    "footer": "Balcão · pre-launch"
+  },
+  "auth": {
+    "loginTitle": "Log in",
+    "loginSub": "Access your business dashboard.",
+    "signupTitle": "Create account",
+    "signupSub": "Get started in a few minutes.",
+    "email": "Email",
+    "password": "Password",
+    "passwordHint": "At least 8 characters.",
+    "submitLogin": "Log in",
+    "submitSignup": "Create account",
+    "submitting": "Sending…",
+    "haveAccount": "Already have an account?",
+    "noAccount": "Don't have an account yet?",
+    "checkEmail": "We sent you a confirmation email. Open it and click the link to continue.",
+    "errors": {
+      "invalid_credentials": "Incorrect email or password.",
+      "weak_password": "That password is too weak. Use at least 8 characters.",
+      "email_in_use": "This email already has an account. Try logging in.",
+      "email_not_confirmed": "Please confirm your email before logging in.",
+      "rate_limit": "Too many attempts. Wait a minute.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "onboarding": {
+    "title": "Create your business",
+    "subtitle": "Pick your business type and we'll switch on the right modules.",
+    "name": "Business name",
+    "slug": "Store address",
+    "slugHint": "Your store will live at",
+    "niche": "Business type",
+    "country": "Country",
+    "currency": "Currency",
+    "currencyHint": "Prices are stored in this currency.",
+    "timezone": "Time zone",
+    "language": "Store language",
+    "whatsapp": "Business WhatsApp",
+    "whatsappHint": "Number with country code, or just the national number.",
+    "whatsappInvalid": "Invalid WhatsApp number. Please check it.",
+    "submit": "Create business",
+    "creating": "Creating…",
+    "modulesOn": "Modules switched on",
+    "errors": {
+      "slug_taken": "This address is already taken. Choose another.",
+      "invalid_slug": "The address must be 3 to 40 lowercase letters, numbers or hyphens.",
+      "invalid_data": "Check the details and try again.",
+      "tenant_limit": "You reached the business limit for your account.",
+      "invalid_timezone": "Invalid time zone.",
+      "invalid_niche": "Invalid business type.",
+      "not_authenticated": "Session expired. Please log in again.",
+      "forbidden": "You don't have permission for this action.",
+      "generic": "Could not create the business. Please try again."
+    }
+  },
+  "dashboard": {
+    "hello": "Hello",
+    "yourBusiness": "Your business",
+    "noBusiness": "You don't have a business yet.",
+    "createBusiness": "Create business",
+    "storeLink": "Public store",
+    "openStore": "Open store",
+    "modules": "Modules",
+    "moduleActive": "On",
+    "moduleOff": "Off",
+    "comingSoon": "Coming soon",
+    "moduleNames": {
+      "menu": "Digital menu",
+      "agenda": "Bookings",
+      "catalog": "Catalog",
+      "loyalty": "Loyalty"
+    },
+    "moduleDesc": {
+      "menu": "Pickup, delivery and table orders.",
+      "agenda": "Free slots calculated without conflicts.",
+      "catalog": "Products with stock and promotions.",
+      "loyalty": "Stamps or points by phone number."
+    },
+    "settings": "Settings",
+    "currency": "Currency",
+    "language": "Language",
+    "timezone": "Time zone",
+    "niche": "Business type",
+    "whatsapp": "WhatsApp",
+    "notSet": "Not set",
+    "role": "Role",
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "staff": "Staff"
+    },
+    "switch": "Switch business",
+    "another": "Create another business",
+    "phase": "This dashboard is at phase 1. Managing items, orders and bookings arrives in the next phases."
+  },
+  "store": {
+    "open": "Open",
+    "closed": "Closed",
+    "closesAt": "until {time}",
+    "opensToday": "Opens today at {time}",
+    "opensTomorrow": "Opens tomorrow at {time}",
+    "opensOn": "Opens {day} at {time}",
+    "tabs": {
+      "menu": "Menu",
+      "catalog": "Catalog",
+      "agenda": "Services",
+      "loyalty": "Loyalty"
+    },
+    "empty": "No items yet.",
+    "unavailable": "Unavailable",
+    "soldOut": "Sold out",
+    "lastUnits": "{n} left",
+    "minutes": "{n} min",
+    "free": "Free",
+    "hours": "Opening hours",
+    "loyaltyStamps": "Collect {goal} stamps and get: {reward}.",
+    "loyaltyPoints": "Collect {goal} points and get: {reward}. Every 1 {currency} spent earns {rate} points.",
+    "whatsappCta": "Chat on WhatsApp",
+    "whatsappMsg": "Hi! I found your store {name}.",
+    "orderSoon": "Online ordering is coming soon. For now, message us on WhatsApp.",
+    "poweredBy": "Made with Balcão",
+    "notFoundTitle": "Store not found",
+    "notFoundText": "Check the address or go back home.",
+    "home": "Go home"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "configTitle": "Missing configuration",
+    "configText": "Fill in NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local and restart the server."
+  }
+}

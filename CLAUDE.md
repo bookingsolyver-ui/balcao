@@ -6,16 +6,17 @@ Quatro módulos, ligáveis por negócio: **menu** (cardápio + pedidos), **agend
 O produto vende-se por **nicho** (pacotes em `niche_presets`), mas é UM só código e UMA só base de dados.
 
 ## Estado atual
-- `supabase/migrations/` — esquema completo, RLS, RPCs, gatilhos. **Testado**: `npm run test:db` (Postgres real em memória, ~60 verificações).
-- `src/lib/money.ts`, `src/lib/phone.ts` — moeda universal e telefones internacionais. **Testado**: `npm run test:lib`.
-- `docs/prototype/balcao-prototype.html` — protótipo de UI e comportamento (HTML único, dados em localStorage). É a **referência de design e de fluxos**, não é para reaproveitar o armazenamento.
-- Falta: a aplicação web. É o próximo passo.
+- `supabase/migrations/` — esquema completo, RLS, RPCs, gatilhos. **Testado**: `npm run test:db`.
+- `src/lib/` — moeda, telefones, países, slugs, horário de funcionamento, erros. **Testado**: `npm run test:lib`.
+- **Fase 1 entregue** (ver `docs/FASE1.md`): Next.js 16 + next-intl + Supabase SSR; login, registo, onboarding por nicho, painel e loja pública. Onboarding validado contra Postgres real nos 23 países (`npm run test:onboarding`).
+- `docs/prototype/balcao-prototype.html` — protótipo de UI e comportamento (referência de design e fluxos).
+- Próximo: **fase 2 (restaurante)**.
 
 ## Stack a usar (a mesma do projeto vexto-app do dono)
-Next.js (App Router) + TypeScript + Tailwind + `@supabase/ssr` + `next-intl` (pt-PT, pt-BR, en, es). Deploy na Vercel.
+Next.js 16 (App Router; o antigo `middleware` chama-se `proxy`) + TypeScript + Tailwind 4 + `@supabase/ssr` + `next-intl` (pt-PT, pt-BR, en, es). Deploy na Vercel.
 
 ## Regras que NÃO se quebram
-1. **Dinheiro**: inteiros na menor unidade (`*_minor`) + ISO 4217 por tenant. Formatar só com `formatMoney`. Nunca `float`.
+1. **Dinheiro**: inteiros na menor unidade (`*_minor`) + ISO 4217 por tenant. Formatar só com `formatMoney(minor, currency, locale, tenant.currency_decimals)`: passar SEMPRE as casas decimais guardadas no negócio (o `Intl` varia entre aparelhos, ex.: COP). Nunca `float`.
 2. **Preços nunca vêm do cliente.** Pedidos só por `rpc('place_order')`, reservas só por `rpc('create_booking')`. O servidor recalcula tudo.
 3. **RLS em toda a tabela nova** + `revoke all ... from anon` + políticas explícitas. O Supabase concede tudo por defeito; fechar é responsabilidade nossa.
 4. Telefones sempre em dígitos internacionais (`toE164Digits`). Nunca assumir um país.

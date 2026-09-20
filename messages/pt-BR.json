@@ -1,0 +1,183 @@
+{
+  "common": {
+    "appName": "Balcão",
+    "loading": "Carregando…",
+    "back": "Voltar",
+    "language": "Idioma"
+  },
+  "nav": {
+    "login": "Entrar",
+    "signup": "Criar conta",
+    "dashboard": "Painel",
+    "logout": "Sair",
+    "viewStore": "Ver loja"
+  },
+  "landing": {
+    "title": "O balcão digital do seu negócio.",
+    "text": "Pedidos, agendamentos, catálogo e fidelidade num só lugar, com a moeda e o idioma do seu país.",
+    "ctaStart": "Criar o meu negócio",
+    "ctaLogin": "Já tenho conta",
+    "nichesTitle": "Feito para o seu tipo de negócio",
+    "niches": {
+      "restaurant": {
+        "name": "Restaurantes e cafés",
+        "desc": "Cardápio digital, pedidos para retirada ou entrega e cartão de fidelidade."
+      },
+      "salon": {
+        "name": "Cabeleireiros e estética",
+        "desc": "Agendamentos online sem conflitos de horário e cartão de fidelidade."
+      },
+      "beauty_store": {
+        "name": "Lojas de beleza",
+        "desc": "Catálogo com estoque, promoções e pedidos por WhatsApp."
+      },
+      "general": {
+        "name": "Outros negócios",
+        "desc": "Comece com um catálogo e ative o que precisar depois."
+      }
+    },
+    "features": {
+      "currency": {
+        "title": "Qualquer moeda",
+        "desc": "Preços na moeda do seu país, com as casas decimais certas."
+      },
+      "secure": {
+        "title": "Seguro por desenho",
+        "desc": "Cada negócio só vê os seus próprios dados."
+      },
+      "whatsapp": {
+        "title": "Pronto para WhatsApp",
+        "desc": "Mensagens prontas para confirmar pedidos e agendamentos."
+      }
+    },
+    "footer": "Balcão · pré-lançamento"
+  },
+  "auth": {
+    "loginTitle": "Entrar",
+    "loginSub": "Acesse ao painel do seu negócio.",
+    "signupTitle": "Criar conta",
+    "signupSub": "Comece em poucos minutos.",
+    "email": "E-mail",
+    "password": "Senha",
+    "passwordHint": "Mínimo de 8 caracteres.",
+    "submitLogin": "Entrar",
+    "submitSignup": "Criar conta",
+    "submitting": "Enviando…",
+    "haveAccount": "Já tem conta?",
+    "noAccount": "Ainda não tem conta?",
+    "checkEmail": "Enviamos um e-mail de confirmação. Abra a mensagem e clique no link para continuar.",
+    "errors": {
+      "invalid_credentials": "E-mail ou senha incorretos.",
+      "weak_password": "A senha é demasiado fraca. Use pelo menos 8 caracteres.",
+      "email_in_use": "Este e-mail já tem conta. Tente entrar.",
+      "email_not_confirmed": "Confirme o seu e-mail antes de entrar.",
+      "rate_limit": "Demasiadas tentativas. Aguarde um minuto.",
+      "generic": "Não foi possível concluir. Tente novamente."
+    }
+  },
+  "onboarding": {
+    "title": "Crie o seu negócio",
+    "subtitle": "Escolha o tipo de negócio e nós ligamos os módulos certos.",
+    "name": "Nome do negócio",
+    "slug": "Endereço da loja",
+    "slugHint": "A sua loja ficará em",
+    "niche": "Tipo de negócio",
+    "country": "País",
+    "currency": "Moeda",
+    "currencyHint": "Os preços são guardados nesta moeda.",
+    "timezone": "Fuso horário",
+    "language": "Idioma da loja",
+    "whatsapp": "WhatsApp do negócio",
+    "whatsappHint": "Número com indicativo do país, ou só o número nacional.",
+    "whatsappInvalid": "WhatsApp inválido. Confira o número.",
+    "submit": "Criar negócio",
+    "creating": "Criando…",
+    "modulesOn": "Módulos ligados",
+    "errors": {
+      "slug_taken": "Este endereço já está em uso. Escolha outro.",
+      "invalid_slug": "O endereço deve ter 3 a 40 letras minúsculas, números ou hifens.",
+      "invalid_data": "Verifique os dados e tente novamente.",
+      "tenant_limit": "Você atingiu o limite de negócios da sua conta.",
+      "invalid_timezone": "Fuso horário inválido.",
+      "invalid_niche": "Tipo de negócio inválido.",
+      "not_authenticated": "Sessão expirada. Entre novamente.",
+      "forbidden": "Não tem permissão para esta ação.",
+      "generic": "Não foi possível criar o negócio. Tente novamente."
+    }
+  },
+  "dashboard": {
+    "hello": "Olá",
+    "yourBusiness": "O seu negócio",
+    "noBusiness": "Ainda não tem nenhum negócio.",
+    "createBusiness": "Criar negócio",
+    "storeLink": "Loja pública",
+    "openStore": "Abrir loja",
+    "modules": "Módulos",
+    "moduleActive": "Ativo",
+    "moduleOff": "Desligado",
+    "comingSoon": "Em breve",
+    "moduleNames": {
+      "menu": "Cardápio digital",
+      "agenda": "Agendamentos",
+      "catalog": "Catálogo",
+      "loyalty": "Fidelidade"
+    },
+    "moduleDesc": {
+      "menu": "Pedidos para retirar, entregar ou na mesa.",
+      "agenda": "Horários livres calculados sem conflitos.",
+      "catalog": "Produtos com estoque e promoções.",
+      "loyalty": "Carimbos ou pontos por telefone."
+    },
+    "settings": "Configurações",
+    "currency": "Moeda",
+    "language": "Idioma",
+    "timezone": "Fuso horário",
+    "niche": "Tipo de negócio",
+    "whatsapp": "WhatsApp",
+    "notSet": "Não definido",
+    "role": "Função",
+    "roles": {
+      "owner": "Proprietário",
+      "admin": "Administrador",
+      "staff": "Equipe"
+    },
+    "switch": "Trocar de negócio",
+    "another": "Criar outro negócio",
+    "phase": "Este painel está na fase 1. O gerenciamento de itens, pedidos e agendamentos chega nas próximas fases."
+  },
+  "store": {
+    "open": "Aberto",
+    "closed": "Fechado",
+    "closesAt": "até as {time}",
+    "opensToday": "Abre hoje às {time}",
+    "opensTomorrow": "Abre amanhã às {time}",
+    "opensOn": "Abre {day} às {time}",
+    "tabs": {
+      "menu": "Cardápio",
+      "catalog": "Catálogo",
+      "agenda": "Serviços",
+      "loyalty": "Fidelidade"
+    },
+    "empty": "Ainda não há itens.",
+    "unavailable": "Indisponível",
+    "soldOut": "Esgotado",
+    "lastUnits": "Restam {n}",
+    "minutes": "{n} min",
+    "free": "Grátis",
+    "hours": "Horário",
+    "loyaltyStamps": "Junte {goal} carimbos e ganhe: {reward}.",
+    "loyaltyPoints": "Junte {goal} pontos e ganhe: {reward}. Cada 1 {currency} gasto vale {rate} pontos.",
+    "whatsappCta": "Falar no WhatsApp",
+    "whatsappMsg": "Olá! Vi a loja de vocês, {name}.",
+    "orderSoon": "Os pedidos online chegam em breve. Por agora, fale conosco pelo WhatsApp.",
+    "poweredBy": "Feito com Balcão",
+    "notFoundTitle": "Loja não encontrada",
+    "notFoundText": "Confirme o endereço ou volte ao início.",
+    "home": "Ir para o início"
+  },
+  "errors": {
+    "generic": "Ocorreu um erro. Tente novamente.",
+    "configTitle": "Configuração em falta",
+    "configText": "Preencha NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY em .env.local e reinicie o servidor."
+  }
+}

@@ -3,17 +3,33 @@
   "version": "0.1.0",
   "description": "Plataforma multi-inquilino para negócios locais: cardápio, agenda, catálogo e fidelidade.",
   "scripts": {
-    "test": "npm run test:lib && npm run test:db",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "npm run test:lib && npm run test:db && npm run test:onboarding",
     "test:db": "node tests/db.test.mjs",
-    "test:lib": "tsx tests/lib.test.ts",
-    "typecheck": "tsc"
+    "test:lib": "tsx tests/lib.test.ts && tsx tests/app.test.ts",
+    "typecheck": "tsc",
+    "test:onboarding": "tsx tests/onboarding.test.ts"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.6.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "tailwindcss": "^4.3.3",
     "tsx": "^4.23.13",
     "typescript": "^7.0.2"
   },
   "private": true,
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.116.0",
+    "next": "^16.3.5",
+    "next-intl": "^4.14.5",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  }
 }

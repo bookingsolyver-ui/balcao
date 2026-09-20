@@ -11,3 +11,5 @@ supabase/.temp/
 # Claude Code: configuração pessoal (a partilhada é .mcp.json.example)
 .claude/settings.local.json
 .mcp.json
+next-env.d.ts
+*.tsbuildinfo
