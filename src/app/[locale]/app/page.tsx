@@ -25,6 +25,10 @@ export default async function Dashboard({ params, searchParams }: { params: Prom
 
   const current = memberships.find((m) => m.tenants.slug === wanted) ?? memberships[0];
   const tenant = current.tenants;
+  const ordersOn = tenant.modules.menu || tenant.modules.catalog;
+  const newOrders = ordersOn
+    ? (await s.supabase!.from('orders').select('id', { count: 'exact', head: true }).eq('tenant_id', tenant.id).eq('status', 'new')).count ?? 0
+    : 0;
   const storeLocale = (routing.locales as readonly string[]).includes(tenant.locale) ? (tenant.locale as Locale) : routing.defaultLocale;
   const niche = ['restaurant', 'salon', 'beauty_store', 'general'].includes(tenant.niche) ? tn(`${tenant.niche}.name` as never) : tenant.niche;
 
@@ -68,6 +72,16 @@ export default async function Dashboard({ params, searchParams }: { params: Prom
             </div>
           </div>
         </div>
+
+        {ordersOn && (
+          <div className="card" style={{ marginTop: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+            <div>
+              <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-.025em' }}>{t('orders')}</h2>
+              <p className={newOrders ? '' : 'muted'} style={{ marginTop: 4, fontWeight: newOrders ? 600 : 400 }}>{t('ordersNew', { n: newOrders })}</p>
+            </div>
+            <Link href={`/app/orders?t=${tenant.slug}`} className="btn">{t('openQueue')}</Link>
+          </div>
+        )}
 
         <h2 className="h2" style={{ margin: '44px 0 16px' }}>{t('modules')}</h2>
         <div className="grid c2">

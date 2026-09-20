@@ -11,7 +11,8 @@ O produto vende-se por **nicho** (pacotes em `niche_presets`), mas é UM só có
 - **Fase 1 entregue** (ver `docs/FASE1.md`): Next.js 16 + next-intl + Supabase SSR; login, registo, onboarding por nicho, painel e loja pública. Onboarding validado contra Postgres real nos 23 países (`npm run test:onboarding`).
 - `docs/prototype/balcao-prototype.html` — protótipo de UI e comportamento (referência de design e fluxos).
 - **Fase 2A entregue** (ver `docs/FASE2A.md`): gestão de categorias e itens/produtos pelo painel, com fotos no bucket `item-images`.
-- Próximo: **fase 2B** (carrinho, `place_order`, fila de pedidos em tempo real, WhatsApp).
+- **Fase 2B entregue** (ver `docs/FASE2B.md`): carrinho, checkout com `place_order`, acompanhamento por token, fila de pedidos em tempo real e WhatsApp. Migração `20260920000003_order_tracking.sql`.
+- Próximo: **Definições do negócio** (taxa de entrega, mínimo, pagamentos, horário, módulos; hoje só por SQL), depois **fase 3 (agenda)** e **fase 5 (fidelidade na interface)**.
 
 ## Stack a usar (a mesma do projeto vexto-app do dono)
 Next.js 16 (App Router; o antigo `middleware` chama-se `proxy`) + TypeScript + Tailwind 4 + `@supabase/ssr` + `next-intl` (pt-PT, pt-BR, en, es). Deploy na Vercel.

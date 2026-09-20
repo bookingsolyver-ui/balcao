@@ -145,7 +145,10 @@
     "another": "Create another business",
     "phase": "This dashboard is at phase 1. Managing items, orders and bookings arrives in the next phases.",
     "country": "Country",
-    "manage": "Manage"
+    "manage": "Manage",
+    "orders": "Orders",
+    "ordersNew": "{n, plural, one {# new order} other {# new orders}}",
+    "openQueue": "Open order queue"
   },
   "store": {
     "open": "Open",
@@ -171,7 +174,6 @@
     "loyaltyPoints": "Collect {goal, plural, one {# point} other {# points}} and get: {reward}. Every 1 {currency} spent earns {rate, plural, one {# point} other {# points}}.",
     "whatsappCta": "Chat on WhatsApp",
     "whatsappMsg": "Hi! I found your store {name}.",
-    "orderSoon": "Online ordering is coming soon. For now, message us on WhatsApp.",
     "poweredBy": "Made with Balcão",
     "notFoundTitle": "Store not found",
     "notFoundText": "Check the address or go back home.",
@@ -236,6 +238,149 @@
       "forbidden": "You don't have permission for this action.",
       "invalid_data": "Check the details and try again.",
       "generic": "Could not save. Please try again."
+    }
+  },
+  "order": {
+    "bag": "Bag",
+    "viewBag": "View bag",
+    "addAria": "Add {name}",
+    "decAria": "Less",
+    "incAria": "More",
+    "empty": "Your bag is empty.",
+    "fulfillmentTitle": "How would you like to receive it?",
+    "fulfillment": {
+      "pickup": "Pickup",
+      "delivery": "Delivery",
+      "dine_in": "At the table"
+    },
+    "eta": "Estimated: {eta}",
+    "name": "Your name",
+    "phone": "WhatsApp",
+    "phoneHint": "With country code, or just the national number.",
+    "address": "Delivery address",
+    "table": "Table number",
+    "paymentTitle": "Payment",
+    "pay": {
+      "cash": "Cash",
+      "card": "Card",
+      "online": "Online",
+      "pix": "Pix",
+      "mbway": "MB WAY",
+      "transfer": "Bank transfer",
+      "other": "Other"
+    },
+    "change": "Change for how much? (optional)",
+    "note": "Order notes",
+    "subtotal": "Subtotal",
+    "fee": "Delivery",
+    "total": "Total",
+    "minimum": "Minimum order {min}. {missing} to go.",
+    "submit": "Place order · {total}",
+    "submitting": "Sending…",
+    "doneTitle": "Order #{number} sent",
+    "doneText": "{business} will confirm shortly. You can follow the order status.",
+    "sendWhatsapp": "Send via WhatsApp",
+    "track": "Track order",
+    "close": "Close",
+    "noWhatsapp": "The business hasn't set a WhatsApp number yet. Use order tracking.",
+    "wa": {
+      "order": "Order",
+      "customer": "Customer",
+      "type": "Type",
+      "subtotal": "Subtotal",
+      "delivery": "Delivery",
+      "total": "Total",
+      "payment": "Payment",
+      "changeFor": "change for",
+      "note": "Notes",
+      "track": "Track",
+      "table": "Table"
+    },
+    "status": {
+      "new": "Received",
+      "preparing": "Preparing",
+      "ready": "Ready",
+      "confirmed": "Confirmed",
+      "shipped": "Shipped",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "trackTitle": "Order #{number}",
+    "trackLive": "Updates automatically",
+    "cancelledText": "This order was cancelled.",
+    "yourItems": "Items",
+    "backToStore": "Back to the store",
+    "errors": {
+      "name": "Enter your name.",
+      "phone": "Invalid WhatsApp number. Please check it.",
+      "address": "Enter the delivery address.",
+      "table": "Enter the table number.",
+      "change": "Invalid change amount.",
+      "tenant_not_found": "Store not found.",
+      "module_disabled": "Ordering is turned off for this store.",
+      "invalid_name": "Enter your name.",
+      "invalid_phone": "Invalid WhatsApp number. Please check it.",
+      "fulfillment_not_allowed": "This way of receiving is not available.",
+      "address_required": "Enter the delivery address.",
+      "table_required": "Enter the table number.",
+      "empty_cart": "Your bag is empty.",
+      "payment_not_allowed": "This payment method is not available.",
+      "too_many_orders": "Too many orders in a row. Try again shortly.",
+      "invalid_quantity": "Invalid quantity.",
+      "item_unavailable": "An item became unavailable. We refreshed the list; please review your bag.",
+      "insufficient_stock": "Not enough stock for an item. We refreshed the list; please review your bag.",
+      "below_minimum": "Minimum order {min}. {missing} to go.",
+      "generic": "Could not send the order. Please try again."
+    }
+  },
+  "orders": {
+    "title": "Orders",
+    "back": "Back to dashboard",
+    "queue": "Queue",
+    "history": "History",
+    "live": "Live",
+    "offline": "Refreshes every 15 s",
+    "columns": {
+      "new": "New",
+      "progress": "In progress",
+      "ready": "Ready"
+    },
+    "module": {
+      "menu": "Menu",
+      "catalog": "Catalog"
+    },
+    "empty": "No orders in the queue. When a customer places an order, it shows up here.",
+    "emptyColumn": "Empty",
+    "emptyHistory": "No history yet.",
+    "actions": {
+      "menu": {
+        "new": "Accept order",
+        "preparing": "Mark as ready",
+        "ready": "Complete"
+      },
+      "catalog": {
+        "new": "Confirm order",
+        "confirmed": "Mark as shipped",
+        "shipped": "Complete"
+      }
+    },
+    "cancel": "Cancel",
+    "confirmCancel": "Cancel order #{number}? Stock goes back to inventory.",
+    "notify": "Notify on WhatsApp",
+    "changeFor": "Change for {amount}",
+    "newOrderToast": "New order #{number}",
+    "updateError": "Could not update the order. Please try again.",
+    "tableLabel": "Table {table}",
+    "wa": {
+      "new": "Hi {name}! We received your order #{number}. We'll confirm it shortly. — {business}",
+      "preparing": "Hi {name}! Your order #{number} was accepted and is being prepared. — {business}",
+      "ready_pickup": "Hi {name}! Your order #{number} is ready for pickup. — {business}",
+      "ready_delivery": "Hi {name}! Your order #{number} is out for delivery. — {business}",
+      "ready_dine_in": "Hi {name}! Your order #{number} is ready to be served. — {business}",
+      "confirmed": "Hi {name}! Your order #{number} is confirmed. We're picking the items. — {business}",
+      "shipped_delivery": "Hi {name}! Your order #{number} has been shipped. — {business}",
+      "completed": "Order #{number} completed. Thank you! — {business}",
+      "cancelled": "Your order #{number} was cancelled. Reply here if you need anything. — {business}"
     }
   }
 }

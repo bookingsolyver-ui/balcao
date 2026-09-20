@@ -6,13 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "npm run test:lib && npm run test:db && npm run test:onboarding && npm run test:items && npm run test:ui",
+    "test": "npm run test:lib && npm run test:db && npm run test:onboarding && npm run test:items && npm run test:orders && npm run test:ui",
     "test:db": "node tests/db.test.mjs",
     "test:lib": "tsx tests/lib.test.ts && tsx tests/app.test.ts",
     "typecheck": "tsc",
     "test:onboarding": "tsx tests/onboarding.test.ts",
     "test:items": "tsx tests/items.test.ts",
-    "test:ui": "tsx tests/manager.test.tsx"
+    "test:ui": "tsx tests/manager.test.tsx && tsx tests/orders-ui.test.tsx",
+    "test:orders": "tsx tests/order.test.ts"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",

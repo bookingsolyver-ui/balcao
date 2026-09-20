@@ -145,7 +145,10 @@
     "another": "Crear otro negocio",
     "phase": "Este panel está en la fase 1. La gestión de artículos, pedidos y reservas llega en las próximas fases.",
     "country": "País",
-    "manage": "Gestionar"
+    "manage": "Gestionar",
+    "orders": "Pedidos",
+    "ordersNew": "{n, plural, one {# pedido nuevo} other {# pedidos nuevos}}",
+    "openQueue": "Abrir cola de pedidos"
   },
   "store": {
     "open": "Abierto",
@@ -171,7 +174,6 @@
     "loyaltyPoints": "Reúne {goal, plural, one {# punto} other {# puntos}} y gana: {reward}. Cada 1 {currency} gastado da {rate, plural, one {# punto} other {# puntos}}.",
     "whatsappCta": "Hablar por WhatsApp",
     "whatsappMsg": "¡Hola! Vi vuestra tienda {name}.",
-    "orderSoon": "Los pedidos online llegan pronto. Por ahora, escríbenos por WhatsApp.",
     "poweredBy": "Hecho con Balcão",
     "notFoundTitle": "Tienda no encontrada",
     "notFoundText": "Revisa la dirección o vuelve al inicio.",
@@ -236,6 +238,149 @@
       "forbidden": "No tienes permiso para esta acción.",
       "invalid_data": "Revisa los datos e inténtalo de nuevo.",
       "generic": "No se pudo guardar. Inténtalo de nuevo."
+    }
+  },
+  "order": {
+    "bag": "Bolsa",
+    "viewBag": "Ver bolsa",
+    "addAria": "Añadir {name}",
+    "decAria": "Menos",
+    "incAria": "Más",
+    "empty": "La bolsa está vacía.",
+    "fulfillmentTitle": "¿Cómo quieres recibirlo?",
+    "fulfillment": {
+      "pickup": "Recoger en el local",
+      "delivery": "Entrega a domicilio",
+      "dine_in": "En la mesa"
+    },
+    "eta": "Previsión: {eta}",
+    "name": "Tu nombre",
+    "phone": "WhatsApp",
+    "phoneHint": "Con prefijo del país, o solo el número nacional.",
+    "address": "Dirección de entrega",
+    "table": "Número de mesa",
+    "paymentTitle": "Pago",
+    "pay": {
+      "cash": "Efectivo",
+      "card": "Tarjeta",
+      "online": "Online",
+      "pix": "Pix",
+      "mbway": "MB WAY",
+      "transfer": "Transferencia",
+      "other": "Otro"
+    },
+    "change": "¿Cambio para cuánto? (opcional)",
+    "note": "Notas del pedido",
+    "subtotal": "Subtotal",
+    "fee": "Entrega",
+    "total": "Total",
+    "minimum": "Pedido mínimo de {min}. Faltan {missing}.",
+    "submit": "Hacer pedido · {total}",
+    "submitting": "Enviando…",
+    "doneTitle": "Pedido #{number} enviado",
+    "doneText": "{business} lo confirmará en breve. Puedes seguir el estado del pedido.",
+    "sendWhatsapp": "Enviar por WhatsApp",
+    "track": "Seguir pedido",
+    "close": "Cerrar",
+    "noWhatsapp": "El negocio aún no indicó un WhatsApp. Usa el seguimiento del pedido.",
+    "wa": {
+      "order": "Pedido",
+      "customer": "Cliente",
+      "type": "Tipo",
+      "subtotal": "Subtotal",
+      "delivery": "Entrega",
+      "total": "Total",
+      "payment": "Pago",
+      "changeFor": "cambio para",
+      "note": "Notas",
+      "track": "Seguir",
+      "table": "Mesa"
+    },
+    "status": {
+      "new": "Recibido",
+      "preparing": "En preparación",
+      "ready": "Listo",
+      "confirmed": "Confirmado",
+      "shipped": "Enviado",
+      "completed": "Completado",
+      "cancelled": "Cancelado"
+    },
+    "trackTitle": "Pedido #{number}",
+    "trackLive": "Se actualiza solo",
+    "cancelledText": "Este pedido fue cancelado.",
+    "yourItems": "Artículos",
+    "backToStore": "Volver a la tienda",
+    "errors": {
+      "name": "Indica tu nombre.",
+      "phone": "WhatsApp no válido. Revisa el número.",
+      "address": "Indica la dirección de entrega.",
+      "table": "Indica el número de mesa.",
+      "change": "Importe de cambio no válido.",
+      "tenant_not_found": "Tienda no encontrada.",
+      "module_disabled": "Los pedidos están desactivados en esta tienda.",
+      "invalid_name": "Indica tu nombre.",
+      "invalid_phone": "WhatsApp no válido. Revisa el número.",
+      "fulfillment_not_allowed": "Esta forma de recibir no está disponible.",
+      "address_required": "Indica la dirección de entrega.",
+      "table_required": "Indica el número de mesa.",
+      "empty_cart": "La bolsa está vacía.",
+      "payment_not_allowed": "Esta forma de pago no está disponible.",
+      "too_many_orders": "Demasiados pedidos seguidos. Inténtalo en un rato.",
+      "invalid_quantity": "Cantidad no válida.",
+      "item_unavailable": "Un artículo dejó de estar disponible. Actualizamos la lista; revisa tu bolsa.",
+      "insufficient_stock": "No hay stock suficiente de un artículo. Actualizamos la lista; revisa tu bolsa.",
+      "below_minimum": "Pedido mínimo de {min}. Faltan {missing}.",
+      "generic": "No se pudo enviar el pedido. Inténtalo de nuevo."
+    }
+  },
+  "orders": {
+    "title": "Pedidos",
+    "back": "Volver al panel",
+    "queue": "Cola",
+    "history": "Historial",
+    "live": "En vivo",
+    "offline": "Se actualiza cada 15 s",
+    "columns": {
+      "new": "Nuevos",
+      "progress": "En curso",
+      "ready": "Listos"
+    },
+    "module": {
+      "menu": "Carta",
+      "catalog": "Catálogo"
+    },
+    "empty": "No hay pedidos en la cola. Cuando un cliente haga un pedido, aparecerá aquí.",
+    "emptyColumn": "Vacío",
+    "emptyHistory": "Aún no hay historial.",
+    "actions": {
+      "menu": {
+        "new": "Aceptar pedido",
+        "preparing": "Marcar como listo",
+        "ready": "Completar"
+      },
+      "catalog": {
+        "new": "Confirmar pedido",
+        "confirmed": "Marcar como enviado",
+        "shipped": "Completar"
+      }
+    },
+    "cancel": "Cancelar",
+    "confirmCancel": "¿Cancelar el pedido #{number}? El stock vuelve al inventario.",
+    "notify": "Avisar por WhatsApp",
+    "changeFor": "Cambio para {amount}",
+    "newOrderToast": "Nuevo pedido #{number}",
+    "updateError": "No se pudo actualizar el pedido. Inténtalo de nuevo.",
+    "tableLabel": "Mesa {table}",
+    "wa": {
+      "new": "¡Hola, {name}! Recibimos tu pedido #{number}. Lo confirmamos enseguida. — {business}",
+      "preparing": "¡Hola, {name}! Tu pedido #{number} fue aceptado y se está preparando. — {business}",
+      "ready_pickup": "¡Hola, {name}! Tu pedido #{number} está listo para recoger. — {business}",
+      "ready_delivery": "¡Hola, {name}! Tu pedido #{number} salió para entrega. — {business}",
+      "ready_dine_in": "¡Hola, {name}! Tu pedido #{number} está listo para servir. — {business}",
+      "confirmed": "¡Hola, {name}! Tu pedido #{number} está confirmado. Estamos separando los artículos. — {business}",
+      "shipped_delivery": "¡Hola, {name}! Tu pedido #{number} fue enviado. — {business}",
+      "completed": "Pedido #{number} completado. ¡Gracias! — {business}",
+      "cancelled": "Tu pedido #{number} fue cancelado. Responde aquí si necesitas algo. — {business}"
     }
   }
 }

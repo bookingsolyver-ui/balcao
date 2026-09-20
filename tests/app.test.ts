@@ -6,6 +6,7 @@ import { openStatus, type HourRow } from '../src/lib/hours';
 import { dbErrorKey, authErrorKey } from '../src/lib/errors';
 import { decimalsFor, formatMoney, moneyLocale, toMinor } from '../src/lib/money';
 import { fmtPhoneIntl, toE164Digits } from '../src/lib/phone';
+import { FLOW, PAY_METHODS, FULFILLMENTS, waStatusKey } from '../src/lib/order';
 
 // ---- slug ----
 assert.equal(slugify('Café Aurora'), 'cafe-aurora');
@@ -86,4 +87,15 @@ for (const k of ['slug_taken', 'invalid_slug', 'invalid_data', 'tenant_limit', '
 const aerrs = Object.keys(load('pt-PT').auth.errors);
 for (const k of ['invalid_credentials', 'weak_password', 'email_in_use', 'email_not_confirmed', 'rate_limit', 'generic']) assert.ok(aerrs.includes(k), `auth.errors.${k}`);
 
+// ---- pedidos: tudo o que a interface pode mostrar tem tradução em todos os idiomas ----
+const PLACE_ORDER_ERRORS = ['tenant_not_found', 'module_disabled', 'invalid_name', 'invalid_phone', 'fulfillment_not_allowed', 'address_required', 'table_required', 'empty_cart', 'payment_not_allowed', 'too_many_orders', 'invalid_quantity', 'item_unavailable', 'insufficient_stock', 'below_minimum'];
+for (const l of ['pt-PT', 'pt-BR', 'en', 'es']) {
+  const m = load(l);
+  for (const k of [...PLACE_ORDER_ERRORS, 'name', 'phone', 'address', 'table', 'change', 'generic']) assert.ok(m.order.errors[k], `${l}: order.errors.${k}`);
+  for (const s of ['new', 'preparing', 'ready', 'confirmed', 'shipped', 'completed', 'cancelled']) assert.ok(m.order.status[s], `${l}: order.status.${s}`);
+  for (const p of PAY_METHODS) assert.ok(m.order.pay[p], `${l}: order.pay.${p}`);
+  for (const f of FULFILLMENTS) assert.ok(m.order.fulfillment[f], `${l}: order.fulfillment.${f}`);
+  for (const mod of ['menu', 'catalog'] as const) for (const st of FLOW[mod].slice(0, -1)) assert.ok(m.orders.actions[mod][st], `${l}: orders.actions.${mod}.${st}`);
+  for (const st of ['new', 'preparing', 'ready', 'confirmed', 'shipped', 'completed', 'cancelled']) for (const f of FULFILLMENTS) assert.ok(m.orders.wa[waStatusKey(st, f)], `${l}: orders.wa.${waStatusKey(st, f)}`);
+}
 console.log('✔ lógica da aplicação OK (slug, países, horário, erros, traduções)');

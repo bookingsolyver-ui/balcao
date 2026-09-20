@@ -9,6 +9,8 @@ import { isValidSlug } from '@/lib/slug';
 import { formatMoney, moneyLocale } from '@/lib/money';
 import { waLink } from '@/lib/phone';
 import { imageUrl } from '@/lib/storage';
+import { orderConfig } from '@/lib/order';
+import { AddButton, CartProvider } from '@/components/store/CartProvider';
 import { openStatus, type HourRow } from '@/lib/hours';
 import { MODULE_IDS, type Category, type Item, type LoyaltyProgram, type ModuleId, type Service, type Tenant } from '@/lib/types';
 
@@ -54,6 +56,11 @@ export default async function Store({ params, searchParams }: { params: Promise<
     statusText = st.next.dayOffset === 0 ? t('opensToday', { time }) : st.next.dayOffset === 1 ? t('opensTomorrow', { time }) : t('opensOn', { day: dayName(st.next.weekday, locale), time });
   } else statusText = t('closed');
 
+  const cartItems = allItems.map((i) => ({ id: i.id, module: i.module, name: i.name, price_minor: i.price_minor, promo_minor: i.promo_minor, stock: i.stock, active: i.active, emoji: i.emoji }));
+  const cartInfo = {
+    slug, name: tenant.name, whatsapp: tenant.whatsapp, country: tenant.country, currency: tenant.currency, decimals: tenant.currency_decimals,
+    moneyLocale: moneyLocale(locale, tenant.country), locale, configs: { menu: orderConfig(tenant.settings, 'menu'), catalog: orderConfig(tenant.settings, 'catalog') },
+  };
   const money = (n: number) => formatMoney(n, tenant.currency, moneyLocale(locale, tenant.country), tenant.currency_decimals);
   const price = (i: Item) => (i.promo_minor != null && i.promo_minor < i.price_minor)
     ? <span className="price"><s>{money(i.price_minor)}</s>{money(i.promo_minor)}</span> : <span className="price">{money(i.price_minor)}</span>;
@@ -74,8 +81,14 @@ export default async function Store({ params, searchParams }: { params: Promise<
               <div className="row" key={i.id} style={{ opacity: out ? .55 : 1, alignItems: 'flex-start' }}>
                 <span className="th" style={{ ['--h' as string]: hue(i.name) }}>{i.image_path ? <img src={imageUrl(i.image_path)} alt="" loading="lazy" /> : (i.emoji ?? '•')}</span>
                 <div className="g"><strong>{i.name}</strong>{i.description && <small style={{ whiteSpace: 'normal' }}>{i.description}</small>}<div style={{ marginTop: 4 }}>{price(i)}</div></div>
-                {out ? <span className="badge">{i.stock === 0 ? t('soldOut') : t('unavailable')}</span>
-                  : mod === 'catalog' && i.stock != null && i.stock <= lowStock ? <span className="badge warn">{t('lastUnits', { n: i.stock })}</span> : null}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, flex: 'none' }}>
+                  {out ? <span className="badge">{i.stock === 0 ? t('soldOut') : t('unavailable')}</span> : (
+                    <>
+                      {mod === 'catalog' && i.stock != null && i.stock <= lowStock ? <span className="badge warn">{t('lastUnits', { n: i.stock })}</span> : null}
+                      <AddButton itemId={i.id} />
+                    </>
+                  )}
+                </div>
               </div>
             );
           })}
@@ -87,7 +100,8 @@ export default async function Store({ params, searchParams }: { params: Promise<
   return (
     <div data-accent={tenant.accent} style={{ minHeight: '100vh' }}>
       <header className="nav"><div className="nav-in"><span className="brand"><span className="logo" aria-hidden="true">{tenant.name.charAt(0).toUpperCase()}</span>{tenant.name}</span><span className="spacer" /><LocaleSwitcher /></div></header>
-      <main className="wrap" style={{ padding: 'clamp(24px, 5vw, 48px) 0 56px', maxWidth: 760 }}>
+      <CartProvider info={cartInfo} items={cartItems} module={active === 'menu' || active === 'catalog' ? active : null}>
+      <main className="wrap" style={{ padding: 'clamp(24px, 5vw, 48px) 0 96px', maxWidth: 760 }}>
         <h1 className="page-title">{tenant.name}</h1>
         <p className="muted small" style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span className={`dot ${st.open ? '' : 'bad'}`} aria-hidden="true" />{statusText}{tenant.address ? <> · {tenant.address}</> : null}
@@ -129,7 +143,6 @@ export default async function Store({ params, searchParams }: { params: Promise<
         ) : <div className="card muted">{t('empty')}</div>)}
 
         {tabs.length === 0 && <div className="card muted">{td('noBusiness')}</div>}
-        <p className="muted small" style={{ marginTop: 26 }}>{t('orderSoon')}</p>
 
         {hourRows.length > 0 && (
           <section style={{ marginTop: 40 }}>
@@ -145,6 +158,7 @@ export default async function Store({ params, searchParams }: { params: Promise<
         )}
         <p className="muted small" style={{ marginTop: 32, textAlign: 'center' }}>{t('poweredBy')}</p>
       </main>
+      </CartProvider>
     </div>
   );
 }
