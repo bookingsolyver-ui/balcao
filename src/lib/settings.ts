@@ -6,12 +6,12 @@ import { FULFILLMENTS, PAY_METHODS, type Fulfillment, type OrderConfig, type Ord
 import { paymentsFor } from './payments';
 
 /* ---------- pedidos (por módulo) ---------- */
-export interface OrderSettingsForm { pickup: boolean; delivery: boolean; dine_in: boolean; fee: string; min: string; eta: string; payments: string[] }
+export interface OrderSettingsForm { pickup: boolean; delivery: boolean; dine_in: boolean; fee: string; min: string; eta: string; payments: string[]; only_when_open: boolean }
 export type OrderSettingsError = 'fee' | 'min' | 'eta' | 'no_fulfillment' | 'no_payment' | 'no_payment_for_delivery';
-export type OrderSettingsValue = Pick<OrderConfig, 'pickup' | 'delivery' | 'dine_in' | 'fee_minor' | 'min_minor' | 'eta' | 'payments'>;
+export type OrderSettingsValue = Pick<OrderConfig, 'pickup' | 'delivery' | 'dine_in' | 'fee_minor' | 'min_minor' | 'eta' | 'payments'> & { only_when_open: boolean };
 
 export function toOrderSettingsForm(cfg: OrderConfig, decimals: number): OrderSettingsForm {
-  return { pickup: cfg.pickup, delivery: cfg.delivery, dine_in: cfg.dine_in, fee: minorToInput(cfg.fee_minor, decimals), min: minorToInput(cfg.min_minor, decimals), eta: cfg.eta, payments: [...cfg.payments] };
+  return { pickup: cfg.pickup, delivery: cfg.delivery, dine_in: cfg.dine_in, fee: minorToInput(cfg.fee_minor, decimals), min: minorToInput(cfg.min_minor, decimals), eta: cfg.eta, payments: [...cfg.payments], only_when_open: cfg.only_when_open === true };
 }
 
 export function buildOrderSettings(f: OrderSettingsForm, ctx: { currency: string; decimals: number; module: OrderModule }): { ok: true; value: OrderSettingsValue } | { ok: false; error: OrderSettingsError } {
@@ -27,7 +27,7 @@ export function buildOrderSettings(f: OrderSettingsForm, ctx: { currency: string
 
   const payments = PAY_METHODS.filter((p) => f.payments.includes(p)); // valida, remove duplicados e ordena
   if (payments.length === 0) return { ok: false, error: 'no_payment' };
-  const value: OrderSettingsValue = { pickup: f.pickup, delivery: f.delivery, dine_in, fee_minor: fee, min_minor: min, eta, payments };
+  const value: OrderSettingsValue = { pickup: f.pickup, delivery: f.delivery, dine_in, fee_minor: fee, min_minor: min, eta, payments, only_when_open: f.only_when_open === true };
   for (const fl of FULFILLMENTS) {
     if (value[fl as Fulfillment] && paymentsFor(value, fl).length === 0) return { ok: false, error: 'no_payment_for_delivery' };
   }

@@ -23,7 +23,7 @@ export const columnOf = (status: string): 'new' | 'progress' | 'ready' | null =>
   status === 'new' ? 'new' : status === 'preparing' || status === 'confirmed' ? 'progress' : status === 'ready' || status === 'shipped' ? 'ready' : null;
 
 /* ---------- configuração por módulo (igual a default_settings() da base de dados; há um teste que o garante) ---------- */
-export interface OrderConfig { pickup: boolean; delivery: boolean; dine_in: boolean; fee_minor: number; min_minor: number; eta: string; payments: string[] }
+export interface OrderConfig { pickup: boolean; delivery: boolean; dine_in: boolean; fee_minor: number; min_minor: number; eta: string; payments: string[]; only_when_open?: boolean }
 export const DEFAULT_CONFIG: Record<OrderModule, OrderConfig> = {
   menu: { pickup: true, delivery: true, dine_in: true, fee_minor: 0, min_minor: 0, eta: '30-45 min', payments: ['cash', 'card'] },
   catalog: { pickup: true, delivery: true, dine_in: false, fee_minor: 0, min_minor: 0, eta: '1-2 dias', payments: ['card', 'transfer'] },

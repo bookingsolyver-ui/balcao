@@ -61,4 +61,20 @@ assert.match(tx, /Multicaixa Express/); assert.doesNotMatch(tx, /Pagar na loja/,
 tx = checkout({ pickup: true, delivery: true, payments: ['express', 'store'] });
 assert.match(tx, /Pagar na loja/, 'começa em levantar, onde pagar na loja existe');
 console.log('✔ checkout: pagar na loja só em levantar/mesa; Express e transferência sempre');
+
+// ---- só aceitar pedidos com a loja aberta ----
+const closedInfo = (only: boolean, openNow: boolean): StoreInfo => ({ ...info({ only_when_open: only, pickup: true, payments: ['express'] }), openNow, statusText: 'Abre amanhã às 10:00' });
+const co = (i: StoreInfo) => wrap('pt-PT', <CartProvider info={i} items={items} module="catalog" initialCart={{ menu: [], catalog: [{ itemId: 'a', qty: 1 }] }} defaultOpen><p>x</p></CartProvider>);
+let hh = co(closedInfo(true, false));
+assert.match(text(hh), /A loja está fechada e só aceita pedidos durante o horário de funcionamento\. Abre amanhã às 10:00/); assert.match(hh, /<button type="submit" class="btn" style="flex:1" disabled="">/, 'botão de pedir desativado');
+hh = co(closedInfo(true, true)); assert.doesNotMatch(text(hh), /só aceita pedidos durante/); assert.doesNotMatch(hh, /class="btn" style="flex:1" disabled=""/);
+hh = co(closedInfo(false, false)); assert.doesNotMatch(text(hh), /só aceita pedidos durante/, 'com a opção desligada aceita pedidos fechada');
+console.log('✔ checkout bloqueia pedidos com a loja fechada só quando o negócio ativou a opção');
+
+// ---- definições: opção da loja fechada e regras da agenda ----
+h = wrap('pt-PT', <SettingsForm {...props} tenant={{ ...tenant, modules: { ...tenant.modules, agenda: true }, settings: { ...tenant.settings, catalog: { ...(tenant.settings.catalog as object), only_when_open: true }, agenda: { slot_step_min: 15, days_ahead: 30, min_notice_hours: 1, auto_confirm: false } } }} canEdit />); tx = text(h);
+assert.match(tx, /Só aceitar pedidos com a loja aberta/); assert.match(tx, /Agenda · regras/); assert.match(tx, /Intervalo entre horários \(minutos\)/); assert.match(tx, /Confirmar marcações automaticamente/);
+assert.match(h, /id="ag-step"[^>]*value="15"/); assert.match(h, /id="ag-ahead"[^>]*value="30"/); assert.match(h, /id="ag-notice"[^>]*value="1"/);
+h = wrap('pt-PT', <SettingsForm {...props} canEdit />); assert.doesNotMatch(text(h), /Agenda · regras/, 'só com o módulo da agenda ligado');
+console.log('✔ definições: opção da loja fechada e regras da agenda');
 process.exit(0);

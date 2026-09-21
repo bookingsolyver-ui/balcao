@@ -98,7 +98,7 @@ export default async function Dashboard({ params, searchParams }: { params: Prom
                 </div>
                 <h3 style={{ fontSize: 21, fontWeight: 700, letterSpacing: '-.025em', marginTop: 22 }}>{t(`moduleNames.${m}` as never)}</h3>
                 <p className="muted" style={{ marginTop: 4 }}>{t(`moduleDesc.${m}` as never)}</p>
-                {on && (m === 'menu' || m === 'catalog')
+                {on && (m === 'menu' || m === 'catalog' || m === 'loyalty' || m === 'agenda')
                   ? <p style={{ marginTop: 14 }}><Link className="btn sm" href={`/app/${m}?t=${tenant.slug}`}>{t('manage')}</Link></p>
                   : on && <p className="small" style={{ marginTop: 12, color: 'var(--fg3)' }}>{t('comingSoon')}</p>}
               </div>

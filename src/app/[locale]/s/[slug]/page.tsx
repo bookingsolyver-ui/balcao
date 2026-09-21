@@ -11,8 +11,11 @@ import { waLink } from '@/lib/phone';
 import { imageUrl } from '@/lib/storage';
 import { orderConfig } from '@/lib/order';
 import { AddButton, CartProvider } from '@/components/store/CartProvider';
+import { LoyaltyCard } from '@/components/store/LoyaltyCard';
+import { BookingFlow } from '@/components/store/BookingFlow';
+import { agendaConfig, type ServiceRow as BookingService, type StaffRow } from '@/lib/booking';
 import { openStatus, type HourRow } from '@/lib/hours';
-import { MODULE_IDS, type Category, type Item, type LoyaltyProgram, type ModuleId, type Service, type Tenant } from '@/lib/types';
+import { MODULE_IDS, type Category, type Item, type LoyaltyProgram, type ModuleId, type Tenant } from '@/lib/types';
 
 const hue = (s: string) => { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h % 360; };
 const dayName = (d: number, locale: string) => new Intl.DateTimeFormat(locale, { weekday: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(2023, 0, 1 + d)));
@@ -34,13 +37,17 @@ export default async function Store({ params, searchParams }: { params: Promise<
   if (!tenantRow) notFound();
   const tenant = tenantRow as Tenant;
 
-  const [cats, items, services, hours, loyalty] = await Promise.all([
+  const [cats, items, services, hours, loyalty, staffRes, blockedRes] = await Promise.all([
     sb.from('categories').select('*').eq('tenant_id', tenant.id).order('position').order('name'),
     sb.from('items').select('*').eq('tenant_id', tenant.id).order('position').order('name'),
     sb.from('services').select('*').eq('tenant_id', tenant.id).eq('active', true).order('position').order('name'),
     sb.from('business_hours').select('weekday,is_open,opens,closes').eq('tenant_id', tenant.id).order('weekday'),
     sb.from('loyalty_programs').select('*').eq('tenant_id', tenant.id).maybeSingle(),
+    sb.from('staff').select('*').eq('tenant_id', tenant.id).eq('active', true).order('name'),
+    sb.from('blocked_dates').select('day').eq('tenant_id', tenant.id),
   ]);
+  const agenda = agendaConfig(tenant.settings);
+  const blockedDays = ((blockedRes.data ?? []) as { day: string }[]).map((x) => x.day);
   const categories = (cats.data ?? []) as Category[];
   const allItems = (items.data ?? []) as Item[];
   const hourRows = (hours.data ?? []) as HourRow[];
@@ -60,7 +67,7 @@ export default async function Store({ params, searchParams }: { params: Promise<
   const cartItems = allItems.map((i) => ({ id: i.id, module: i.module, name: i.name, price_minor: i.price_minor, promo_minor: i.promo_minor, stock: i.stock, active: i.active, emoji: i.emoji }));
   const cartInfo = {
     slug, name: tenant.name, whatsapp: tenant.whatsapp, country: tenant.country, currency: tenant.currency, decimals: tenant.currency_decimals,
-    moneyLocale: moneyLocale(locale, tenant.country), locale, configs: { menu: orderConfig(tenant.settings, 'menu'), catalog: orderConfig(tenant.settings, 'catalog') },
+    moneyLocale: moneyLocale(locale, tenant.country), locale, openNow: st.open, statusText: statusText, configs: { menu: orderConfig(tenant.settings, 'menu'), catalog: orderConfig(tenant.settings, 'catalog') },
   };
   const money = (n: number) => formatMoney(n, tenant.currency, moneyLocale(locale, tenant.country), tenant.currency_decimals);
   const price = (i: Item) => (i.promo_minor != null && i.promo_minor < i.price_minor)
@@ -123,25 +130,15 @@ export default async function Store({ params, searchParams }: { params: Promise<
 
         {(active === 'menu' || active === 'catalog') && renderItems(active)}
 
-        {active === 'agenda' && ((services.data as Service[] | null)?.length ? (
-          <div className="list">
-            {(services.data as Service[]).map((sv) => (
-              <div className="row" key={sv.id}><div className="g"><strong>{sv.name}</strong><small style={{ whiteSpace: 'normal' }}>{t('minutes', { n: sv.duration_min })}{sv.description ? ` · ${sv.description}` : ''}</small></div>
-                <span className="price">{sv.price_minor ? money(sv.price_minor) : t('free')}</span></div>
-            ))}
-          </div>
-        ) : <div className="card muted">{t('empty')}</div>)}
+        {active === 'agenda' && (
+          <BookingFlow mode="public" slug={slug} autoConfirm={agenda.auto_confirm} daysAhead={agenda.days_ahead} hours={hourRows} blocked={blockedDays}
+            services={((services.data ?? []) as BookingService[])} staff={((staffRes.data ?? []) as StaffRow[])}
+            tenant={{ name: tenant.name, country: tenant.country, currency: tenant.currency, decimals: tenant.currency_decimals, moneyLocale: moneyLocale(locale, tenant.country), timezone: tenant.timezone, whatsapp: tenant.whatsapp, address: tenant.address }} />
+        )}
 
-        {active === 'loyalty' && (program ? (
-          <div className="pass">
-            <b style={{ fontSize: 18, position: 'relative' }}>{tenant.name}</b>
-            <p style={{ marginTop: 14, fontSize: 20, lineHeight: 1.3, position: 'relative' }}>
-              {program.mode === 'stamps'
-                ? t('loyaltyStamps', { goal: program.goal, reward: program.reward })
-                : t('loyaltyPoints', { goal: program.goal, reward: program.reward, currency: tenant.currency, rate: Number(program.points_per_unit) })}
-            </p>
-          </div>
-        ) : <div className="card muted">{t('empty')}</div>)}
+        {active === 'loyalty' && (program
+          ? <LoyaltyCard slug={slug} tenantName={tenant.name} country={tenant.country} currency={tenant.currency} program={{ mode: program.mode, goal: program.goal, reward: program.reward, points_per_unit: program.points_per_unit }} />
+          : <div className="card muted">{t('empty')}</div>)}
 
         {tabs.length === 0 && <div className="card muted">{td('noBusiness')}</div>}
 

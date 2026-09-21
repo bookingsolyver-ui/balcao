@@ -43,6 +43,7 @@ export function CheckoutDialog() {
 
   const lines = useMemo(() => resolveLines(cart, mod, items), [cart, mod, items]);
   const tot = totals(lines, cfg, form.fulfillment);
+  const closedBlock = cfg.only_when_open === true && info.openNow === false; // a loja só aceita pedidos com o horário aberto
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -50,6 +51,7 @@ export function CheckoutDialog() {
     if (lines.length === 0) return setErr('empty_cart');
     const built = buildOrderParams({ ...form, payment }, { slug: info.slug, module: mod, country: info.country, currency: info.currency, decimals: info.decimals, lines: lines.map((l) => ({ itemId: l.item.id, qty: l.qty })) });
     if (!built.ok) return setErr(built.error);
+    if (closedBlock) return setErr('store_closed');
     if (tot.missing > 0) return setErr('below_minimum');
     setBusy(true);
     try {
@@ -133,11 +135,12 @@ export function CheckoutDialog() {
               {form.fulfillment === 'delivery' && <div><span>{t('fee')}</span><span>{money(tot.fee)}</span></div>}
               <div className="t"><span>{t('total')}</span><span>{money(tot.total)}</span></div>
             </div>
+            {closedBlock && <p className="sf-note">{t('closedNotice', { status: info.statusText ?? '' })}</p>}
             {tot.missing > 0 && <p className="sf-note">{t('minimum', { min: money(cfg.min_minor), missing: money(tot.missing) })}</p>}
             {errText && <p className="err" role="alert">{errText}</p>}
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               <button type="button" className="btn gray" onClick={close}>{t('close')}</button>
-              <button type="submit" className="btn" style={{ flex: 1 }} disabled={busy || lines.length === 0}>{busy ? t('submitting') : t('submit', { total: money(tot.total) })}</button>
+              <button type="submit" className="btn" style={{ flex: 1 }} disabled={busy || lines.length === 0 || closedBlock}>{busy ? t('submitting') : t('submit', { total: money(tot.total) })}</button>
             </div>
           </form>
         )}

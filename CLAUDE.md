@@ -13,7 +13,8 @@ O produto vende-se por **nicho** (pacotes em `niche_presets`), mas é UM só có
 - **Fase 2A entregue** (ver `docs/FASE2A.md`): gestão de categorias e itens/produtos pelo painel, com fotos no bucket `item-images`.
 - **Fase 2B entregue** (ver `docs/FASE2B.md`): carrinho, checkout com `place_order`, acompanhamento por token, fila de pedidos em tempo real e WhatsApp. Migração `20260920000003_order_tracking.sql`.
 - **Definições entregues** (ver `docs/SETTINGS.md`): país/fuso/idioma, módulos, taxa, mínimo, pagamentos (novos `express` e `store`), horário. Migração `20260920000004_payment_methods.sql`. Pagamentos só são registados, não cobrados.
-- Próximo: opção "bloquear pedidos com a loja fechada", depois **fase 3 (agenda)** e **fase 5 (fidelidade na interface)**.
+- **Agenda, fidelidade e loja fechada entregues** (ver `docs/AGENDA-FIDELIDADE.md`). Migração `20260920000005_only_when_open.sql`. Módulos completos: cardápio, catálogo, agenda, fidelidade, definições.
+- Próximo (produção): ambiente de produção separado, domínio + Vercel, verificação por código no cartão de fidelidade, Turnstile, cobrança dos negócios (Stripe/Paddle), envio automático por WhatsApp Business API, textos legais (privacidade, termos).
 
 ## Stack a usar (a mesma do projeto vexto-app do dono)
 Next.js 16 (App Router; o antigo `middleware` chama-se `proxy`) + TypeScript + Tailwind 4 + `@supabase/ssr` + `next-intl` (pt-PT, pt-BR, en, es). Deploy na Vercel.

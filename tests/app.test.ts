@@ -88,7 +88,7 @@ const aerrs = Object.keys(load('pt-PT').auth.errors);
 for (const k of ['invalid_credentials', 'weak_password', 'email_in_use', 'email_not_confirmed', 'rate_limit', 'generic']) assert.ok(aerrs.includes(k), `auth.errors.${k}`);
 
 // ---- pedidos: tudo o que a interface pode mostrar tem tradução em todos os idiomas ----
-const PLACE_ORDER_ERRORS = ['tenant_not_found', 'module_disabled', 'invalid_name', 'invalid_phone', 'fulfillment_not_allowed', 'address_required', 'table_required', 'empty_cart', 'payment_not_allowed', 'too_many_orders', 'invalid_quantity', 'item_unavailable', 'insufficient_stock', 'below_minimum'];
+const PLACE_ORDER_ERRORS = ['tenant_not_found', 'module_disabled', 'invalid_name', 'invalid_phone', 'fulfillment_not_allowed', 'address_required', 'table_required', 'empty_cart', 'payment_not_allowed', 'too_many_orders', 'invalid_quantity', 'item_unavailable', 'insufficient_stock', 'below_minimum', 'store_closed'];
 for (const l of ['pt-PT', 'pt-BR', 'en', 'es']) {
   const m = load(l);
   for (const k of [...PLACE_ORDER_ERRORS, 'name', 'phone', 'address', 'table', 'change', 'generic']) assert.ok(m.order.errors[k], `${l}: order.errors.${k}`);

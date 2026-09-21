@@ -4,7 +4,7 @@ const KNOWN = new Set([
   'table_required', 'empty_cart', 'payment_not_allowed', 'too_many_orders', 'invalid_quantity', 'item_unavailable',
   'insufficient_stock', 'below_minimum', 'slot_unavailable', 'service_unavailable', 'too_many_bookings', 'not_found',
   'cannot_cancel', 'forbidden', 'final_status', 'not_authenticated', 'tenant_limit', 'invalid_timezone', 'invalid_niche',
-  'not_enough_balance', 'no_program', 'no_points',
+  'not_enough_balance', 'no_program', 'no_points', 'store_closed',
 ]);
 
 export interface DbError { code?: string; message?: string }

@@ -7,6 +7,7 @@ import { COUNTRIES, countryInfo } from '@/lib/countries';
 import { FULFILLMENTS, PAY_METHODS, orderConfig, type OrderModule } from '@/lib/order';
 import { suggestedPayments } from '@/lib/payments';
 import { buildBusinessPatch, buildOrderSettings, mergeSettings, toOrderSettingsForm, validateHours, type HoursRow, type OrderSettingsForm } from '@/lib/settings';
+import { agendaConfig, buildAgendaSettings, mergeAgenda, toAgendaSettingsForm, type AgendaSettingsForm } from '@/lib/booking';
 import type { ModuleId } from '@/lib/types';
 
 interface Props {
@@ -39,6 +40,7 @@ export function SettingsForm({ tenant, hours, canEdit, countries, timezones, cur
     menu: toOrderSettingsForm(orderConfig(tenant.settings, 'menu'), tenant.decimals),
     catalog: toOrderSettingsForm(orderConfig(tenant.settings, 'catalog'), tenant.decimals),
   });
+  const [ag, setAg] = useState<AgendaSettingsForm>(toAgendaSettingsForm(agendaConfig(tenant.settings)));
   const [rows, setRows] = useState<HoursRow[]>(WEEK.map((w) => {
     const r = hours.find((h) => h.weekday === w);
     return { weekday: w, is_open: r?.is_open ?? false, opens: r ? hm(r.opens) : '09:00', closes: r ? hm(r.closes) : '18:00' };
@@ -67,6 +69,11 @@ export function SettingsForm({ tenant, hours, canEdit, countries, timezones, cur
       const r = buildOrderSettings(forms[m], { currency: tenant.currency, decimals: tenant.decimals, module: m });
       if (!r.ok) return fail(`errors.${r.error}`);
       settings = mergeSettings(settings, m, r.value);
+    }
+    if (modules.agenda) {
+      const a = buildAgendaSettings(ag);
+      if (!a.ok) return fail(`errAgenda.${a.error}`);
+      settings = mergeAgenda(settings, a.value);
     }
     if (!validateHours(rows).ok) return fail('errors.hours');
     setBusy(true);
@@ -137,6 +144,7 @@ export function SettingsForm({ tenant, hours, canEdit, countries, timezones, cur
                 <div className="field"><label htmlFor={`min-${m}`}>{t('min', { currency: tenant.currency })}</label><input id={`min-${m}`} className="input" inputMode="decimal" disabled={dis} value={f.min} onChange={(e) => setForm(m, { min: e.target.value })} /></div>
                 <div className="field"><label htmlFor={`eta-${m}`}>{t('eta')}</label><input id={`eta-${m}`} className="input" maxLength={60} disabled={dis} value={f.eta} onChange={(e) => setForm(m, { eta: e.target.value })} /></div>
               </div>
+              <div className="row" style={{ padding: 0, minHeight: 0 }}><div className="g"><strong>{t('onlyWhenOpen')}</strong><small style={{ whiteSpace: 'normal' }}>{t('onlyWhenOpenHint')}</small></div>{sw(f.only_when_open, (v) => setForm(m, { only_when_open: v }), t('onlyWhenOpen'))}</div>
               <div className="field"><span className="lbl">{t('payments')}</span>
                 <div className="opts">{PAY_METHODS.map((p) => <button type="button" key={p} className="opt" disabled={dis} aria-pressed={f.payments.includes(p)} onClick={() => togglePay(m, p)}>{tp(`pay.${p}`)}</button>)}</div>
                 <span className="hint">{t('paymentsHint')}</span>
@@ -145,6 +153,20 @@ export function SettingsForm({ tenant, hours, canEdit, countries, timezones, cur
           </section>
         );
       })}
+
+      {modules.agenda && (
+        <section>
+          <h2 className="h2" style={{ fontSize: 24, marginBottom: 12 }}>{t('agendaTitle')}</h2>
+          <div className="card form">
+            <div className="frow">
+              <div className="field"><label htmlFor="ag-step">{t('agendaStep')}</label><input id="ag-step" className="input" inputMode="numeric" disabled={dis} value={ag.slot_step_min} onChange={(e) => setAg({ ...ag, slot_step_min: e.target.value })} /></div>
+              <div className="field"><label htmlFor="ag-ahead">{t('agendaAhead')}</label><input id="ag-ahead" className="input" inputMode="numeric" disabled={dis} value={ag.days_ahead} onChange={(e) => setAg({ ...ag, days_ahead: e.target.value })} /></div>
+              <div className="field"><label htmlFor="ag-notice">{t('agendaNotice')}</label><input id="ag-notice" className="input" inputMode="numeric" disabled={dis} value={ag.min_notice_hours} onChange={(e) => setAg({ ...ag, min_notice_hours: e.target.value })} /></div>
+            </div>
+            <div className="row" style={{ padding: 0, minHeight: 0 }}><div className="g"><strong>{t('agendaAuto')}</strong><small style={{ whiteSpace: 'normal' }}>{t('agendaAutoHint')}</small></div>{sw(ag.auto_confirm, (v) => setAg({ ...ag, auto_confirm: v }), t('agendaAuto'))}</div>
+          </div>
+        </section>
+      )}
 
       <section>
         <h2 className="h2" style={{ fontSize: 24, marginBottom: 12 }}>{t('hours')}</h2>

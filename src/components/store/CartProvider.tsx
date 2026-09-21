@@ -10,6 +10,8 @@ export interface StoreItem { id: string; module: OrderModule; name: string; pric
 export interface StoreInfo {
   slug: string; name: string; whatsapp: string | null; country: string; currency: string; decimals: number;
   moneyLocale: string; locale: string; configs: Record<OrderModule, OrderConfig>;
+  /** Estado de abertura no momento em que a página foi gerada (o servidor volta a validar ao criar o pedido). */
+  openNow?: boolean; statusText?: string;
 }
 interface Ctx {
   cart: Cart; module: OrderModule | null; info: StoreInfo; items: Map<string, StoreItem>;

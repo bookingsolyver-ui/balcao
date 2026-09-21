@@ -9,7 +9,7 @@ import { dbErrorKey } from '../src/lib/errors';
 import { makeDb, asUser } from './helpers/pg';
 
 const kz = { currency: 'AOA', decimals: 2, module: 'catalog' as const };
-const base: OrderSettingsForm = { pickup: true, delivery: false, dine_in: false, fee: '', min: '', eta: '1-2 dias', payments: ['express', 'transfer', 'store'] };
+const base: OrderSettingsForm = { pickup: true, delivery: false, dine_in: false, fee: '', min: '', eta: '1-2 dias', payments: ['express', 'transfer', 'store'], only_when_open: false };
 
 // ---- sugestões e regras de pagamento ----
 assert.deepEqual(suggestedPayments('AO'), ['express', 'transfer', 'store']);
@@ -34,7 +34,7 @@ r = buildOrderSettings({ ...base, dine_in: true }, kz); assert.ok(r.ok && r.valu
 r = buildOrderSettings({ ...base, dine_in: true }, { ...kz, module: 'menu' }); assert.ok(r.ok && r.value.dine_in === true);
 r = buildOrderSettings({ ...base, payments: ['express', 'express', 'nope', 'transfer'] }, kz); assert.ok(r.ok && r.value.payments.join() === 'transfer,express', 'sem duplicados nem desconhecidos');
 assert.deepEqual(toOrderSettingsForm({ ...DEFAULT_CONFIG.catalog, fee_minor: 30000 }, 2).fee, '300.00');
-const merged = mergeSettings({ catalog: { low_stock: 5, fee_minor: 1 }, other: 1 }, 'catalog', { pickup: true, delivery: false, dine_in: false, fee_minor: 0, min_minor: 0, eta: 'x', payments: ['cash'] });
+const merged = mergeSettings({ catalog: { low_stock: 5, fee_minor: 1 }, other: 1 }, 'catalog', { pickup: true, delivery: false, dine_in: false, fee_minor: 0, min_minor: 0, eta: 'x', payments: ['cash'], only_when_open: false });
 assert.equal((merged.catalog as { low_stock: number }).low_stock, 5, 'não apaga chaves que o ecrã não edita'); assert.equal(merged.other, 1);
 
 // ---- horário e negócio ----
@@ -111,4 +111,31 @@ await asUser(db, owner, () => db.query('update tenants set is_published=false wh
 assert.equal(await fails('pickup', 'express'), 'tenant_not_found', 'loja despublicada não recebe pedidos');
 assert.equal((await asUser(db, 'anon', () => db.query('select id from tenants where id=$1', [tid]))).rows.length, 0, 'público deixa de ver a loja');
 console.log('✔ horário (owner sim, staff não) e loja despublicada');
+
+// ---- só aceitar pedidos com a loja aberta ----
+await asUser(db, owner, () => db.query('update tenants set is_published=true where id=$1', [tid]));
+const onlyOpen = buildOrderSettings({ ...base, delivery: true, fee: '300', only_when_open: true }, kz); assert.ok(onlyOpen.ok && onlyOpen.value.only_when_open === true);
+assert.ok(buildOrderSettings({ ...base }, kz).ok && (buildOrderSettings({ ...base }, kz) as { value: { only_when_open: boolean } }).value.only_when_open === false, 'por defeito aceita pedidos fechada');
+if (onlyOpen.ok) {
+  const st = mergeSettings((await db.query<{ settings: Record<string, unknown> }>('select settings from tenants where id=$1', [tid])).rows[0].settings, 'catalog', onlyOpen.value);
+  await asUser(db, owner, () => db.query('update tenants set settings=$2 where id=$1', [tid, JSON.stringify(st)]));
+}
+// tenant_is_open no fuso do negócio (Luanda = UTC+1): segunda-feira 2026-09-21
+await db.query(`update business_hours set is_open = (weekday <> 0), opens='10:00', closes='19:00' where tenant_id=$1`, [tid]);
+const isOpen = async (iso: string) => (await db.query<{ o: boolean }>(`select tenant_is_open($1, $2::timestamptz) o`, [tid, iso])).rows[0].o;
+assert.equal(await isOpen('2026-09-21T10:00:00+01:00'), true, 'segunda 10:00 em Luanda: aberto');
+assert.equal(await isOpen('2026-09-21T09:59:00+01:00'), false, 'segunda 09:59: ainda fechado');
+assert.equal(await isOpen('2026-09-21T18:59:00+01:00'), true); assert.equal(await isOpen('2026-09-21T19:00:00+01:00'), false, 'fecha às 19:00');
+assert.equal(await isOpen('2026-09-27T12:00:00+01:00'), false, 'domingo fechado');
+assert.equal(await isOpen('2026-09-21T09:30:00Z'), true, 'o mesmo instante em UTC (10:30 em Luanda)');
+// place_order respeita a opção
+await db.query(`update business_hours set is_open=false where tenant_id=$1`, [tid]);
+assert.equal(await fails('pickup', 'express'), 'store_closed', 'loja fechada com a opção ligada recusa o pedido');
+await db.query(`update business_hours set is_open=true, opens='00:00', closes='23:59' where tenant_id=$1`, [tid]);
+assert.ok((await place('pickup', 'express')).rows[0].r, 'loja aberta aceita');
+const off = mergeSettings((await db.query<{ settings: Record<string, unknown> }>('select settings from tenants where id=$1', [tid])).rows[0].settings, 'catalog', { ...(onlyOpen.ok ? onlyOpen.value : (undefined as never)), only_when_open: false });
+await db.query('update tenants set settings=$2 where id=$1', [tid, JSON.stringify(off)]);
+await db.query(`update business_hours set is_open=false where tenant_id=$1`, [tid]);
+assert.ok((await place('pickup', 'express')).rows[0].r, 'com a opção desligada, aceita pedidos mesmo fechada');
+console.log('✔ só aceitar pedidos com a loja aberta (fuso do negócio, opção ligada/desligada)');
 process.exit(0);
