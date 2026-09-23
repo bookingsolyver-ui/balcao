@@ -4,7 +4,7 @@ import { SiteHeader } from '@/components/SiteHeader';
 import { Icon } from '@/components/Icon';
 import { getSession } from '@/lib/session';
 
-const NICHES = [['restaurant', 'menu'], ['salon', 'agenda'], ['beauty_store', 'catalog'], ['general', 'loyalty']] as const;
+const NICHES = [['restaurant', 'menu'], ['salon', 'agenda'], ['beauty_store', 'catalog'], ['moving', 'moving'], ['general', 'loyalty']] as const;
 
 export default async function Landing({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

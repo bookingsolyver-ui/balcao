@@ -14,6 +14,7 @@ O produto vende-se por **nicho** (pacotes em `niche_presets`), mas é UM só có
 - **Fase 2B entregue** (ver `docs/FASE2B.md`): carrinho, checkout com `place_order`, acompanhamento por token, fila de pedidos em tempo real e WhatsApp. Migração `20260920000003_order_tracking.sql`.
 - **Definições entregues** (ver `docs/SETTINGS.md`): país/fuso/idioma, módulos, taxa, mínimo, pagamentos (novos `express` e `store`), horário. Migração `20260920000004_payment_methods.sql`. Pagamentos só são registados, não cobrados.
 - **Agenda, fidelidade e loja fechada entregues** (ver `docs/AGENDA-FIDELIDADE.md`). Migração `20260920000005_only_when_open.sql`. Módulos completos: cardápio, catálogo, agenda, fidelidade, definições.
+- **Nicho "Mudanças e transportes" entregue** (ver `docs/MUDANCAS.md`): pedido de orçamento (m³, moradas, extras, observações, consentimento), painel com fila por estado, orçamento visível ao cliente só depois de enviado, aceitar/recusar, exportação CSV/Excel. Migração `20260921000006_moving.sql`.
 - Próximo (produção): ambiente de produção separado, domínio + Vercel, verificação por código no cartão de fidelidade, Turnstile, cobrança dos negócios (Stripe/Paddle), envio automático por WhatsApp Business API, textos legais (privacidade, termos).
 
 ## Stack a usar (a mesma do projeto vexto-app do dono)

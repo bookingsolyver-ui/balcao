@@ -5,6 +5,8 @@ const KNOWN = new Set([
   'insufficient_stock', 'below_minimum', 'slot_unavailable', 'service_unavailable', 'too_many_bookings', 'not_found',
   'cannot_cancel', 'forbidden', 'final_status', 'not_authenticated', 'tenant_limit', 'invalid_timezone', 'invalid_niche',
   'not_enough_balance', 'no_program', 'no_points', 'store_closed',
+  // mudanças
+  'invalid_email', 'invalid_volume', 'invalid_address', 'invalid_extras', 'invalid_date', 'invalid_floor', 'invalid_data', 'consent_required', 'too_many_requests', 'quote_required', 'date_required', 'cannot_respond',
 ]);
 
 export interface DbError { code?: string; message?: string }

@@ -8,6 +8,7 @@ import { FULFILLMENTS, PAY_METHODS, orderConfig, type OrderModule } from '@/lib/
 import { suggestedPayments } from '@/lib/payments';
 import { buildBusinessPatch, buildOrderSettings, mergeSettings, toOrderSettingsForm, validateHours, type HoursRow, type OrderSettingsForm } from '@/lib/settings';
 import { agendaConfig, buildAgendaSettings, mergeAgenda, toAgendaSettingsForm, type AgendaSettingsForm } from '@/lib/booking';
+import { buildMovingSettings, mergeMoving, movingConfig, toMovingSettingsForm, type MovingSettingsForm } from '@/lib/moving';
 import type { ModuleId } from '@/lib/types';
 
 interface Props {
@@ -20,7 +21,7 @@ interface Props {
 }
 const LANGS = [['pt-PT', 'Português (PT)'], ['pt-BR', 'Português (BR)'], ['en', 'English'], ['es', 'Español']] as const;
 const ORDER_MODULES: OrderModule[] = ['menu', 'catalog'];
-const MODULES: ModuleId[] = ['menu', 'agenda', 'catalog', 'loyalty'];
+const MODULES: ModuleId[] = ['menu', 'agenda', 'catalog', 'loyalty', 'moving'];
 const WEEK = [1, 2, 3, 4, 5, 6, 0];
 const hm = (t: string) => t.slice(0, 5);
 
@@ -41,6 +42,7 @@ export function SettingsForm({ tenant, hours, canEdit, countries, timezones, cur
     catalog: toOrderSettingsForm(orderConfig(tenant.settings, 'catalog'), tenant.decimals),
   });
   const [ag, setAg] = useState<AgendaSettingsForm>(toAgendaSettingsForm(agendaConfig(tenant.settings)));
+  const [mv, setMv] = useState<MovingSettingsForm>(toMovingSettingsForm(movingConfig(tenant.settings), tenant.decimals));
   const [rows, setRows] = useState<HoursRow[]>(WEEK.map((w) => {
     const r = hours.find((h) => h.weekday === w);
     return { weekday: w, is_open: r?.is_open ?? false, opens: r ? hm(r.opens) : '09:00', closes: r ? hm(r.closes) : '18:00' };
@@ -74,6 +76,11 @@ export function SettingsForm({ tenant, hours, canEdit, countries, timezones, cur
       const a = buildAgendaSettings(ag);
       if (!a.ok) return fail(`errAgenda.${a.error}`);
       settings = mergeAgenda(settings, a.value);
+    }
+    if (modules.moving) {
+      const mvr = buildMovingSettings(mv, { currency: tenant.currency, decimals: tenant.decimals });
+      if (!mvr.ok) return fail(`moving.errors.${mvr.error}`);
+      settings = mergeMoving(settings, mvr.value);
     }
     if (!validateHours(rows).ok) return fail('errors.hours');
     setBusy(true);
@@ -122,7 +129,7 @@ export function SettingsForm({ tenant, hours, canEdit, countries, timezones, cur
         <h2 className="h2" style={{ fontSize: 24, marginBottom: 12 }}>{t('modules')}</h2>
         <div className="list">
           {MODULES.map((m) => (
-            <div className="row" key={m}><div className="g"><strong>{tm(`moduleNames.${m}`)}</strong><small style={{ whiteSpace: 'normal' }}>{tm(`moduleDesc.${m}`)}{m === 'agenda' || m === 'loyalty' ? ` ${t('moduleSoon')}` : ''}</small></div>
+            <div className="row" key={m}><div className="g"><strong>{tm(`moduleNames.${m}`)}</strong><small style={{ whiteSpace: 'normal' }}>{tm(`moduleDesc.${m}`)}</small></div>
               {sw(modules[m], (v) => setModules({ ...modules, [m]: v }), tm(`moduleNames.${m}`))}</div>
           ))}
         </div>
@@ -164,6 +171,51 @@ export function SettingsForm({ tenant, hours, canEdit, countries, timezones, cur
               <div className="field"><label htmlFor="ag-notice">{t('agendaNotice')}</label><input id="ag-notice" className="input" inputMode="numeric" disabled={dis} value={ag.min_notice_hours} onChange={(e) => setAg({ ...ag, min_notice_hours: e.target.value })} /></div>
             </div>
             <div className="row" style={{ padding: 0, minHeight: 0 }}><div className="g"><strong>{t('agendaAuto')}</strong><small style={{ whiteSpace: 'normal' }}>{t('agendaAutoHint')}</small></div>{sw(ag.auto_confirm, (v) => setAg({ ...ag, auto_confirm: v }), t('agendaAuto'))}</div>
+          </div>
+        </section>
+      )}
+
+      {modules.moving && (
+        <section>
+          <h2 className="h2" style={{ fontSize: 24, marginBottom: 12 }}>{t('moving.title')}</h2>
+          <div className="card form">
+            <div className="field"><label htmlFor="mv-cap">{t('moving.capacity')}</label><input id="mv-cap" className="input" inputMode="numeric" style={{ maxWidth: 140 }} disabled={dis} value={mv.capacity} onChange={(e) => setMv({ ...mv, capacity: e.target.value })} /></div>
+
+            <div className="hr" />
+            <div><strong>{t('moving.pricing')}</strong><p className="hint" style={{ marginTop: 4 }}>{t('moving.pricingHint')}</p></div>
+            <div className="frow">
+              <div className="field"><label htmlFor="mv-rate">{tt('moving.rate', { currency: tenant.currency })}</label><input id="mv-rate" className="input" inputMode="decimal" disabled={dis} value={mv.rate} onChange={(e) => setMv({ ...mv, rate: e.target.value })} /></div>
+              <div className="field"><label htmlFor="mv-min">{tt('moving.min', { currency: tenant.currency })}</label><input id="mv-min" className="input" inputMode="decimal" disabled={dis} value={mv.min} onChange={(e) => setMv({ ...mv, min: e.target.value })} /></div>
+              <div className="field"><label htmlFor="mv-floor">{tt('moving.perFloor', { currency: tenant.currency })}</label><input id="mv-floor" className="input" inputMode="decimal" disabled={dis} value={mv.perFloor} onChange={(e) => setMv({ ...mv, perFloor: e.target.value })} /></div>
+            </div>
+
+            <div className="hr" />
+            <div className="field"><span className="lbl">{t('moving.typologies')}</span>
+              {mv.typologies.map((ty, i) => (
+                <div className="frow" key={i} style={{ alignItems: 'end' }}>
+                  <div className="field"><label htmlFor={`mv-ty-k-${i}`}>{t('moving.typologyKey')}</label><input id={`mv-ty-k-${i}`} className="input" disabled={dis} value={ty.key} onChange={(e) => setMv({ ...mv, typologies: mv.typologies.map((x, k) => (k === i ? { ...x, key: e.target.value } : x)) })} /></div>
+                  <div className="field"><label htmlFor={`mv-ty-v-${i}`}>{t('moving.typologyVolume')}</label><input id={`mv-ty-v-${i}`} className="input" inputMode="decimal" disabled={dis} value={ty.m3} onChange={(e) => setMv({ ...mv, typologies: mv.typologies.map((x, k) => (k === i ? { ...x, m3: e.target.value } : x)) })} /></div>
+                  {canEdit && <button type="button" className="iconbtn bad" onClick={() => setMv({ ...mv, typologies: mv.typologies.filter((_, k) => k !== i) })}>{t('moving.remove')}</button>}
+                </div>
+              ))}
+              {canEdit && <button type="button" className="link small" style={{ textAlign: 'left' }} onClick={() => setMv({ ...mv, typologies: [...mv.typologies, { key: '', m3: '' }] })}>+ {t('moving.addTypology')}</button>}
+            </div>
+
+            <div className="hr" />
+            <div className="field"><span className="lbl">{t('moving.extrasTitle')}</span>
+              {mv.extras.map((ex, i) => (
+                <div className="frow" key={i} style={{ alignItems: 'end' }}>
+                  <div className="field"><label htmlFor={`mv-ex-n-${i}`}>{t('moving.extraName')}</label><input id={`mv-ex-n-${i}`} className="input" disabled={dis} value={ex.name} onChange={(e) => setMv({ ...mv, extras: mv.extras.map((x, k) => (k === i ? { ...x, name: e.target.value } : x)) })} /></div>
+                  <div className="field"><label htmlFor={`mv-ex-p-${i}`}>{tt('moving.extraPrice', { currency: tenant.currency })}</label><input id={`mv-ex-p-${i}`} className="input" inputMode="decimal" disabled={dis} value={ex.price} onChange={(e) => setMv({ ...mv, extras: mv.extras.map((x, k) => (k === i ? { ...x, price: e.target.value } : x)) })} /></div>
+                  {canEdit && <button type="button" className="iconbtn bad" onClick={() => setMv({ ...mv, extras: mv.extras.filter((_, k) => k !== i) })}>{t('moving.remove')}</button>}
+                </div>
+              ))}
+              {canEdit && <button type="button" className="link small" style={{ textAlign: 'left' }} onClick={() => setMv({ ...mv, extras: [...mv.extras, { name: '', price: '' }] })}>+ {t('moving.addExtra')}</button>}
+            </div>
+
+            <div className="field"><label htmlFor="mv-special">{t('moving.specialItems')}</label><input id="mv-special" className="input" disabled={dis} value={mv.special} onChange={(e) => setMv({ ...mv, special: e.target.value })} /></div>
+            <div className="field"><label htmlFor="mv-crews">{t('moving.crews')}</label><input id="mv-crews" className="input" disabled={dis} value={mv.crews} onChange={(e) => setMv({ ...mv, crews: e.target.value })} /></div>
+            <div className="field"><label htmlFor="mv-privacy">{t('moving.privacyUrl')}</label><input id="mv-privacy" className="input" type="url" placeholder="https://" disabled={dis} value={mv.privacy} onChange={(e) => setMv({ ...mv, privacy: e.target.value })} /></div>
           </div>
         </section>
       )}

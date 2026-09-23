@@ -1,4 +1,4 @@
-export type ModuleId = 'menu' | 'agenda' | 'catalog' | 'loyalty';
+export type ModuleId = 'menu' | 'agenda' | 'catalog' | 'loyalty' | 'moving';
 
 export interface Tenant {
   id: string; slug: string; name: string; niche: string;
@@ -16,7 +16,7 @@ export interface LoyaltyProgram { mode: 'stamps' | 'points'; goal: number; rewar
 export interface NichePreset { niche: string; label: Record<string, string>; modules: Record<ModuleId, boolean> }
 export interface Membership { role: 'owner' | 'admin' | 'staff'; tenants: Tenant }
 
-export const MODULE_IDS: ModuleId[] = ['menu', 'agenda', 'catalog', 'loyalty'];
+export const MODULE_IDS: ModuleId[] = ['menu', 'agenda', 'catalog', 'loyalty', 'moving'];
 
 export interface OrderRow {
   id: string; number: number; module: 'menu' | 'catalog'; status: string; fulfillment: 'pickup' | 'delivery' | 'dine_in';

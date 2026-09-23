@@ -15,7 +15,7 @@ const text = (h: string) => h.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
 
 const tenant = {
   id: 't1', name: 'Perola&charme', address: 'Rua do Comércio', whatsapp: '244923306869', country: 'AO', timezone: 'Africa/Luanda', locale: 'pt-PT', currency: 'AOA', decimals: 2,
-  is_published: true, modules: { menu: false, agenda: false, catalog: true, loyalty: true },
+  is_published: true, modules: { menu: false, agenda: false, catalog: true, loyalty: true, moving: false },
   settings: { catalog: { pickup: true, delivery: false, dine_in: false, fee_minor: 30000, min_minor: 200000, eta: '1-2 dias', payments: ['express', 'transfer', 'store'] } },
 };
 const hours = [1, 2, 3, 4, 5, 6, 0].map((w) => ({ weekday: w, is_open: w !== 0, opens: '10:00:00', closes: '19:00:00' }));
@@ -77,4 +77,28 @@ assert.match(tx, /Só aceitar pedidos com a loja aberta/); assert.match(tx, /Age
 assert.match(h, /id="ag-step"[^>]*value="15"/); assert.match(h, /id="ag-ahead"[^>]*value="30"/); assert.match(h, /id="ag-notice"[^>]*value="1"/);
 h = wrap('pt-PT', <SettingsForm {...props} canEdit />); assert.doesNotMatch(text(h), /Agenda · regras/, 'só com o módulo da agenda ligado');
 console.log('✔ definições: opção da loja fechada e regras da agenda');
+
+// ---- definições: módulo de mudanças (empresa de mudanças em Portugal) ----
+const movingSettings = { rate_per_m3_minor: 3500, min_price_minor: 30000, per_floor_minor: 1500,
+  typologies: [{ key: 'T2', m3: 28 }, { key: 'T3', m3: 40 }],
+  extras: [{ name: 'Embalagem', price_minor: 12000 }], special_items: ['Piano', 'Cofre'], crews: ['Equipa A'], privacy_url: 'https://exemplo.pt/privacidade' };
+h = wrap('pt-PT', <SettingsForm {...props} tenant={{ ...tenant, country: 'PT', currency: 'EUR', modules: { ...tenant.modules, moving: true }, settings: { ...tenant.settings, moving: movingSettings } }} canEdit />); tx = text(h);
+assert.match(tx, /Mudanças · regras/); assert.match(tx, /Capacidade \(mudanças confirmadas por dia\)/);
+assert.match(tx, /Preço por m³ \(EUR\)/); assert.match(tx, /Preço mínimo \(EUR\)/); assert.match(tx, /Acréscimo por andar sem elevador \(EUR\)/);
+assert.match(h, /id="mv-rate"[^>]*value="35.00"/); assert.match(h, /id="mv-min"[^>]*value="300.00"/); assert.match(h, /id="mv-floor"[^>]*value="15.00"/);
+assert.match(h, /id="mv-ty-k-0"[^>]*value="T2"/); assert.match(h, /id="mv-ty-v-0"[^>]*value="28"/); assert.match(h, /id="mv-ty-k-1"[^>]*value="T3"/);
+assert.match(h, /id="mv-ex-n-0"[^>]*value="Embalagem"/); assert.match(h, /id="mv-ex-p-0"[^>]*value="120.00"/);
+assert.match(h, /id="mv-special"[^>]*value="Piano, Cofre"/); assert.match(h, /id="mv-crews"[^>]*value="Equipa A"/); assert.match(h, /id="mv-privacy"[^>]*value="https:\/\/exemplo\.pt\/privacidade"/);
+assert.match(tx, /Adicionar tipologia/); assert.match(tx, /Adicionar serviço/);
+h = wrap('pt-PT', <SettingsForm {...props} tenant={{ ...tenant, modules: { ...tenant.modules, moving: true } }} canEdit={false} />); tx = text(h);
+assert.match(tx, /Mudanças · regras/); assert.doesNotMatch(tx, /Adicionar tipologia|Adicionar serviço/, 'equipa não adiciona linhas');
+h = wrap('pt-PT', <SettingsForm {...props} canEdit />); assert.doesNotMatch(text(h), /Mudanças · regras/, 'só aparece com o módulo ligado');
+h = wrap('en', <SettingsForm {...props} tenant={{ ...tenant, modules: { ...tenant.modules, moving: true }, settings: { ...tenant.settings, moving: movingSettings } }} canEdit />);
+assert.match(text(h), /Moving · rules/); assert.match(text(h), /Price per m³/);
+console.log('✔ definições: módulo de mudanças (capacidade, preços indicativos, tipologias, extras, itens especiais, equipas)');
+
+// ---- definições: já não mostram o aviso obsoleto "ainda sem gestão" para agenda/fidelidade ----
+h = wrap('pt-PT', <SettingsForm {...props} tenant={{ ...tenant, modules: { ...tenant.modules, agenda: true } }} canEdit />);
+assert.doesNotMatch(text(h), /Ainda sem gestão no painel/);
+console.log('✔ definições: sem aviso desatualizado para módulos que já têm gestão própria');
 process.exit(0);

@@ -14,6 +14,8 @@ import { AddButton, CartProvider } from '@/components/store/CartProvider';
 import { LoyaltyCard } from '@/components/store/LoyaltyCard';
 import { BookingFlow } from '@/components/store/BookingFlow';
 import { agendaConfig, type ServiceRow as BookingService, type StaffRow } from '@/lib/booking';
+import { MoveRequestForm } from '@/components/store/MoveRequestForm';
+import { movingConfig } from '@/lib/moving';
 import { openStatus, type HourRow } from '@/lib/hours';
 import { MODULE_IDS, type Category, type Item, type LoyaltyProgram, type ModuleId, type Tenant } from '@/lib/types';
 
@@ -48,6 +50,15 @@ export default async function Store({ params, searchParams }: { params: Promise<
   ]);
   const agenda = agendaConfig(tenant.settings);
   const blockedDays = ((blockedRes.data ?? []) as { day: string }[]).map((x) => x.day);
+  const moving = movingConfig(tenant.settings);
+  let moveFullDays: string[] = [];
+  if (tenant.modules.moving) {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const until = new Date(); until.setDate(until.getDate() + 180);
+    const { data: loadData } = await sb.rpc('move_day_load', { p_slug: slug, p_from: todayStr, p_to: until.toISOString().slice(0, 10) });
+    const load = loadData as { capacity: number; days: { day: string; jobs: number }[] } | null;
+    if (load) moveFullDays = load.days.filter((d) => d.jobs >= load.capacity).map((d) => d.day);
+  }
   const categories = (cats.data ?? []) as Category[];
   const allItems = (items.data ?? []) as Item[];
   const hourRows = (hours.data ?? []) as HourRow[];
@@ -139,6 +150,13 @@ export default async function Store({ params, searchParams }: { params: Promise<
         {active === 'loyalty' && (program
           ? <LoyaltyCard slug={slug} tenantName={tenant.name} country={tenant.country} currency={tenant.currency} program={{ mode: program.mode, goal: program.goal, reward: program.reward, points_per_unit: program.points_per_unit }} />
           : <div className="card muted">{t('empty')}</div>)}
+
+        {active === 'moving' && (
+          <MoveRequestForm
+            tenant={{ slug, name: tenant.name, whatsapp: tenant.whatsapp, country: tenant.country, timezone: tenant.timezone }}
+            cfg={moving} fullDays={moveFullDays} today={new Date().toISOString().slice(0, 10)}
+          />
+        )}
 
         {tabs.length === 0 && <div className="card muted">{td('noBusiness')}</div>}
 

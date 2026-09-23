@@ -104,4 +104,19 @@ for (const l of ['pt-PT', 'pt-BR', 'en', 'es']) {
   for (const k of ['name', 'whatsapp', 'country', 'timezone', 'locale', 'fee', 'min', 'eta', 'no_fulfillment', 'no_payment', 'no_payment_for_delivery', 'hours', 'forbidden', 'generic']) assert.ok(m.settings.errors[k], `${l}: settings.errors.${k}`);
   assert.ok(m.dashboard.editSettings, `${l}: dashboard.editSettings`);
 }
+// mudanças: todos os erros, estados e ações dinâmicas têm tradução nos 4 idiomas
+const MOVE_ERRORS = ['name','phone','email','volume','origin','destination','origin_postal','destination_postal','origin_floor','destination_floor','date','day_full','consent','notes','tenant_not_found','module_disabled','invalid_name','invalid_phone','invalid_email','invalid_volume','invalid_address','invalid_extras','invalid_date','invalid_floor','invalid_data','consent_required','too_many_requests','not_found','cannot_respond','generic'];
+const MOVE_STATUSES = ['new','visit','quoted','accepted','confirmed','done','lost'];
+const MOVE_ACTIONS = ['visit','quoted','accepted','confirmed','done','lost','new'];
+for (const l of ['pt-PT', 'pt-BR', 'en', 'es']) {
+  const m = load(l);
+  for (const k of MOVE_ERRORS) assert.ok(m.move.errors[k], `${l}: move.errors.${k}`);
+  for (const k of MOVE_STATUSES) assert.ok(m.move.status[k], `${l}: move.status.${k}`);
+  for (const k of ['home','office','furniture']) assert.ok(m.move.type[k], `${l}: move.type.${k}`);
+  for (const k of ['new','visit','quoted','accepted','confirmed']) assert.ok(m.moveOrders.columns[k], `${l}: moveOrders.columns.${k}`);
+  for (const k of MOVE_ACTIONS) assert.ok(m.moveOrders.actions[k], `${l}: moveOrders.actions.${k}`);
+  for (const k of ['visit','quoted','confirmed','done','lost']) assert.ok(m.moveOrders.wa[k], `${l}: moveOrders.wa.${k}`);
+  for (const k of ['forbidden','quote_required','date_required','status','amount','generic']) assert.ok(m.moveOrders.errors[k], `${l}: moveOrders.errors.${k}`);
+  for (const k of ['rate','min','perFloor','capacity','typology','extra','privacy']) assert.ok(m.settings.moving.errors[k], `${l}: settings.moving.errors.${k}`);
+}
 console.log('✔ lógica da aplicação OK (slug, países, horário, erros, traduções)');
