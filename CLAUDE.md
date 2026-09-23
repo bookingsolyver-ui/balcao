@@ -15,7 +15,9 @@ O produto vende-se por **nicho** (pacotes em `niche_presets`), mas é UM só có
 - **Definições entregues** (ver `docs/SETTINGS.md`): país/fuso/idioma, módulos, taxa, mínimo, pagamentos (novos `express` e `store`), horário. Migração `20260920000004_payment_methods.sql`. Pagamentos só são registados, não cobrados.
 - **Agenda, fidelidade e loja fechada entregues** (ver `docs/AGENDA-FIDELIDADE.md`). Migração `20260920000005_only_when_open.sql`. Módulos completos: cardápio, catálogo, agenda, fidelidade, definições.
 - **Nicho "Mudanças e transportes" entregue** (ver `docs/MUDANCAS.md`): pedido de orçamento (m³, moradas, extras, observações, consentimento), painel com fila por estado, orçamento visível ao cliente só depois de enviado, aceitar/recusar, exportação CSV/Excel. Migração `20260921000006_moving.sql`.
-- Próximo (produção): ambiente de produção separado, domínio + Vercel, verificação por código no cartão de fidelidade, Turnstile, cobrança dos negócios (Stripe/Paddle), envio automático por WhatsApp Business API, textos legais (privacidade, termos).
+- **Faturação às empresas entregue** (ver `docs/FATURACAO.md`): 14 dias de avaliação automáticos, cartão de estado no painel, checkout do Paddle, recetor de eventos testado com servidor real (assinatura verificada). Migração `20260924000007_billing.sql`. Ainda não bloqueia acesso em atraso — decisão pendente. Precisa das variáveis do Paddle + SUPABASE_SERVICE_ROLE_KEY para ligar (ver `.env.example`).
+- Também entregue: nova identidade visual ("balcão de bairro": papel, tinta de carimbo, verde de toldo — Fraunces + Karla em vez de fontes de sistema).
+- Próximo (produção): ambiente de produção separado, domínio + Vercel, verificação por código no cartão de fidelidade, Turnstile, envio automático por WhatsApp Business API, textos legais (privacidade, termos), decidir se/como bloquear negócios com pagamento em atraso.
 
 ## Stack a usar (a mesma do projeto vexto-app do dono)
 Next.js 16 (App Router; o antigo `middleware` chama-se `proxy`) + TypeScript + Tailwind 4 + `@supabase/ssr` + `next-intl` (pt-PT, pt-BR, en, es). Deploy na Vercel.

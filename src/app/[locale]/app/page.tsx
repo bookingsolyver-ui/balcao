@@ -4,6 +4,8 @@ import { routing, type Locale } from '@/i18n/routing';
 import { SiteHeader } from '@/components/SiteHeader';
 import { Icon } from '@/components/Icon';
 import { ConfigMissing } from '@/components/ConfigMissing';
+import { BillingCard } from '@/components/BillingCard';
+import type { BillingRow } from '@/lib/billing';
 import { getSession } from '@/lib/session';
 import { countryName, currencyName } from '@/lib/countries';
 import { fmtPhoneIntl } from '@/lib/phone';
@@ -25,6 +27,7 @@ export default async function Dashboard({ params, searchParams }: { params: Prom
 
   const current = memberships.find((m) => m.tenants.slug === wanted) ?? memberships[0];
   const tenant = current.tenants;
+  const { data: billingRow } = await s.supabase!.from('tenant_billing').select('*').eq('tenant_id', tenant.id).maybeSingle();
   const ordersOn = tenant.modules.menu || tenant.modules.catalog;
   const newOrders = ordersOn
     ? (await s.supabase!.from('orders').select('id', { count: 'exact', head: true }).eq('tenant_id', tenant.id).eq('status', 'new')).count ?? 0
@@ -44,6 +47,8 @@ export default async function Dashboard({ params, searchParams }: { params: Prom
             {memberships.map((m) => <Link key={m.tenants.id} href={`/app?t=${m.tenants.slug}`} aria-current={m.tenants.id === tenant.id ? 'page' : undefined}>{m.tenants.name}</Link>)}
           </div>
         )}
+
+        <BillingCard billing={billingRow as BillingRow | null} tenantId={tenant.id} />
 
         <div className="grid c2" style={{ marginTop: 26 }}>
           <div className="card">

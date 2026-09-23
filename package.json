@@ -6,18 +6,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "npm run test:lib && npm run test:db && npm run test:onboarding && npm run test:items && npm run test:orders && npm run test:settings && npm run test:loyalty && npm run test:booking && npm run test:moving && npm run test:ui",
+    "test": "npm run test:lib && npm run test:db && npm run test:onboarding && npm run test:items && npm run test:orders && npm run test:settings && npm run test:loyalty && npm run test:booking && npm run test:moving && npm run test:billing && npm run test:ui",
     "test:db": "node tests/db.test.mjs",
     "test:lib": "tsx tests/lib.test.ts && tsx tests/app.test.ts",
     "typecheck": "tsc",
     "test:onboarding": "tsx tests/onboarding.test.ts",
     "test:items": "tsx tests/items.test.ts",
-    "test:ui": "tsx tests/manager.test.tsx && tsx tests/orders-ui.test.tsx && tsx tests/settings-ui.test.tsx && tsx tests/loyalty-ui.test.tsx && tsx tests/agenda-ui.test.tsx",
+    "test:ui": "tsx tests/manager.test.tsx && tsx tests/orders-ui.test.tsx && tsx tests/settings-ui.test.tsx && tsx tests/loyalty-ui.test.tsx && tsx tests/agenda-ui.test.tsx && tsx tests/billing-ui.test.tsx",
     "test:orders": "tsx tests/order.test.ts",
     "test:settings": "tsx tests/settings.test.ts",
     "test:loyalty": "tsx tests/loyalty.test.ts",
     "test:booking": "tsx tests/booking.test.ts",
-    "test:moving": "tsx tests/moving.test.ts && tsx tests/moving-ui.test.tsx"
+    "test:moving": "tsx tests/moving.test.ts && tsx tests/moving-ui.test.tsx",
+    "test:billing": "tsx tests/billing.test.ts"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",

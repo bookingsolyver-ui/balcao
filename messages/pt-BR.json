@@ -911,5 +911,25 @@
       "amount": "Valor inválido.",
       "generic": "Não foi possível guardar. Tente novamente."
     }
+  },
+  "billing": {
+    "title": "Assinatura",
+    "status": {
+      "trialing": "Em avaliação",
+      "active": "Ativa",
+      "past_due": "Pagamento em atraso",
+      "paused": "Em pausa",
+      "canceled": "Cancelada",
+      "expired": "Avaliação terminada"
+    },
+    "trialLeft": "{n, plural, =0 {Termina hoje} one {Falta # dia de avaliação} other {Faltam # dias de avaliação}}.",
+    "trialOver": "O período de avaliação terminou. Subscreva para continuar a usar o Balcão.",
+    "renewsOn": "Renova a {date}.",
+    "pastDue": "O último pagamento falhou. Atualize os dados de pagamento para não perder o acesso.",
+    "canceledNote": "A subscrição foi cancelada.",
+    "pausedNote": "A subscrição está em pausa.",
+    "subscribe": "Subscrever",
+    "loading": "Carregando…",
+    "notConfigured": "Pagamentos ainda não configurados para este Balcão."
   }
 }

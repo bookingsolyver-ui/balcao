@@ -911,5 +911,25 @@
       "amount": "Invalid amount.",
       "generic": "Could not save. Please try again."
     }
+  },
+  "billing": {
+    "title": "Subscription",
+    "status": {
+      "trialing": "Trial",
+      "active": "Active",
+      "past_due": "Payment past due",
+      "paused": "Paused",
+      "canceled": "Canceled",
+      "expired": "Trial ended"
+    },
+    "trialLeft": "{n, plural, =0 {Ends today} one {# day left in trial} other {# days left in trial}}.",
+    "trialOver": "Your trial has ended. Subscribe to keep using Balcão.",
+    "renewsOn": "Renews on {date}.",
+    "pastDue": "Your last payment failed. Update your payment details to avoid losing access.",
+    "canceledNote": "The subscription has been canceled.",
+    "pausedNote": "The subscription is paused.",
+    "subscribe": "Subscribe",
+    "loading": "Loading…",
+    "notConfigured": "Payments aren't set up for this Balcão yet."
   }
 }

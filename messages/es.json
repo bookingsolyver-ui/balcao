@@ -911,5 +911,25 @@
       "amount": "Importe no válido.",
       "generic": "No se pudo guardar. Inténtalo de nuevo."
     }
+  },
+  "billing": {
+    "title": "Suscripción",
+    "status": {
+      "trialing": "En prueba",
+      "active": "Activa",
+      "past_due": "Pago pendiente",
+      "paused": "En pausa",
+      "canceled": "Cancelada",
+      "expired": "Prueba finalizada"
+    },
+    "trialLeft": "{n, plural, =0 {Termina hoy} one {Queda # día de prueba} other {Quedan # días de prueba}}.",
+    "trialOver": "El período de prueba terminó. Suscríbete para seguir usando Balcão.",
+    "renewsOn": "Se renueva el {date}.",
+    "pastDue": "El último pago falló. Actualiza los datos de pago para no perder el acceso.",
+    "canceledNote": "La suscripción fue cancelada.",
+    "pausedNote": "La suscripción está en pausa.",
+    "subscribe": "Suscribirse",
+    "loading": "Cargando…",
+    "notConfigured": "Los pagos aún no están configurados para este Balcão."
   }
 }
