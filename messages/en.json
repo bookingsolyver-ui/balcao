@@ -156,7 +156,9 @@
     "orders": "Orders",
     "ordersNew": "{n, plural, one {# new order} other {# new orders}}",
     "openQueue": "Open order queue",
-    "editSettings": "Edit settings"
+    "editSettings": "Edit settings",
+    "lockedTitle": "Subscribe to unlock your Balcão",
+    "lockedBody": "The store, settings and modules become available as soon as the subscription is active."
   },
   "store": {
     "open": "Open",
@@ -935,7 +937,8 @@
       "past_due": "Payment past due",
       "paused": "Paused",
       "canceled": "Canceled",
-      "expired": "Trial ended"
+      "expired": "Trial ended",
+      "unpaid": "Unpaid"
     },
     "trialLeft": "{n, plural, =0 {Ends today} one {# day left in trial} other {# days left in trial}}.",
     "trialOver": "Your trial has ended. Subscribe to keep using Balcão.",
@@ -945,7 +948,8 @@
     "pausedNote": "The subscription is paused.",
     "subscribe": "Subscribe",
     "loading": "Loading…",
-    "notConfigured": "Payments aren't set up for this Balcão yet."
+    "notConfigured": "Payments aren't set up for this Balcão yet.",
+    "unpaidNote": "This Balcão doesn't have an active subscription yet. Subscribe to start using it."
   },
   "account": {
     "title": "My account",

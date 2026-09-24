@@ -51,4 +51,11 @@ h = wrap('en', <BillingCard billing={row({ trial_ends_at: inDays(3) })} tenantId
 h = wrap('es', <BillingCard billing={row({ status: 'past_due' })} tenantId="t1" />); assert.match(text(h), /Pago pendiente/);
 h = wrap('pt-BR', <BillingCard billing={row({ status: 'active', current_period_end: '2026-11-24T12:00:00Z' })} tenantId="t1" />); assert.match(text(h), /Ativa/);
 console.log('✔ faturação em inglês, espanhol e português do Brasil');
+
+// ---- estado "unpaid" (a partir do 11º negócio, sem avaliação) ----
+h = wrap('pt-PT', <BillingCard billing={row({ status: 'unpaid', trial_ends_at: null })} tenantId="t1" />); tx = text(h);
+assert.match(tx, /Por pagar/); assert.match(tx, /Este Balcão ainda não tem uma subscrição ativa\. Assine para começar a usar\./);
+assert.match(h, /class="badge bad"/, 'estado "por pagar" mostra a etiqueta vermelha'); assert.doesNotMatch(tx, /Faltam|dias de avaliação/, 'sem avaliação: não mostra contagem nenhuma');
+h = wrap('en', <BillingCard billing={row({ status: 'unpaid', trial_ends_at: null })} tenantId="t1" />); assert.match(text(h), /Unpaid/); assert.match(text(h), /Subscribe to start using it/);
+console.log('✔ estado "por pagar": sem contagem de avaliação, etiqueta vermelha, aviso claro');
 process.exit(0);

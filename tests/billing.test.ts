@@ -75,4 +75,29 @@ console.log('✔ o servidor (service_role) consegue mesmo atualizar o estado dep
 const tid2 = (await asUser(db, staff, () => db.query<{ id: string }>(`select create_tenant('mudancas-t2','Outra Empresa','moving','EUR',2,'pt-PT','Europe/Lisbon','PT','351922222222') id`))).rows[0].id;
 assert.equal((await asUser(db, owner, () => db.query('select status from tenant_billing where tenant_id=$1', [tid2]))).rows.length, 0, 'o dono do 1º negócio não vê a faturação do 2º');
 console.log('✔ isolamento entre negócios diferentes');
+
+// ---- só os primeiros 10 negócios (de sempre) ganham avaliação; o resto nasce "unpaid" ----
+// base de dados própria e limpa, para a contagem começar mesmo do zero.
+// Espalhado por vários donos (há um limite de 5 negócios por utilizador — regra à parte desta).
+const db2 = await makeDb();
+const owners = [randomUUID(), randomUUID(), randomUUID()];
+for (const o of owners) await db2.query('insert into auth.users(id) values ($1)', [o]);
+const ownerOf = (n: number) => owners[Math.floor((n - 1) / 5)];
+const mk = (n: number) => asUser(db2, ownerOf(n), () => db2.query<{ id: string }>(`select create_tenant($1,$2,'moving','EUR',2,'pt-PT','Europe/Lisbon','PT','351900000000') id`, [`neg-${n}`, `Negócio ${n}`]));
+for (let i = 1; i <= 10; i++) {
+  const tidN = (await mk(i)).rows[0].id;
+  const b = (await asUser(db2, ownerOf(i), () => db2.query<{ status: string; trial_ends_at: string | null }>('select status, trial_ends_at from tenant_billing where tenant_id=$1', [tidN]))).rows[0];
+  assert.equal(b.status, 'trialing', `negócio nº${i}: deveria estar em avaliação`);
+  assert.ok(b.trial_ends_at, `negócio nº${i}: deveria ter data de fim de avaliação`);
+}
+console.log('✔ os primeiros 10 negócios nascem todos em avaliação, com 3 dias');
+
+const tid11 = (await mk(11)).rows[0].id;
+const b11 = (await asUser(db2, ownerOf(11), () => db2.query<{ status: string; trial_ends_at: string | null }>('select status, trial_ends_at from tenant_billing where tenant_id=$1', [tid11]))).rows[0];
+assert.equal(b11.status, 'unpaid', 'o 11º negócio não tem direito a avaliação');
+assert.equal(b11.trial_ends_at, null, 'sem avaliação, sem data de fim');
+const tid12 = (await mk(12)).rows[0].id;
+const b12 = (await asUser(db2, ownerOf(12), () => db2.query<{ status: string }>('select status from tenant_billing where tenant_id=$1', [tid12]))).rows[0];
+assert.equal(b12.status, 'unpaid', 'e todos os seguintes também');
+console.log('✔ a partir do 11º negócio, nasce "unpaid" — sem avaliação, tem de subscrever primeiro');
 process.exit(0);

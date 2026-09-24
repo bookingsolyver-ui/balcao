@@ -3,7 +3,7 @@
 Isto é **tu a cobrar às empresas** (mensalidade da plataforma) — diferente do que a empresa de mudanças cobra aos clientes dela, que já existia.
 
 ## O que foi construído
-- Cada negócio nasce com **3 dias de avaliação**, automaticamente (nenhuma ação tua).
+- **Só os primeiros 10 negócios** (de sempre, por ordem de criação) nascem com **3 dias de avaliação**, automaticamente — servem para recolher feedback cedo. A partir do 11º, o negócio nasce como **"unpaid"**: sem avaliação, e **o painel fica bloqueado** (só vê o cartão de assinatura e o botão de subscrever) até haver um pagamento confirmado pelo Paddle.
 - Um cartão no painel mostra o estado: em avaliação (com contagem), ativa, pagamento em atraso, em pausa, cancelada.
 - Um botão **Subscrever** abre o checkout do Paddle (só aparece depois de ligares o Paddle — ver abaixo).
 - Um recetor de eventos (`/api/webhooks/paddle`) que o Paddle chama sempre que algo muda (pagamento feito, falhou, cancelado) e atualiza o estado sozinho — **verifiquei a assinatura de segurança com um servidor real**: aceita pedidos assinados corretamente, recusa corpo alterado e pedidos sem assinatura.
@@ -24,5 +24,7 @@ Isto é **tu a cobrar às empresas** (mensalidade da plataforma) — diferente d
 7. O botão "Subscrever" aparece no painel. Testa com um [cartão de teste do Paddle](https://developer.paddle.com/concepts/payment-methods/test-payment-methods).
 
 ## Verificado / não verificado
-**Verificado**: toda a lógica (estados, contagem da avaliação, mapeamento de eventos), a segurança da base de dados (153 verificações, incluindo Postgres real: só o dono vê o seu próprio estado, ninguém escreve exceto o servidor), e **o recetor de eventos com um Next.js real a correr** — testei com pedidos assinados corretamente (aceite), corpo alterado (recusado), sem assinatura (recusado) e eventos irrelevantes (ignorados sem erro).
+**Verificado**: toda a lógica (estados, contagem da avaliação, mapeamento de eventos), a segurança da base de dados (172 verificações, incluindo Postgres real: só o dono vê o seu próprio estado, ninguém escreve exceto o servidor), e **o recetor de eventos com um Next.js real a correr** — testei com pedidos assinados corretamente (aceite), corpo alterado (recusado), sem assinatura (recusado) e eventos irrelevantes (ignorados sem erro).
+
+**A regra "só os primeiros 10 ganham avaliação"**: verificada contra Postgres real — criei 12 negócios (espalhados por vários donos, por causa do limite de 5 negócios por utilizador já existente) e confirmei que os primeiros 10 nascem em avaliação e o 11º em diante nasce "unpaid", sem data de avaliação. O ecrã do cartão de subscrição no estado "unpaid" também está testado. **O bloqueio do painel em si** (a loja/definições/módulos ficarem escondidos) só se confirma com uma sessão de login real — não há como simular isso sem um utilizador autenticado a sério.
 **Só se confirma no teu Paddle real**: o checkout em si (o ecrã onde o cartão é introduzido é do Paddle, não posso testá-lo aqui) e o envio real de um evento a partir de um pagamento de sandbox verdadeiro.

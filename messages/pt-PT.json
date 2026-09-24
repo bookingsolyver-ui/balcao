@@ -156,7 +156,9 @@
     "orders": "Pedidos",
     "ordersNew": "{n, plural, one {# pedido novo} other {# pedidos novos}}",
     "openQueue": "Abrir fila de pedidos",
-    "editSettings": "Editar definições"
+    "editSettings": "Editar definições",
+    "lockedTitle": "Assine para desbloquear o seu Balcão",
+    "lockedBody": "A loja, as definições e os módulos ficam disponíveis assim que a subscrição estiver ativa."
   },
   "store": {
     "open": "Aberto",
@@ -935,7 +937,8 @@
       "past_due": "Pagamento em atraso",
       "paused": "Em pausa",
       "canceled": "Cancelada",
-      "expired": "Avaliação terminada"
+      "expired": "Avaliação terminada",
+      "unpaid": "Por pagar"
     },
     "trialLeft": "{n, plural, =0 {Termina hoje} one {Falta # dia de avaliação} other {Faltam # dias de avaliação}}.",
     "trialOver": "O período de avaliação terminou. Subscreva para continuar a usar o Balcão.",
@@ -945,7 +948,8 @@
     "pausedNote": "A subscrição está em pausa.",
     "subscribe": "Subscrever",
     "loading": "A carregar…",
-    "notConfigured": "Pagamentos ainda não configurados para este Balcão."
+    "notConfigured": "Pagamentos ainda não configurados para este Balcão.",
+    "unpaidNote": "Este Balcão ainda não tem uma subscrição ativa. Assine para começar a usar."
   },
   "account": {
     "title": "A minha conta",

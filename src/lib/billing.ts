@@ -1,10 +1,10 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 
 /* ---------- estado da subscrição ---------- */
-export type BillingStatus = 'trialing' | 'active' | 'past_due' | 'paused' | 'canceled';
+export type BillingStatus = 'trialing' | 'active' | 'past_due' | 'paused' | 'canceled' | 'unpaid';
 export interface BillingRow { tenant_id: string; status: BillingStatus; plan: string; paddle_customer_id: string | null; paddle_subscription_id: string | null; trial_ends_at: string | null; current_period_end: string | null }
 
-/** Estados em que o negócio deve continuar a funcionar normalmente. */
+/** Estados em que o negócio deve continuar a funcionar normalmente. "unpaid" nunca teve avaliação: tem de subscrever primeiro. */
 export const isBillingOk = (s: BillingStatus): boolean => s === 'trialing' || s === 'active' || s === 'past_due';
 /** true só quando o período de avaliação já passou e nunca houve pagamento. */
 export const trialExpired = (b: Pick<BillingRow, 'status' | 'trial_ends_at'>, now: Date = new Date()): boolean =>

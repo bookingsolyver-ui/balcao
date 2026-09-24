@@ -45,7 +45,7 @@ export function BillingCard({ billing, tenantId }: Props) {
     <div className="card" style={{ marginBottom: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
         <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-.025em' }}>{t('title')}</h2>
-        <span className={`badge ${ok && status !== 'trialing' ? 'ok' : expired || status === 'canceled' || status === 'past_due' ? 'bad' : ''}`}>{tt(`status.${expired ? 'expired' : status}`)}</span>
+        <span className={`badge ${ok && status !== 'trialing' ? 'ok' : expired || status === 'canceled' || status === 'past_due' || status === 'unpaid' ? 'bad' : ''}`}>{tt(`status.${expired ? 'expired' : status}`)}</span>
       </div>
 
       {status === 'trialing' && !expired && <p className="muted" style={{ margin: '8px 0 0' }}>{tt('trialLeft', { n: left ?? 0 })}</p>}
@@ -54,6 +54,7 @@ export function BillingCard({ billing, tenantId }: Props) {
       {status === 'past_due' && <p style={{ margin: '8px 0 0', color: 'var(--bad)' }}>{t('pastDue')}</p>}
       {status === 'canceled' && <p className="muted" style={{ margin: '8px 0 0' }}>{t('canceledNote')}</p>}
       {status === 'paused' && <p className="muted" style={{ margin: '8px 0 0' }}>{t('pausedNote')}</p>}
+      {status === 'unpaid' && <p style={{ margin: '8px 0 0', color: 'var(--bad)' }}>{t('unpaidNote')}</p>}
 
       {status !== 'active' && (
         paddleReady() ? (

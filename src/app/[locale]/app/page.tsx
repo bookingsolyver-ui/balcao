@@ -50,6 +50,13 @@ export default async function Dashboard({ params, searchParams }: { params: Prom
 
         <BillingCard billing={billingRow as BillingRow | null} tenantId={tenant.id} />
 
+        {(billingRow as BillingRow | null)?.status === 'unpaid' ? (
+          <div className="card" style={{ textAlign: 'center', padding: 'clamp(32px, 6vw, 56px) 24px' }}>
+            <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-.025em' }}>{t('lockedTitle')}</h2>
+            <p className="muted" style={{ margin: '10px auto 0', maxWidth: '42ch' }}>{t('lockedBody')}</p>
+          </div>
+        ) : (
+        <>
         <div className="grid c2" style={{ marginTop: 26 }}>
           <div className="card">
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
@@ -112,6 +119,8 @@ export default async function Dashboard({ params, searchParams }: { params: Prom
         </div>
         <p className="muted small" style={{ marginTop: 28 }}>{t('phase')}</p>
         <p style={{ marginTop: 14 }}><Link className="link" href="/app/onboarding">{t('another')}</Link></p>
+        </>
+        )}
       </main>
     </>
   );
