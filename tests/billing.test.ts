@@ -53,8 +53,8 @@ await db.query(`insert into tenant_members(tenant_id,user_id,role) values ($1,$2
 const bill = (await asUser(db, owner, () => db.query<{ status: string; trial_ends_at: string; plan: string }>('select status, trial_ends_at, plan from tenant_billing where tenant_id=$1', [tid]))).rows[0];
 assert.equal(bill.status, 'trialing'); assert.equal(bill.plan, 'standard');
 const trialDays = Math.round((new Date(bill.trial_ends_at).getTime() - Date.now()) / 86400000);
-assert.ok(trialDays >= 13 && trialDays <= 14, `avaliação de ~14 dias (deu ${trialDays})`);
-console.log('✔ negócio novo nasce automaticamente com 14 dias de avaliação');
+assert.ok(trialDays >= 2 && trialDays <= 3, `avaliação de ~3 dias (deu ${trialDays})`);
+console.log('✔ negócio novo nasce automaticamente com 3 dias de avaliação');
 
 const err = (fn: () => Promise<unknown>) => fn().then(() => null, (e) => (e as Error).message.includes('permission denied') ? 'forbidden' : (e as Error).message);
 assert.equal((await asUser(db, staff, () => db.query('select status from tenant_billing where tenant_id=$1', [tid]))).rows.length, 1, 'a equipa também vê o estado do seu próprio negócio');

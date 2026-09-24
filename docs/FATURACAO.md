@@ -3,7 +3,7 @@
 Isto é **tu a cobrar às empresas** (mensalidade da plataforma) — diferente do que a empresa de mudanças cobra aos clientes dela, que já existia.
 
 ## O que foi construído
-- Cada negócio nasce com **14 dias de avaliação**, automaticamente (nenhuma ação tua).
+- Cada negócio nasce com **3 dias de avaliação**, automaticamente (nenhuma ação tua).
 - Um cartão no painel mostra o estado: em avaliação (com contagem), ativa, pagamento em atraso, em pausa, cancelada.
 - Um botão **Subscrever** abre o checkout do Paddle (só aparece depois de ligares o Paddle — ver abaixo).
 - Um recetor de eventos (`/api/webhooks/paddle`) que o Paddle chama sempre que algo muda (pagamento feito, falhou, cancelado) e atualiza o estado sozinho — **verifiquei a assinatura de segurança com um servidor real**: aceita pedidos assinados corretamente, recusa corpo alterado e pedidos sem assinatura.
