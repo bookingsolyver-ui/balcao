@@ -2,6 +2,7 @@ import { toMinor } from './money';
 import { minorToInput } from './items';
 import { COUNTRIES } from './countries';
 import { toE164Digits } from './phone';
+import { formatIban, isValidIban, normalizeIban } from './iban';
 import { FULFILLMENTS, PAY_METHODS, type Fulfillment, type OrderConfig, type OrderModule } from './order';
 import { paymentsFor } from './payments';
 
@@ -39,6 +40,37 @@ export function mergeSettings(existing: Record<string, unknown> | null | undefin
   const base = existing ?? {};
   return { ...base, [mod]: { ...((base[mod] as Record<string, unknown>) ?? {}), ...value } };
 }
+
+/* ---------- dados para pagamento (Multicaixa Express, IBAN) — um só por negócio, partilhado por todos os módulos ---------- */
+export interface PaymentDetailsValue { express_number: string | null; express_holder: string | null; iban: string | null; iban_holder: string | null }
+export interface PaymentDetailsForm { expressNumber: string; expressHolder: string; iban: string; ibanHolder: string }
+export type PaymentDetailsError = 'express_number' | 'iban';
+const EMPTY_PAYMENT_DETAILS: PaymentDetailsValue = { express_number: null, express_holder: null, iban: null, iban_holder: null };
+
+export function paymentDetails(settings: Record<string, unknown> | null | undefined): PaymentDetailsValue {
+  const p = (settings?.payment_details ?? {}) as Partial<PaymentDetailsValue>;
+  return { express_number: p.express_number ?? null, express_holder: p.express_holder ?? null, iban: p.iban ?? null, iban_holder: p.iban_holder ?? null };
+}
+export function toPaymentDetailsForm(v: PaymentDetailsValue): PaymentDetailsForm {
+  return { expressNumber: v.express_number ? `+${v.express_number}` : '', expressHolder: v.express_holder ?? '', iban: v.iban ? formatIban(v.iban) : '', ibanHolder: v.iban_holder ?? '' };
+}
+/** Todos os campos são opcionais — um negócio pode não usar Express nem transferência. */
+export function buildPaymentDetails(f: PaymentDetailsForm, country: string): { ok: true; value: PaymentDetailsValue } | { ok: false; error: PaymentDetailsError } {
+  let express_number: string | null = null;
+  if (f.expressNumber.trim() !== '') {
+    express_number = toE164Digits(f.expressNumber, country);
+    if (!express_number) return { ok: false, error: 'express_number' };
+  }
+  let iban: string | null = null;
+  if (f.iban.trim() !== '') {
+    const norm = normalizeIban(f.iban);
+    if (!isValidIban(norm)) return { ok: false, error: 'iban' };
+    iban = norm;
+  }
+  return { ok: true, value: { express_number, express_holder: f.expressHolder.trim().slice(0, 80) || null, iban, iban_holder: f.ibanHolder.trim().slice(0, 80) || null } };
+}
+export const mergePaymentDetails = (existing: Record<string, unknown> | null | undefined, value: PaymentDetailsValue): Record<string, unknown> =>
+  ({ ...(existing ?? {}), payment_details: value.express_number || value.iban ? value : EMPTY_PAYMENT_DETAILS });
 
 /* ---------- horário ---------- */
 export interface HoursRow { weekday: number; is_open: boolean; opens: string; closes: string }

@@ -101,4 +101,47 @@ console.log('✔ definições: módulo de mudanças (capacidade, preços indicat
 h = wrap('pt-PT', <SettingsForm {...props} tenant={{ ...tenant, modules: { ...tenant.modules, agenda: true } }} canEdit />);
 assert.doesNotMatch(text(h), /Ainda sem gestão no painel/);
 console.log('✔ definições: sem aviso desatualizado para módulos que já têm gestão própria');
+
+// ---- definições: dados para pagamento (Express, IBAN) ----
+h = wrap('pt-PT', <SettingsForm {...props} canEdit />); tx = text(h);
+assert.match(tx, /Dados para pagamento/); assert.match(tx, /Número Multicaixa Express/); assert.match(tx, /IBAN/);
+assert.match(h, /id="pd-express"[^>]*value=""/, 'sem dados guardados: campo vazio');
+h = wrap('pt-PT', <SettingsForm {...props} tenant={{ ...tenant, settings: { ...tenant.settings, payment_details: { express_number: '244923306869', express_holder: 'Perola&charme', iban: 'AO23004000000123456789012', iban_holder: 'Perola&charme Lda' } } }} canEdit />);
+assert.match(h, /id="pd-express"[^>]*value="\+244923306869"/); assert.match(h, /id="pd-express-holder"[^>]*value="Perola&amp;charme"/);
+assert.match(h, /id="pd-iban"[^>]*value="AO23 0040 0000 0123 4567 8901 2"/, 'IBAN mostrado formatado, de 4 em 4'); assert.match(h, /id="pd-iban-holder"[^>]*value="Perola&amp;charme Lda"/);
+h = wrap('pt-PT', <SettingsForm {...props} tenant={{ ...tenant, modules: { ...tenant.modules, catalog: false, menu: false } }} canEdit />);
+assert.doesNotMatch(text(h), /Dados para pagamento/, 'sem cardápio nem catálogo: não faz sentido pedir dados de pagamento');
+h = wrap('en', <SettingsForm {...props} canEdit />); assert.match(text(h), /Payment details/); assert.match(text(h), /Multicaixa Express number/);
+console.log('✔ definições: dados para pagamento (Express, IBAN) — vazio, preenchido, formatado, e só com pedidos ligados');
+
+// ---- confirmação do pedido: caixa de pagamento (Express / IBAN) ----
+const infoWith = (over: Partial<StoreInfo> = {}): StoreInfo => ({ ...info({ pickup: true, delivery: false, payments: ['express', 'transfer', 'store'] }),
+  paymentDetails: { express_number: '244923306869', express_holder: 'Perola&charme', iban: 'AO23004000000123456789012', iban_holder: 'Perola&charme Lda' }, ...over });
+const doneCard = (payment: string, i: StoreInfo) => wrap('pt-PT',
+  <CartProvider info={i} items={items} module="catalog" defaultOpen initialDone={{ number: 1042, total: 990000, token: 'tok-1', text: 'msg', payment }}><p>x</p></CartProvider>);
+
+h = doneCard('express', infoWith()); tx = text(h);
+assert.match(tx, /Pague por Multicaixa Express/); assert.match(tx, /\+244 923 306 869/); assert.match(tx, /Titular: Perola&amp;charme/); assert.match(tx, /Valor a pagar: 9\s?900,00\s?Kz/); assert.match(tx, /Depois de pagar, envie o comprovativo/);
+assert.doesNotMatch(tx, /Pague por transferência/, 'escolheu Express: não mostra a caixa do IBAN');
+console.log('✔ confirmação: caixa do Multicaixa Express com número, titular e valor');
+
+h = doneCard('transfer', infoWith()); tx = text(h);
+assert.match(tx, /Pague por transferência/); assert.match(tx, /AO23\s?0040\s?0000\s?0123\s?4567\s?8901\s?2/); assert.match(tx, /Titular: Perola&amp;charme Lda/);
+assert.doesNotMatch(tx, /Pague por Multicaixa Express/);
+console.log('✔ confirmação: caixa do IBAN, formatado de 4 em 4, com o titular certo');
+
+h = doneCard('store', infoWith()); tx = text(h);
+assert.doesNotMatch(tx, /Pague por Multicaixa Express|Pague por transferência/, 'pagar na loja: nenhuma caixa, mesmo com dados configurados');
+h = doneCard('express', infoWith({ paymentDetails: { express_number: null, express_holder: null, iban: null, iban_holder: null } })); tx = text(h);
+assert.doesNotMatch(tx, /Pague por Multicaixa Express/, 'negócio ainda não configurou nada: sem caixa, sem quebrar');
+h = doneCard('express', infoWith({ paymentDetails: undefined })); assert.doesNotMatch(text(h), /Pague por/, 'sem paymentDetails de todo: também não quebra');
+console.log('✔ confirmação: sem caixa quando não há dados, ou o pagamento é outro (não quebra)');
+
+h = doneCard('transfer', infoWith({ paymentDetails: { express_number: null, express_holder: null, iban: 'AO23004000000123456789012', iban_holder: null } })); tx = text(h);
+assert.match(tx, /Pague por transferência/); assert.doesNotMatch(tx, /Titular:/, 'sem titular guardado: não mostra a linha');
+console.log('✔ confirmação: titular é opcional, some sem quebrar o resto');
+
+h = wrap('en', <CartProvider info={infoWith()} items={items} module="catalog" defaultOpen initialDone={{ number: 1, total: 990000, token: 't', text: 'm', payment: 'express' }}><p>x</p></CartProvider>);
+assert.match(text(h), /Pay via Multicaixa Express/); assert.match(text(h), /Account holder: Perola&amp;charme/);
+console.log('✔ confirmação em inglês');
 process.exit(0);

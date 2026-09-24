@@ -5,15 +5,16 @@ import { useRefresh } from '@/lib/useRefresh';
 import { paymentsFor } from '@/lib/payments';
 import { createClient } from '@/lib/supabase/client';
 import { dbErrorKey } from '@/lib/errors';
-import { waLink } from '@/lib/phone';
+import { fmtPhoneIntl, waLink } from '@/lib/phone';
+import { formatIban } from '@/lib/iban';
 import { resolveLines } from '@/lib/cart';
 import { allowedFulfillments, buildOrderParams, orderMessage, totals, unitPrice, type Fulfillment, type OrderForm } from '@/lib/order';
 import { useCart } from './CartProvider';
 
-interface Done { number: number; total: number; token: string; text: string }
+export interface Done { number: number; total: number; token: string; text: string; payment: string }
 const CUSTOMER_KEY = 'balcao:customer';
 
-export function CheckoutDialog() {
+export function CheckoutDialog({ initialDone }: { /** Só para testes/SSR: mostra já o ecrã de confirmação. */ initialDone?: Done }) {
   const t = useTranslations('order');
   const locale = useLocale();
   const refresh = useRefresh();
@@ -28,7 +29,9 @@ export function CheckoutDialog() {
   const payment = payments.includes(form.payment) ? form.payment : (payments[0] ?? 'cash');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const [done, setDone] = useState<Done | null>(null);
+  const [done, setDone] = useState<Done | null>(initialDone ?? null);
+  const [copied, setCopied] = useState(false);
+  const copy = (v: string) => { navigator.clipboard?.writeText(v).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500); }); };
   const set_ = <K extends keyof OrderForm>(k: K, v: OrderForm[K]) => setForm((p) => ({ ...p, [k]: v }));
   const close = () => setOpen(false);
 
@@ -73,7 +76,7 @@ export function CheckoutDialog() {
         trackUrl: `${window.location.origin}/${locale}/s/${info.slug}/order/${r.public_token}`,
         labels: { order: t('wa.order'), customer: t('wa.customer'), type: t('wa.type'), subtotal: t('wa.subtotal'), delivery: t('wa.delivery'), total: t('wa.total'), payment: t('wa.payment'), changeFor: t('wa.changeFor'), note: t('wa.note'), track: t('wa.track'), table: t('wa.table') },
       });
-      setDone({ number: r.number, total: r.total_minor, token: r.public_token, text });
+      setDone({ number: r.number, total: r.total_minor, token: r.public_token, text, payment });
       clear();
     } catch { setErr('generic'); } finally { setBusy(false); }
   }
@@ -90,6 +93,24 @@ export function CheckoutDialog() {
             <h2 id="co-title" style={{ textAlign: 'center' }}>{t('doneTitle', { number: done.number })}</h2>
             <p className="muted" style={{ textAlign: 'center', margin: '8px 0 20px' }}>{t('doneText', { business: info.name })}</p>
             <p style={{ textAlign: 'center', fontSize: 22, fontWeight: 700, marginBottom: 20 }}>{money(done.total)}</p>
+            {done.payment === 'express' && info.paymentDetails?.express_number && (
+              <div className="pay-box">
+                <strong>{t('payExpress')}</strong>
+                <div className="pb-row"><span className="pb-num">{fmtPhoneIntl(info.paymentDetails.express_number)}</span><button type="button" className="copy" onClick={() => copy(info.paymentDetails!.express_number!)}>{copied ? '✓' : t('copy')}</button></div>
+                {info.paymentDetails.express_holder && <p className="muted small" style={{ marginTop: 6 }}>{t('payHolder')}: {info.paymentDetails.express_holder}</p>}
+                <p className="muted small" style={{ marginTop: 6 }}>{t('payAmount')}: <strong style={{ color: 'var(--fg)' }}>{money(done.total)}</strong></p>
+                <p className="muted small" style={{ marginTop: 10 }}>{t('payThenSend')}</p>
+              </div>
+            )}
+            {done.payment === 'transfer' && info.paymentDetails?.iban && (
+              <div className="pay-box">
+                <strong>{t('payTransfer')}</strong>
+                <div className="pb-row"><span className="pb-num">{formatIban(info.paymentDetails.iban)}</span><button type="button" className="copy" onClick={() => copy(info.paymentDetails!.iban!)}>{copied ? '✓' : t('copy')}</button></div>
+                {info.paymentDetails.iban_holder && <p className="muted small" style={{ marginTop: 6 }}>{t('payHolder')}: {info.paymentDetails.iban_holder}</p>}
+                <p className="muted small" style={{ marginTop: 6 }}>{t('payAmount')}: <strong style={{ color: 'var(--fg)' }}>{money(done.total)}</strong></p>
+                <p className="muted small" style={{ marginTop: 10 }}>{t('payThenSend')}</p>
+              </div>
+            )}
             <div className="form">
               {info.whatsapp
                 ? <a className="btn wa block" target="_blank" rel="noopener" href={waLink(info.whatsapp, done.text)}>{t('sendWhatsapp')}</a>

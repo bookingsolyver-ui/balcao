@@ -243,3 +243,9 @@ textarea.input { min-height: 76px; resize: vertical; }
 .mv-grid dd { margin: 0; font-weight: 500; }
 .quote-box { position: relative; border-radius: 12px; padding: 22px; color: #fff; background: var(--accent); }
 .quote-box .amt { font-size: 34px; font-weight: 700; letter-spacing: -.03em; margin: 6px 0; }
+
+/* ---- caixa de pagamento (Express / IBAN) na confirmação ---- */
+.pay-box { background: var(--bg2); border: 1px solid var(--line2); border-radius: 10px; padding: 16px; margin: 4px 0 18px; text-align: left; }
+.pay-box .pb-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 6px; }
+.pay-box .pb-num { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: .01em; word-break: break-all; }
+.pay-box .copy { border: 0; background: var(--bg3); border-radius: 6px; height: 30px; padding: 0 10px; font: 500 13px/1 inherit; color: var(--fg); cursor: pointer; flex: none; }

@@ -8,7 +8,7 @@
     "start": "next start",
     "test": "npm run test:lib && npm run test:db && npm run test:onboarding && npm run test:items && npm run test:orders && npm run test:settings && npm run test:loyalty && npm run test:booking && npm run test:moving && npm run test:billing && npm run test:ui",
     "test:db": "node tests/db.test.mjs",
-    "test:lib": "tsx tests/lib.test.ts && tsx tests/app.test.ts",
+    "test:lib": "tsx tests/lib.test.ts && tsx tests/app.test.ts && tsx tests/iban.test.ts",
     "typecheck": "tsc",
     "test:onboarding": "tsx tests/onboarding.test.ts",
     "test:items": "tsx tests/items.test.ts",

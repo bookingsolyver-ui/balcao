@@ -10,6 +10,7 @@ import { formatMoney, moneyLocale } from '@/lib/money';
 import { waLink } from '@/lib/phone';
 import { imageUrl } from '@/lib/storage';
 import { orderConfig } from '@/lib/order';
+import { paymentDetails } from '@/lib/settings';
 import { AddButton, CartProvider } from '@/components/store/CartProvider';
 import { LoyaltyCard } from '@/components/store/LoyaltyCard';
 import { BookingFlow } from '@/components/store/BookingFlow';
@@ -79,6 +80,7 @@ export default async function Store({ params, searchParams }: { params: Promise<
   const cartInfo = {
     slug, name: tenant.name, whatsapp: tenant.whatsapp, country: tenant.country, currency: tenant.currency, decimals: tenant.currency_decimals,
     moneyLocale: moneyLocale(locale, tenant.country), locale, openNow: st.open, statusText: statusText, configs: { menu: orderConfig(tenant.settings, 'menu'), catalog: orderConfig(tenant.settings, 'catalog') },
+    paymentDetails: paymentDetails(tenant.settings),
   };
   const money = (n: number) => formatMoney(n, tenant.currency, moneyLocale(locale, tenant.country), tenant.currency_decimals);
   const price = (i: Item) => (i.promo_minor != null && i.promo_minor < i.price_minor)

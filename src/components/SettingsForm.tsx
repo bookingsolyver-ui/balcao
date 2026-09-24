@@ -7,6 +7,7 @@ import { COUNTRIES, countryInfo } from '@/lib/countries';
 import { FULFILLMENTS, PAY_METHODS, orderConfig, type OrderModule } from '@/lib/order';
 import { suggestedPayments } from '@/lib/payments';
 import { buildBusinessPatch, buildOrderSettings, mergeSettings, toOrderSettingsForm, validateHours, type HoursRow, type OrderSettingsForm } from '@/lib/settings';
+import { buildPaymentDetails, mergePaymentDetails, paymentDetails, toPaymentDetailsForm, type PaymentDetailsForm } from '@/lib/settings';
 import { agendaConfig, buildAgendaSettings, mergeAgenda, toAgendaSettingsForm, type AgendaSettingsForm } from '@/lib/booking';
 import { buildMovingSettings, mergeMoving, movingConfig, toMovingSettingsForm, type MovingSettingsForm } from '@/lib/moving';
 import type { ModuleId } from '@/lib/types';
@@ -42,6 +43,7 @@ export function SettingsForm({ tenant, hours, canEdit, countries, timezones, cur
     catalog: toOrderSettingsForm(orderConfig(tenant.settings, 'catalog'), tenant.decimals),
   });
   const [ag, setAg] = useState<AgendaSettingsForm>(toAgendaSettingsForm(agendaConfig(tenant.settings)));
+  const [pd, setPd] = useState<PaymentDetailsForm>(toPaymentDetailsForm(paymentDetails(tenant.settings)));
   const [mv, setMv] = useState<MovingSettingsForm>(toMovingSettingsForm(movingConfig(tenant.settings), tenant.decimals));
   const [rows, setRows] = useState<HoursRow[]>(WEEK.map((w) => {
     const r = hours.find((h) => h.weekday === w);
@@ -81,6 +83,11 @@ export function SettingsForm({ tenant, hours, canEdit, countries, timezones, cur
       const mvr = buildMovingSettings(mv, { currency: tenant.currency, decimals: tenant.decimals });
       if (!mvr.ok) return fail(`moving.errors.${mvr.error}`);
       settings = mergeMoving(settings, mvr.value);
+    }
+    if (modules.menu || modules.catalog) {
+      const pdr = buildPaymentDetails(pd, biz.country);
+      if (!pdr.ok) return fail(`errors.${pdr.error}`);
+      settings = mergePaymentDetails(settings, pdr.value);
     }
     if (!validateHours(rows).ok) return fail('errors.hours');
     setBusy(true);
@@ -160,6 +167,24 @@ export function SettingsForm({ tenant, hours, canEdit, countries, timezones, cur
           </section>
         );
       })}
+
+      {(modules.menu || modules.catalog) && (
+        <section>
+          <h2 className="h2" style={{ fontSize: 24, marginBottom: 12 }}>{t('paymentDetails')}</h2>
+          <p className="muted small" style={{ margin: '-6px 0 12px' }}>{t('paymentDetailsHint')}</p>
+          <div className="card form">
+            <div className="frow">
+              <div className="field"><label htmlFor="pd-express">{t('expressNumber')}</label><input id="pd-express" className="input" type="tel" inputMode="tel" disabled={dis} value={pd.expressNumber} onChange={(e) => setPd({ ...pd, expressNumber: e.target.value })} /></div>
+              <div className="field"><label htmlFor="pd-express-holder">{t('expressHolder')}</label><input id="pd-express-holder" className="input" maxLength={80} disabled={dis} value={pd.expressHolder} onChange={(e) => setPd({ ...pd, expressHolder: e.target.value })} /></div>
+            </div>
+            <div className="hr" />
+            <div className="frow">
+              <div className="field"><label htmlFor="pd-iban">{t('iban')}</label><input id="pd-iban" className="input" disabled={dis} value={pd.iban} onChange={(e) => setPd({ ...pd, iban: e.target.value })} /></div>
+              <div className="field"><label htmlFor="pd-iban-holder">{t('ibanHolder')}</label><input id="pd-iban-holder" className="input" maxLength={80} disabled={dis} value={pd.ibanHolder} onChange={(e) => setPd({ ...pd, ibanHolder: e.target.value })} /></div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {modules.agenda && (
         <section>

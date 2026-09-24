@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { addLine, countItems, emptyCart, loadCart, qtyOf, resolveLines, saveCart, setQty, clearModule, type Cart } from '@/lib/cart';
 import { formatMoney } from '@/lib/money';
 import { unitPrice, type OrderConfig, type OrderModule } from '@/lib/order';
-import { CheckoutDialog } from './CheckoutDialog';
+import { CheckoutDialog, type Done } from './CheckoutDialog';
 
 export interface StoreItem { id: string; module: OrderModule; name: string; price_minor: number; promo_minor: number | null; stock: number | null; active: boolean; emoji: string | null }
 export interface StoreInfo {
@@ -12,6 +12,8 @@ export interface StoreInfo {
   moneyLocale: string; locale: string; configs: Record<OrderModule, OrderConfig>;
   /** Estado de abertura no momento em que a página foi gerada (o servidor volta a validar ao criar o pedido). */
   openNow?: boolean; statusText?: string;
+  /** Número Multicaixa Express e/ou IBAN, para mostrar ao cliente na confirmação — nenhum dos dois é obrigatório. */
+  paymentDetails?: { express_number: string | null; express_holder: string | null; iban: string | null; iban_holder: string | null };
 }
 interface Ctx {
   cart: Cart; module: OrderModule | null; info: StoreInfo; items: Map<string, StoreItem>;
@@ -25,10 +27,10 @@ export const useCart = (): Ctx => {
   return c;
 };
 
-export function CartProvider({ info, items, module, children, initialCart, defaultOpen = false }: {
+export function CartProvider({ info, items, module, children, initialCart, defaultOpen = false, initialDone }: {
   info: StoreInfo; items: StoreItem[]; module: OrderModule | null; children: React.ReactNode;
-  /** Só para testes/SSR: arranca com este carrinho e (opcionalmente) o checkout aberto. */
-  initialCart?: Cart; defaultOpen?: boolean;
+  /** Só para testes/SSR: arranca com este carrinho e (opcionalmente) o checkout aberto, já no ecrã de confirmação. */
+  initialCart?: Cart; defaultOpen?: boolean; initialDone?: Done;
 }) {
   const [cart, setCart] = useState<Cart>(initialCart ?? emptyCart);
   const [hydrated, setHydrated] = useState(false);
@@ -49,7 +51,7 @@ export function CartProvider({ info, items, module, children, initialCart, defau
     <CartCtx.Provider value={value}>
       {children}
       <CartBar />
-      {open && module && <CheckoutDialog />}
+      {open && module && <CheckoutDialog initialDone={initialDone} />}
     </CartCtx.Provider>
   );
 }

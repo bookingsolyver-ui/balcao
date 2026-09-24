@@ -343,7 +343,13 @@
       "generic": "Não foi possível enviar o pedido. Tente novamente.",
       "store_closed": "A loja está fechada neste momento e só aceita pedidos durante o horário de funcionamento."
     },
-    "closedNotice": "A loja está fechada e só aceita pedidos durante o horário de funcionamento. {status}"
+    "closedNotice": "A loja está fechada e só aceita pedidos durante o horário de funcionamento. {status}",
+    "payExpress": "Pague por Multicaixa Express",
+    "payTransfer": "Pague por transferência",
+    "payAmount": "Valor a pagar",
+    "payHolder": "Titular",
+    "payThenSend": "Depois de pagar, envie o comprovativo pelo WhatsApp, no botão abaixo.",
+    "copy": "Copiar"
   },
   "orders": {
     "title": "Pedidos",
@@ -443,7 +449,9 @@
       "no_payment_for_delivery": "A entrega precisa de um pagamento que não seja «Pagar na loja».",
       "hours": "Horário inválido: a hora de fecho tem de ser depois da de abertura.",
       "forbidden": "Não tem permissão para alterar as definições.",
-      "generic": "Não foi possível salvar. Tente novamente."
+      "generic": "Não foi possível salvar. Tente novamente.",
+      "express_number": "Número de Multicaixa Express inválido.",
+      "iban": "IBAN inválido — confira o número."
     },
     "onlyWhenOpen": "Só aceitar pedidos com a loja aberta",
     "onlyWhenOpenHint": "Fora do horário de funcionamento, o cliente não consegue fazer pedidos. Desligado, os pedidos ficam na fila até abrir.",
@@ -487,7 +495,13 @@
         "extra": "Verifique o nome e o preço de cada serviço extra.",
         "privacy": "O link da política de privacidade deve começar por http:// ou https://."
       }
-    }
+    },
+    "paymentDetails": "Dados para pagamento",
+    "paymentDetailsHint": "Aparecem ao cliente na confirmação do pedido, quando escolhe Multicaixa Express ou transferência — só precisa de pagar e enviar o comprovativo.",
+    "expressNumber": "Número Multicaixa Express",
+    "expressHolder": "Nome do titular (opcional)",
+    "iban": "IBAN",
+    "ibanHolder": "Nome do titular (opcional)"
   },
   "loyalty": {
     "title": "Fidelidade",

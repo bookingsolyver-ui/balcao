@@ -343,7 +343,13 @@
       "generic": "Could not send the order. Please try again.",
       "store_closed": "The store is closed right now and only takes orders during opening hours."
     },
-    "closedNotice": "The store is closed and only takes orders during opening hours. {status}"
+    "closedNotice": "The store is closed and only takes orders during opening hours. {status}",
+    "payExpress": "Pay via Multicaixa Express",
+    "payTransfer": "Pay by bank transfer",
+    "payAmount": "Amount to pay",
+    "payHolder": "Account holder",
+    "payThenSend": "After paying, send the proof of payment via WhatsApp, using the button below.",
+    "copy": "Copy"
   },
   "orders": {
     "title": "Orders",
@@ -443,7 +449,9 @@
       "no_payment_for_delivery": "Delivery needs a payment method other than “Pay in store”.",
       "hours": "Invalid hours: closing time must be after opening time.",
       "forbidden": "You don't have permission to change settings.",
-      "generic": "Could not save. Please try again."
+      "generic": "Could not save. Please try again.",
+      "express_number": "Invalid Multicaixa Express number.",
+      "iban": "Invalid IBAN — please check the number."
     },
     "onlyWhenOpen": "Only accept orders while the store is open",
     "onlyWhenOpenHint": "Outside opening hours customers can't place orders. When off, orders wait in the queue until you open.",
@@ -487,7 +495,13 @@
         "extra": "Check the name and price of each extra service.",
         "privacy": "The privacy policy link must start with http:// or https://."
       }
-    }
+    },
+    "paymentDetails": "Payment details",
+    "paymentDetailsHint": "Shown to the customer on the order confirmation, when they choose Multicaixa Express or bank transfer — they just pay and send proof.",
+    "expressNumber": "Multicaixa Express number",
+    "expressHolder": "Account holder name (optional)",
+    "iban": "IBAN",
+    "ibanHolder": "Account holder name (optional)"
   },
   "loyalty": {
     "title": "Loyalty",

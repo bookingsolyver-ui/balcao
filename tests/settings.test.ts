@@ -138,4 +138,30 @@ await db.query('update tenants set settings=$2 where id=$1', [tid, JSON.stringif
 await db.query(`update business_hours set is_open=false where tenant_id=$1`, [tid]);
 assert.ok((await place('pickup', 'express')).rows[0].r, 'com a opção desligada, aceita pedidos mesmo fechada');
 console.log('✔ só aceitar pedidos com a loja aberta (fuso do negócio, opção ligada/desligada)');
+
+// ---- dados para pagamento (Multicaixa Express, IBAN) ----
+const { buildPaymentDetails, toPaymentDetailsForm, paymentDetails, mergePaymentDetails } = await import('../src/lib/settings');
+const pdEmpty = { expressNumber: '', expressHolder: '', iban: '', ibanHolder: '' };
+let pd = buildPaymentDetails(pdEmpty, 'AO'); assert.ok(pd.ok && pd.value.express_number === null && pd.value.iban === null, 'tudo opcional: negócio pode não usar nenhum dos dois');
+pd = buildPaymentDetails({ expressNumber: '923 306 869', expressHolder: ' Loja Perola&charme ', iban: '', ibanHolder: '' }, 'AO');
+assert.ok(pd.ok); if (pd.ok) { assert.equal(pd.value.express_number, '244923306869'); assert.equal(pd.value.express_holder, 'Loja Perola&charme'); }
+pd = buildPaymentDetails({ ...pdEmpty, expressNumber: '12' }, 'AO'); assert.deepEqual(pd, { ok: false, error: 'express_number' }, 'número de Express inválido');
+pd = buildPaymentDetails({ ...pdEmpty, iban: 'AO23 0040 0000 0123 4567 8901 2', ibanHolder: 'Perola&charme Lda' }, 'AO');
+assert.ok(pd.ok); if (pd.ok) { assert.equal(pd.value.iban, 'AO23004000000123456789012', 'guarda sem espaços'); assert.equal(pd.value.iban_holder, 'Perola&charme Lda'); }
+pd = buildPaymentDetails({ ...pdEmpty, iban: 'AO23004000000123456789013' }, 'AO'); assert.deepEqual(pd, { ok: false, error: 'iban' }, 'dígito de controlo errado');
+pd = buildPaymentDetails({ ...pdEmpty, iban: 'não é um iban' }, 'AO'); assert.deepEqual(pd, { ok: false, error: 'iban' });
+const form = toPaymentDetailsForm({ express_number: '244923306869', express_holder: 'Loja', iban: 'AO23004000000123456789012', iban_holder: 'Perola Lda' });
+assert.equal(form.expressNumber, '+244923306869'); assert.equal(form.iban, 'AO23 0040 0000 0123 4567 8901 2', 'mostra formatado, de 4 em 4');
+assert.deepEqual(paymentDetails({}), { express_number: null, express_holder: null, iban: null, iban_holder: null });
+const mergedPd = mergePaymentDetails({ catalog: { a: 1 } }, { express_number: '244923306869', express_holder: null, iban: null, iban_holder: null });
+assert.equal((mergedPd.catalog as { a: number }).a, 1, 'não apaga outras chaves das definições'); assert.equal((mergedPd.payment_details as { express_number: string }).express_number, '244923306869');
+console.log('✔ dados para pagamento: Express e IBAN opcionais, validados, guardados sem espaços');
+
+// contra o Postgres real: gravar e ler os dados de pagamento através das Definições (owner sim, staff não)
+const pdValue = { express_number: '244923306869', express_holder: 'Perola&charme', iban: 'AO23004000000123456789012', iban_holder: 'Perola&charme Lda' };
+const savedSettings = mergePaymentDetails((await db.query<{ settings: Record<string, unknown> }>('select settings from tenants where id=$1', [tid])).rows[0].settings, pdValue);
+await asUser(db, owner, () => db.query('update tenants set settings=$2 where id=$1', [tid, JSON.stringify(savedSettings)]));
+const readBack = paymentDetails((await asUser(db, staff, () => db.query<{ settings: Record<string, unknown> }>('select settings from tenants where id=$1', [tid]))).rows[0].settings);
+assert.deepEqual(readBack, pdValue, 'a equipa lê os dados de pagamento (precisa deles para atender clientes)');
+console.log('✔ dados para pagamento gravados e lidos através da mesma linha de definições (settings)');
 process.exit(0);
