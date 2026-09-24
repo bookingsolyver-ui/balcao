@@ -10,7 +10,8 @@
     "signup": "Sign up",
     "dashboard": "Dashboard",
     "logout": "Log out",
-    "viewStore": "View store"
+    "viewStore": "View store",
+    "account": "Account"
   },
   "landing": {
     "title": "The digital counter for your business.",
@@ -945,5 +946,21 @@
     "subscribe": "Subscribe",
     "loading": "Loading…",
     "notConfigured": "Payments aren't set up for this Balcão yet."
+  },
+  "account": {
+    "title": "My account",
+    "back": "Back to dashboard",
+    "emailTitle": "Login email",
+    "currentEmail": "Current email",
+    "newEmail": "New email",
+    "confirmHint": "For security, your email only changes after you confirm via a link we'll send to the new address.",
+    "changeEmail": "Change email",
+    "sending": "Sending…",
+    "confirmSent": "We sent a confirmation link to {email}. Your login email only changes after you click that link.",
+    "errors": {
+      "invalid": "Enter a valid email.",
+      "same": "That's already your current email.",
+      "generic": "Could not send the confirmation. Please try again."
+    }
   }
 }

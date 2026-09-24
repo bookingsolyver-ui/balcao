@@ -10,7 +10,8 @@
     "signup": "Crear cuenta",
     "dashboard": "Panel",
     "logout": "Salir",
-    "viewStore": "Ver tienda"
+    "viewStore": "Ver tienda",
+    "account": "Cuenta"
   },
   "landing": {
     "title": "El mostrador digital de tu negocio.",
@@ -945,5 +946,21 @@
     "subscribe": "Suscribirse",
     "loading": "Cargando…",
     "notConfigured": "Los pagos aún no están configurados para este Balcão."
+  },
+  "account": {
+    "title": "Mi cuenta",
+    "back": "Volver al panel",
+    "emailTitle": "Correo de acceso",
+    "currentEmail": "Correo actual",
+    "newEmail": "Correo nuevo",
+    "confirmHint": "Por seguridad, el correo solo cambia después de confirmarlo mediante un enlace que enviaremos a la dirección nueva.",
+    "changeEmail": "Cambiar correo",
+    "sending": "Enviando…",
+    "confirmSent": "Enviamos un enlace de confirmación a {email}. El correo de acceso solo cambia después de hacer clic en ese enlace.",
+    "errors": {
+      "invalid": "Indica un correo válido.",
+      "same": "Ese ya es tu correo actual.",
+      "generic": "No se pudo enviar la confirmación. Inténtalo de nuevo."
+    }
   }
 }

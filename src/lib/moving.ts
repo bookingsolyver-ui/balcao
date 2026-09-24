@@ -1,4 +1,5 @@
 import { toMinor } from './money';
+import { isValidEmail } from './email';
 import { minorToInput } from './items';
 import { toE164Digits } from './phone';
 
@@ -73,7 +74,6 @@ export function normalizePostalPT(v: string): string | null {
   if (/^\d{4}-\d{3}$/.test(d)) return d;
   return /^\d{7}$/.test(d) ? `${d.slice(0, 4)}-${d.slice(4)}` : null;
 }
-const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 export function parseVolume(s: string): number | null {
   const n = Number(s.trim().replace(',', '.'));
   return /^\d+([.,]\d+)?$/.test(s.trim()) && Number.isFinite(n) && n > 0 && n <= 999 ? Math.round(n * 10) / 10 : null;
@@ -91,7 +91,7 @@ export function buildMoveRequest(f: MoveForm, ctx: { country: string; today: str
   const phone = toE164Digits(f.phone, ctx.country);
   if (!phone) return { ok: false, error: 'phone' };
   const email = f.email.trim();
-  if (email && (email.length > 160 || !EMAIL.test(email))) return { ok: false, error: 'email' };
+  if (email && !isValidEmail(email)) return { ok: false, error: 'email' };
   const vol = parseVolume(f.volume);
   if (vol === null) return { ok: false, error: 'volume' };
 

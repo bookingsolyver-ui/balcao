@@ -15,6 +15,7 @@ export async function SiteHeader({ signedIn }: { signedIn: boolean }) {
         {signedIn ? (
           <>
             <Link href="/app" className="btn sm ghost">{t('dashboard')}</Link>
+            <Link href="/app/account" className="btn sm ghost">{t('account')}</Link>
             <SignOutButton />
           </>
         ) : (

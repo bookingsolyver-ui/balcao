@@ -10,7 +10,8 @@
     "signup": "Criar conta",
     "dashboard": "Painel",
     "logout": "Sair",
-    "viewStore": "Ver loja"
+    "viewStore": "Ver loja",
+    "account": "Conta"
   },
   "landing": {
     "title": "O balcão digital do seu negócio.",
@@ -945,5 +946,21 @@
     "subscribe": "Subscrever",
     "loading": "A carregar…",
     "notConfigured": "Pagamentos ainda não configurados para este Balcão."
+  },
+  "account": {
+    "title": "A minha conta",
+    "back": "Voltar ao painel",
+    "emailTitle": "E-mail de acesso",
+    "currentEmail": "E-mail atual",
+    "newEmail": "Novo e-mail",
+    "confirmHint": "Por segurança, o e-mail só muda depois de confirmar através de um link que vamos enviar para o endereço novo.",
+    "changeEmail": "Mudar e-mail",
+    "sending": "A enviar…",
+    "confirmSent": "Enviámos um link de confirmação para {email}. O e-mail de acesso só muda depois de clicar nesse link.",
+    "errors": {
+      "invalid": "Indique um e-mail válido.",
+      "same": "Esse já é o e-mail atual.",
+      "generic": "Não foi possível enviar a confirmação. Tente novamente."
+    }
   }
 }
