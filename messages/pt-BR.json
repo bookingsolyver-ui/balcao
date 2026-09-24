@@ -158,7 +158,9 @@
     "openQueue": "Abrir fila de pedidos",
     "editSettings": "Editar configurações",
     "lockedTitle": "Assine para desbloquear o seu Balcão",
-    "lockedBody": "A loja, as definições e os módulos ficam disponíveis assim que a subscrição estiver ativa."
+    "lockedBody": "A loja, as definições e os módulos ficam disponíveis assim que a subscrição estiver ativa.",
+    "reviewPrompt": "Gostou do Balcão? A sua avaliação ajuda outros negócios a decidir.",
+    "reviewCta": "Deixar avaliação"
   },
   "store": {
     "open": "Aberto",
@@ -965,6 +967,29 @@
       "invalid": "Informe um e-mail válido.",
       "same": "Esse já é o e-mail atual.",
       "generic": "Não foi possível enviar a confirmação. Tente novamente."
+    }
+  },
+  "review": {
+    "back": "Voltar ao painel",
+    "pageTitle": "A sua avaliação",
+    "title": "Avalie o Balcão",
+    "hint": "Aparece automaticamente na página de vendas, com o nome do seu negócio — assim que gravar.",
+    "rating": "Classificação",
+    "stars": "{n} estrelas",
+    "body": "O seu comentário",
+    "bodyHint": "{n}/500 caracteres",
+    "authorName": "Nome a mostrar",
+    "authorNameHint": "Ex.: o seu nome e o nome do negócio.",
+    "publish": "Publicar avaliação",
+    "save": "Salvar alterações",
+    "saving": "Salvando…",
+    "published": "Avaliação publicada — já está na página de vendas.",
+    "updated": "Avaliação atualizada.",
+    "errors": {
+      "rating": "Escolha uma classificação de 1 a 5 estrelas.",
+      "body": "O comentário tem de ter entre 10 e 500 caracteres.",
+      "author_name": "Informe um nome (2 a 80 caracteres).",
+      "generic": "Não foi possível guardar. Tente novamente."
     }
   }
 }

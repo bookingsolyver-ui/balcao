@@ -158,7 +158,9 @@
     "openQueue": "Abrir cola de pedidos",
     "editSettings": "Editar ajustes",
     "lockedTitle": "Suscríbete para desbloquear tu Balcão",
-    "lockedBody": "La tienda, los ajustes y los módulos estarán disponibles en cuanto la suscripción esté activa."
+    "lockedBody": "La tienda, los ajustes y los módulos estarán disponibles en cuanto la suscripción esté activa.",
+    "reviewPrompt": "¿Te gusta Balcão? Tu reseña ayuda a otros negocios a decidir.",
+    "reviewCta": "Dejar una reseña"
   },
   "store": {
     "open": "Abierto",
@@ -965,6 +967,29 @@
       "invalid": "Indica un correo válido.",
       "same": "Ese ya es tu correo actual.",
       "generic": "No se pudo enviar la confirmación. Inténtalo de nuevo."
+    }
+  },
+  "review": {
+    "back": "Volver al panel",
+    "pageTitle": "Tu reseña",
+    "title": "Valora Balcão",
+    "hint": "Aparece automáticamente en la página de ventas, con el nombre de tu negocio, en cuanto guardes.",
+    "rating": "Puntuación",
+    "stars": "{n} estrellas",
+    "body": "Tu reseña",
+    "bodyHint": "{n}/500 caracteres",
+    "authorName": "Nombre a mostrar",
+    "authorNameHint": "Ej.: tu nombre y el nombre del negocio.",
+    "publish": "Publicar reseña",
+    "save": "Guardar cambios",
+    "saving": "Guardando…",
+    "published": "Reseña publicada — ya está en la página de ventas.",
+    "updated": "Reseña actualizada.",
+    "errors": {
+      "rating": "Elige una puntuación de 1 a 5 estrellas.",
+      "body": "La reseña debe tener entre 10 y 500 caracteres.",
+      "author_name": "Indica un nombre (2 a 80 caracteres).",
+      "generic": "No se pudo guardar. Inténtalo de nuevo."
     }
   }
 }

@@ -158,7 +158,9 @@
     "openQueue": "Open order queue",
     "editSettings": "Edit settings",
     "lockedTitle": "Subscribe to unlock your Balcão",
-    "lockedBody": "The store, settings and modules become available as soon as the subscription is active."
+    "lockedBody": "The store, settings and modules become available as soon as the subscription is active.",
+    "reviewPrompt": "Enjoying Balcão? Your review helps other businesses decide.",
+    "reviewCta": "Leave a review"
   },
   "store": {
     "open": "Open",
@@ -965,6 +967,29 @@
       "invalid": "Enter a valid email.",
       "same": "That's already your current email.",
       "generic": "Could not send the confirmation. Please try again."
+    }
+  },
+  "review": {
+    "back": "Back to dashboard",
+    "pageTitle": "Your review",
+    "title": "Review Balcão",
+    "hint": "Appears automatically on the sales page, with your business name — as soon as you save.",
+    "rating": "Rating",
+    "stars": "{n} stars",
+    "body": "Your review",
+    "bodyHint": "{n}/500 characters",
+    "authorName": "Display name",
+    "authorNameHint": "E.g. your name and your business name.",
+    "publish": "Publish review",
+    "save": "Save changes",
+    "saving": "Saving…",
+    "published": "Review published — it's already on the sales page.",
+    "updated": "Review updated.",
+    "errors": {
+      "rating": "Choose a rating from 1 to 5 stars.",
+      "body": "The review must be between 10 and 500 characters.",
+      "author_name": "Enter a name (2 to 80 characters).",
+      "generic": "Could not save. Please try again."
     }
   }
 }

@@ -88,6 +88,13 @@ export default async function Dashboard({ params, searchParams }: { params: Prom
           </div>
         </div>
 
+        {(current.role === 'owner' || current.role === 'admin') && (
+          <div className="card sm" style={{ marginTop: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+            <span className="muted small">{t('reviewPrompt')}</span>
+            <Link href={`/app/review?t=${tenant.slug}`} className="btn sm ghost">{t('reviewCta')}</Link>
+          </div>
+        )}
+
         {ordersOn && (
           <div className="card" style={{ marginTop: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
             <div>
