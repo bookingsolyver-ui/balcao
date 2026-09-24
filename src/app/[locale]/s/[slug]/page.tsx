@@ -120,7 +120,8 @@ export default async function Store({ params, searchParams }: { params: Promise<
 
   return (
     <div data-accent={tenant.accent} style={{ minHeight: '100vh' }}>
-      <header className="nav"><div className="nav-in"><span className="brand"><span className="logo" aria-hidden="true">{tenant.name.charAt(0).toUpperCase()}</span>{tenant.name}</span><span className="spacer" /><LocaleSwitcher /></div></header>
+      <header className="nav"><div className="nav-in"><span className="brand">{tenant.logo_path ? <img className="logo-img" src={imageUrl(tenant.logo_path)} alt="" /> : <span className="logo" aria-hidden="true">{tenant.name.charAt(0).toUpperCase()}</span>}{tenant.name}</span><span className="spacer" /><LocaleSwitcher /></div></header>
+      {tenant.cover_path && <div className="store-cover"><img src={imageUrl(tenant.cover_path)} alt="" /></div>}
       <CartProvider info={cartInfo} items={cartItems} module={active === 'menu' || active === 'catalog' ? active : null}>
       <main className="wrap" style={{ padding: 'clamp(24px, 5vw, 48px) 0 96px', maxWidth: 760 }}>
         <h1 className="page-title">{tenant.name}</h1>

@@ -17,6 +17,7 @@ const tenant = {
   id: 't1', name: 'Perola&charme', address: 'Rua do Comércio', whatsapp: '244923306869', country: 'AO', timezone: 'Africa/Luanda', locale: 'pt-PT', currency: 'AOA', decimals: 2,
   is_published: true, modules: { menu: false, agenda: false, catalog: true, loyalty: true, moving: false },
   settings: { catalog: { pickup: true, delivery: false, dine_in: false, fee_minor: 30000, min_minor: 200000, eta: '1-2 dias', payments: ['express', 'transfer', 'store'] } },
+  logo_path: null, cover_path: null,
 };
 const hours = [1, 2, 3, 4, 5, 6, 0].map((w) => ({ weekday: w, is_open: w !== 0, opens: '10:00:00', closes: '19:00:00' }));
 const countries = [{ code: 'AO', name: 'Angola' }, { code: 'PT', name: 'Portugal' }];

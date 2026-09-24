@@ -456,7 +456,8 @@
       "forbidden": "Não tem permissão para alterar as definições.",
       "generic": "Não foi possível salvar. Tente novamente.",
       "express_number": "Número de Multicaixa Express inválido.",
-      "iban": "IBAN inválido — confira o número."
+      "iban": "IBAN inválido — confira o número.",
+      "upload": "Não foi possível enviar a imagem. Tente uma foto mais pequena, ou tente novamente."
     },
     "onlyWhenOpen": "Só aceitar pedidos com a loja aberta",
     "onlyWhenOpenHint": "Fora do horário de funcionamento, o cliente não consegue fazer pedidos. Desligado, os pedidos ficam na fila até abrir.",
@@ -506,7 +507,14 @@
     "expressNumber": "Número Multicaixa Express",
     "expressHolder": "Nome do titular (opcional)",
     "iban": "IBAN",
-    "ibanHolder": "Nome do titular (opcional)"
+    "ibanHolder": "Nome do titular (opcional)",
+    "storeMedia": "Logo e foto de capa",
+    "storeMediaHint": "Aparecem na loja pública — ajudam a loja a não parecer genérica.",
+    "logo": "Logo",
+    "cover": "Foto de capa",
+    "addLogo": "Adicionar logo",
+    "addCover": "Adicionar foto de capa",
+    "removeImage": "Remover"
   },
   "loyalty": {
     "title": "Fidelidade",

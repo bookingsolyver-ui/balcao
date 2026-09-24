@@ -10,10 +10,11 @@ import { buildBusinessPatch, buildOrderSettings, mergeSettings, toOrderSettingsF
 import { buildPaymentDetails, mergePaymentDetails, paymentDetails, toPaymentDetailsForm, type PaymentDetailsForm } from '@/lib/settings';
 import { agendaConfig, buildAgendaSettings, mergeAgenda, toAgendaSettingsForm, type AgendaSettingsForm } from '@/lib/booking';
 import { buildMovingSettings, mergeMoving, movingConfig, toMovingSettingsForm, type MovingSettingsForm } from '@/lib/moving';
+import { StoreMediaForm } from './StoreMediaForm';
 import type { ModuleId } from '@/lib/types';
 
 interface Props {
-  tenant: { id: string; name: string; address: string | null; whatsapp: string | null; country: string; timezone: string; locale: string; currency: string; decimals: number; is_published: boolean; modules: Record<ModuleId, boolean>; settings: Record<string, unknown> };
+  tenant: { id: string; name: string; address: string | null; whatsapp: string | null; country: string; timezone: string; locale: string; currency: string; decimals: number; is_published: boolean; modules: Record<ModuleId, boolean>; settings: Record<string, unknown>; logo_path: string | null; cover_path: string | null };
   hours: HoursRow[];
   canEdit: boolean;
   countries: { code: string; name: string }[];
@@ -141,6 +142,8 @@ export function SettingsForm({ tenant, hours, canEdit, countries, timezones, cur
           ))}
         </div>
       </section>
+
+      <StoreMediaForm tenantId={tenant.id} logoPath={tenant.logo_path} coverPath={tenant.cover_path} canEdit={canEdit} />
 
       {ORDER_MODULES.filter((m) => modules[m]).map((m) => {
         const f = forms[m];

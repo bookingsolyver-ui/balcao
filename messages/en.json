@@ -456,7 +456,8 @@
       "forbidden": "You don't have permission to change settings.",
       "generic": "Could not save. Please try again.",
       "express_number": "Invalid Multicaixa Express number.",
-      "iban": "Invalid IBAN — please check the number."
+      "iban": "Invalid IBAN — please check the number.",
+      "upload": "Could not upload the image. Try a smaller photo, or try again."
     },
     "onlyWhenOpen": "Only accept orders while the store is open",
     "onlyWhenOpenHint": "Outside opening hours customers can't place orders. When off, orders wait in the queue until you open.",
@@ -506,7 +507,14 @@
     "expressNumber": "Multicaixa Express number",
     "expressHolder": "Account holder name (optional)",
     "iban": "IBAN",
-    "ibanHolder": "Account holder name (optional)"
+    "ibanHolder": "Account holder name (optional)",
+    "storeMedia": "Logo and cover photo",
+    "storeMediaHint": "Shown on the public store — helps it not look generic.",
+    "logo": "Logo",
+    "cover": "Cover photo",
+    "addLogo": "Add logo",
+    "addCover": "Add cover photo",
+    "removeImage": "Remove"
   },
   "loyalty": {
     "title": "Loyalty",

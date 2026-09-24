@@ -5,6 +5,7 @@ export interface Tenant {
   currency: string; currency_decimals: number; locale: string; timezone: string; country: string;
   whatsapp: string | null; address: string | null; accent: string;
   modules: Record<ModuleId, boolean>; settings: Record<string, unknown>; is_published: boolean;
+  logo_path: string | null; cover_path: string | null;
 }
 export interface Category { id: string; module: 'menu' | 'catalog'; name: string; position: number }
 export interface Item {

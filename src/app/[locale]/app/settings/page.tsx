@@ -33,7 +33,7 @@ export default async function SettingsPage({ params, searchParams }: { params: P
         <h1 className="page-title" style={{ marginTop: 10 }}>{t('title')}</h1>
         <p className="muted" style={{ margin: '6px 0 26px' }}>{tenant.name}</p>
         <SettingsForm
-          tenant={{ id: tenant.id, name: tenant.name, address: tenant.address, whatsapp: tenant.whatsapp, country: tenant.country, timezone: tenant.timezone, locale: tenant.locale, currency: tenant.currency, decimals: tenant.currency_decimals, is_published: tenant.is_published, modules: tenant.modules, settings: tenant.settings }}
+          tenant={{ id: tenant.id, name: tenant.name, address: tenant.address, whatsapp: tenant.whatsapp, country: tenant.country, timezone: tenant.timezone, locale: tenant.locale, currency: tenant.currency, decimals: tenant.currency_decimals, is_published: tenant.is_published, modules: tenant.modules, settings: tenant.settings, logo_path: tenant.logo_path, cover_path: tenant.cover_path }}
           hours={(hours ?? []) as HoursRow[]}
           canEdit={current.role === 'owner' || current.role === 'admin'}
           countries={COUNTRIES.map((c) => ({ code: c.code, name: countryName(c.code, locale) })).sort((a, b) => a.name.localeCompare(b.name, locale))}

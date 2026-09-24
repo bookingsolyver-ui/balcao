@@ -12,7 +12,7 @@
     "typecheck": "tsc",
     "test:onboarding": "tsx tests/onboarding.test.ts",
     "test:items": "tsx tests/items.test.ts",
-    "test:ui": "tsx tests/manager.test.tsx && tsx tests/orders-ui.test.tsx && tsx tests/settings-ui.test.tsx && tsx tests/loyalty-ui.test.tsx && tsx tests/agenda-ui.test.tsx && tsx tests/billing-ui.test.tsx && tsx tests/account-ui.test.tsx && tsx tests/review-ui.test.tsx",
+    "test:ui": "tsx tests/manager.test.tsx && tsx tests/orders-ui.test.tsx && tsx tests/settings-ui.test.tsx && tsx tests/loyalty-ui.test.tsx && tsx tests/agenda-ui.test.tsx && tsx tests/billing-ui.test.tsx && tsx tests/account-ui.test.tsx && tsx tests/review-ui.test.tsx && tsx tests/store-media-ui.test.tsx",
     "test:orders": "tsx tests/order.test.ts",
     "test:settings": "tsx tests/settings.test.ts",
     "test:loyalty": "tsx tests/loyalty.test.ts",

@@ -254,3 +254,16 @@ textarea.input { min-height: 76px; resize: vertical; }
 .stars { display: inline-flex; gap: 4px; }
 .stars button { background: none; border: 0; padding: 2px; cursor: pointer; color: var(--line); line-height: 1; font-size: 26px; }
 .stars button.on { color: var(--warn); }
+
+/* ---- logo e capa da loja (definições) ---- */
+.media-slot { position: relative; border-radius: 10px; overflow: hidden; background: var(--bg3); border: 1px solid var(--line2); display: grid; place-items: center; cursor: pointer; }
+.media-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.media-slot .ph { color: var(--fg3); font-size: 13px; text-align: center; padding: 10px; }
+.media-slot input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.media-slot .rm { position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; border-radius: 999px; background: rgba(0,0,0,.55); color: #fff; border: 0; font-size: 15px; line-height: 1; cursor: pointer; z-index: 2; }
+
+/* ---- logo e capa reais na loja pública ---- */
+.logo-img { width: 32px; height: 32px; border-radius: 8px; object-fit: cover; flex: none; }
+.store-cover { width: 100%; aspect-ratio: 21/6; overflow: hidden; background: var(--bg3); }
+.store-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+@media (max-width: 640px) { .store-cover { aspect-ratio: 16/9; } }
