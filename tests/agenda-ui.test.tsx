@@ -103,4 +103,15 @@ h = wrap('pt-PT', <BookingTracker token="t" initial={{ ...trk, status: 'cancelle
 h = wrap('pt-PT', <BookingTracker token="t" initial={{ ...trk, starts_at: '2020-01-05T08:30:00Z' }} tenant={tenantTrack} />); assert.doesNotMatch(text(h), /Cancelar marcação/, 'marcação passada não se cancela');
 h = wrap('en', <BookingTracker token="t" initial={{ ...trk, status: 'pending' }} tenant={tenantTrack} />); assert.match(text(h), /Your booking/); assert.match(text(h), /Pending/);
 console.log('✔ acompanhamento da marcação: estados, calendário e cancelamento só se futura');
+
+// ---- um funcionário comum já vê a agenda filtrada em si próprio, sem precisar de clicar ----
+h = wrap('pt-PT', <AgendaManager {...props} canAdmin={false} myStaffId="p2" />);
+assert.match(h, /<button class="chip" aria-pressed="true"[^>]*>Nuno<\/button>/, 'o chip do próprio (Nuno) já começa premido');
+assert.match(h, /<button class="chip" aria-pressed="false"[^>]*>Toda a equipa<\/button>/, '"toda a equipa" não está ativo por defeito');
+tx = text(h); assert.match(tx, /Rui Costa/); assert.doesNotMatch(tx, /Ana Silva/, 'só vê as marcações de Nuno, não as de Marta');
+console.log('✔ funcionário comum: a agenda já abre filtrada só nas suas marcações');
+
+h = wrap('pt-PT', <AgendaManager {...props} canAdmin={true} myStaffId="p2" />);
+assert.match(h, /<button class="chip" aria-pressed="true"[^>]*>Toda a equipa<\/button>/, 'dono/admin continua a ver tudo por defeito, mesmo que também seja um prestador');
+console.log('✔ dono/admin: continua a ver toda a gente por defeito, independentemente de myStaffId');
 process.exit(0);

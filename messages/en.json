@@ -160,7 +160,9 @@
     "lockedTitle": "Subscribe to unlock your Balcão",
     "lockedBody": "The store, settings and modules become available as soon as the subscription is active.",
     "reviewPrompt": "Enjoying Balcão? Your review helps other businesses decide.",
-    "reviewCta": "Leave a review"
+    "reviewCta": "Leave a review",
+    "teamPrompt": "Have others working with you? Give them access to Balcão.",
+    "teamCta": "Manage team"
   },
   "store": {
     "open": "Open",
@@ -998,6 +1000,49 @@
       "body": "The review must be between 10 and 500 characters.",
       "author_name": "Enter a name (2 to 80 characters).",
       "generic": "Could not save. Please try again."
+    }
+  },
+  "team": {
+    "back": "Back to dashboard",
+    "pageTitle": "Team",
+    "title": "Give your team access",
+    "hint": "Each person signs in with their own account — you just need to share the link.",
+    "hasAccess": "Already has access",
+    "invite": "Invite",
+    "creating": "Creating…",
+    "adminTitle": "Admin",
+    "inviteAdmin": "Invite admin",
+    "adminHint": "Sees and manages everything, like the owner — except adding or removing team members.",
+    "linkReady": "Link ready — send it to whoever you want to give access to.",
+    "copy": "Copy",
+    "shareWhatsapp": "Send via WhatsApp",
+    "waMessage": "You've been invited to Balcão: {url}",
+    "pending": "Unused invites",
+    "revoke": "Revoke",
+    "roles": {
+      "admin": "Admin",
+      "staff": "Staff"
+    },
+    "errors": {
+      "generic": "Could not create the invite. Please try again."
+    }
+  },
+  "inviteAccept": {
+    "title": "You've been invited to {tenant}",
+    "bodyStaff": "You'll join as {name} — their bookings will show up linked to your account.",
+    "bodyRole": {
+      "admin": "You'll join as an admin.",
+      "staff": "You'll join as a team member."
+    },
+    "needLogin": "Sign in or create an account, then open this link again to accept.",
+    "login": "Sign in",
+    "signup": "Create account",
+    "accept": "Accept invite",
+    "accepting": "Joining…",
+    "invalidTitle": "This invite is no longer valid",
+    "invalidBody": "It may have already been used, or the link may be wrong. Ask whoever invited you for a new one.",
+    "errors": {
+      "generic": "Could not accept the invite. Please try again."
     }
   }
 }

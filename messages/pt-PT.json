@@ -160,7 +160,9 @@
     "lockedTitle": "Assine para desbloquear o seu Balcão",
     "lockedBody": "A loja, as definições e os módulos ficam disponíveis assim que a subscrição estiver ativa.",
     "reviewPrompt": "Gostou do Balcão? A sua avaliação ajuda outros negócios a decidir.",
-    "reviewCta": "Deixar avaliação"
+    "reviewCta": "Deixar avaliação",
+    "teamPrompt": "Tens mais gente a trabalhar contigo? Dá-lhes acesso ao Balcão.",
+    "teamCta": "Gerir equipa"
   },
   "store": {
     "open": "Aberto",
@@ -998,6 +1000,49 @@
       "body": "O comentário tem de ter entre 10 e 500 caracteres.",
       "author_name": "Indique um nome (2 a 80 caracteres).",
       "generic": "Não foi possível guardar. Tente novamente."
+    }
+  },
+  "team": {
+    "back": "Voltar ao painel",
+    "pageTitle": "Equipa",
+    "title": "Dar acesso à equipa",
+    "hint": "Cada pessoa entra com a sua própria conta — sem precisares de mexer em nada além de partilhar o link.",
+    "hasAccess": "Já tem acesso",
+    "invite": "Convidar",
+    "creating": "A criar…",
+    "adminTitle": "Administrador",
+    "inviteAdmin": "Convidar administrador",
+    "adminHint": "Vê e gere tudo, como o dono — exceto adicionar ou remover pessoas da equipa.",
+    "linkReady": "Link pronto — envia a quem quiseres dar acesso.",
+    "copy": "Copiar",
+    "shareWhatsapp": "Enviar por WhatsApp",
+    "waMessage": "Foste convidado para o Balcão: {url}",
+    "pending": "Convites por usar",
+    "revoke": "Revogar",
+    "roles": {
+      "admin": "Administrador",
+      "staff": "Funcionário"
+    },
+    "errors": {
+      "generic": "Não foi possível criar o convite. Tente novamente."
+    }
+  },
+  "inviteAccept": {
+    "title": "Fostes convidado para {tenant}",
+    "bodyStaff": "Vais entrar como {name} — as marcações dessa pessoa vão aparecer ligadas à tua conta.",
+    "bodyRole": {
+      "admin": "Vais entrar como administrador.",
+      "staff": "Vais entrar como membro da equipa."
+    },
+    "needLogin": "Inicia sessão ou cria conta, e depois abre este link outra vez para aceitar.",
+    "login": "Iniciar sessão",
+    "signup": "Criar conta",
+    "accept": "Aceitar convite",
+    "accepting": "A entrar…",
+    "invalidTitle": "Este convite já não é válido",
+    "invalidBody": "Pode já ter sido usado, ou o link pode estar errado. Pede um novo a quem te convidou.",
+    "errors": {
+      "generic": "Não foi possível aceitar o convite. Tente novamente."
     }
   }
 }

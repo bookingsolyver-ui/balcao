@@ -9,11 +9,11 @@ import { addDays, bookingActions, buildService, dayRangeUtc, timeInTz, todayInTz
 import { BookingFlow } from './store/BookingFlow';
 
 export interface AgendaTenant { id: string; slug: string; name: string; timezone: string; country: string; currency: string; decimals: number; moneyLocale: string; whatsapp: string | null; daysAhead: number; autoConfirm: boolean }
-interface Props { tenant: AgendaTenant; services: ServiceRow[]; staff: StaffRow[]; hours: HoursRow[]; blocked: string[]; initialDate: string; initialBookings: BookingRow[]; canAdmin: boolean; /** Só para testes/SSR. */ initialTab?: 'day' | 'services' | 'team' }
+interface Props { tenant: AgendaTenant; services: ServiceRow[]; staff: StaffRow[]; hours: HoursRow[]; blocked: string[]; initialDate: string; initialBookings: BookingRow[]; canAdmin: boolean; /** O prestador ligado a este login (se houver) — a agenda de um funcionário comum já começa filtrada nele. */ myStaffId?: string | null; /** Só para testes/SSR. */ initialTab?: 'day' | 'services' | 'team' }
 type Dialog = { kind: 'booking' } | { kind: 'service'; s?: ServiceRow } | { kind: 'staff'; s?: StaffRow } | null;
 const ERR = ['name', 'duration', 'price', 'date', 'forbidden', 'status', 'generic'];
 
-export function AgendaManager({ tenant, services: s0, staff: st0, hours, blocked: b0, initialDate, initialBookings, canAdmin, initialTab = 'day' }: Props) {
+export function AgendaManager({ tenant, services: s0, staff: st0, hours, blocked: b0, initialDate, initialBookings, canAdmin, myStaffId = null, initialTab = 'day' }: Props) {
   const t = useTranslations('agenda');
   const tb = useTranslations('booking');
   const tt = t as unknown as (key: string, values?: Record<string, string | number>) => string;
@@ -22,7 +22,7 @@ export function AgendaManager({ tenant, services: s0, staff: st0, hours, blocked
   const [tab, setTab] = useState<'day' | 'services' | 'team'>(initialTab);
   const [date, setDate] = useState(initialDate);
   const [bookings, setBookings] = useState(initialBookings);
-  const [staffFilter, setStaffFilter] = useState('all');
+  const [staffFilter, setStaffFilter] = useState(!canAdmin && myStaffId ? myStaffId : 'all');
   const [services, setServices] = useState(s0);
   const [staff, setStaff] = useState(st0);
   const [blocked, setBlocked] = useState(b0);

@@ -160,7 +160,9 @@
     "lockedTitle": "Suscríbete para desbloquear tu Balcão",
     "lockedBody": "La tienda, los ajustes y los módulos estarán disponibles en cuanto la suscripción esté activa.",
     "reviewPrompt": "¿Te gusta Balcão? Tu reseña ayuda a otros negocios a decidir.",
-    "reviewCta": "Dejar una reseña"
+    "reviewCta": "Dejar una reseña",
+    "teamPrompt": "¿Tienes más gente trabajando contigo? Dales acceso a Balcão.",
+    "teamCta": "Gestionar equipo"
   },
   "store": {
     "open": "Abierto",
@@ -998,6 +1000,49 @@
       "body": "La reseña debe tener entre 10 y 500 caracteres.",
       "author_name": "Indica un nombre (2 a 80 caracteres).",
       "generic": "No se pudo guardar. Inténtalo de nuevo."
+    }
+  },
+  "team": {
+    "back": "Volver al panel",
+    "pageTitle": "Equipo",
+    "title": "Dar acceso al equipo",
+    "hint": "Cada persona entra con su propia cuenta — solo necesitas compartir el enlace.",
+    "hasAccess": "Ya tiene acceso",
+    "invite": "Invitar",
+    "creating": "Creando…",
+    "adminTitle": "Administrador",
+    "inviteAdmin": "Invitar administrador",
+    "adminHint": "Ve y gestiona todo, como el dueño — excepto añadir o quitar personas del equipo.",
+    "linkReady": "Enlace listo — envíalo a quien quieras dar acceso.",
+    "copy": "Copiar",
+    "shareWhatsapp": "Enviar por WhatsApp",
+    "waMessage": "Has sido invitado a Balcão: {url}",
+    "pending": "Invitaciones sin usar",
+    "revoke": "Revocar",
+    "roles": {
+      "admin": "Administrador",
+      "staff": "Empleado"
+    },
+    "errors": {
+      "generic": "No se pudo crear la invitación. Inténtalo de nuevo."
+    }
+  },
+  "inviteAccept": {
+    "title": "Has sido invitado a {tenant}",
+    "bodyStaff": "Entrarás como {name} — sus reservas aparecerán vinculadas a tu cuenta.",
+    "bodyRole": {
+      "admin": "Entrarás como administrador.",
+      "staff": "Entrarás como miembro del equipo."
+    },
+    "needLogin": "Inicia sesión o crea una cuenta, y luego abre este enlace otra vez para aceptar.",
+    "login": "Iniciar sesión",
+    "signup": "Crear cuenta",
+    "accept": "Aceptar invitación",
+    "accepting": "Entrando…",
+    "invalidTitle": "Esta invitación ya no es válida",
+    "invalidBody": "Puede que ya se haya usado, o que el enlace esté mal. Pide una nueva a quien te invitó.",
+    "errors": {
+      "generic": "No se pudo aceptar la invitación. Inténtalo de nuevo."
     }
   }
 }

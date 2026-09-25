@@ -267,3 +267,21 @@ textarea.input { min-height: 76px; resize: vertical; }
 .store-cover { width: 100%; aspect-ratio: 21/6; overflow: hidden; background: var(--bg3); }
 .store-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
 @media (max-width: 640px) { .store-cover { aspect-ratio: 16/9; } }
+
+/* ---- capa com título sobreposto (loja pública) ---- */
+.store-cover { position: relative; width: 100%; aspect-ratio: 21/6; overflow: hidden; background: var(--bg3); }
+.store-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.store-cover-scrim { position: absolute; inset: 0; display: flex; align-items: flex-end; background: linear-gradient(0deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.15) 55%, rgba(0,0,0,0) 100%); padding-bottom: clamp(18px, 3.4vw, 36px); }
+.store-cover-title { color: #fff !important; text-shadow: 0 2px 16px rgba(0,0,0,.35); }
+.store-cover-status { margin-top: 8px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: rgba(255,255,255,.88); font-size: 14px; }
+@media (max-width: 640px) { .store-cover { aspect-ratio: 16/9; } }
+
+/* ---- nicho: mudanças e transportes — tom profissional e de confiança ---- */
+[data-niche="moving"] .store-cover { aspect-ratio: 21/7; }
+[data-niche="moving"] .store-cover-scrim { background: linear-gradient(0deg, rgba(10,20,35,.82) 0%, rgba(10,20,35,.2) 55%, rgba(10,20,35,0) 100%); }
+[data-niche="moving"] .store-cover-title { letter-spacing: -.01em; font-weight: 600; }
+[data-niche="moving"] .nav { border-bottom: 3px solid var(--accent); }
+[data-niche="moving"] .badge.acc { letter-spacing: .01em; }
+
+/* ---- convites de equipa ---- */
+.invite-link { display: flex; align-items: center; gap: 8px; background: var(--bg); border: 1px solid var(--line2); border-radius: 8px; padding: 10px 12px; font-size: 13px; word-break: break-all; }

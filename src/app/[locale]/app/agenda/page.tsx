@@ -33,6 +33,7 @@ export default async function AgendaPage({ params, searchParams }: { params: Pro
     sb.from('bookings').select('*').eq('tenant_id', tenant.id).gte('starts_at', range.from).lt('starts_at', range.to).order('starts_at'),
   ]);
   const cfg = agendaConfig(tenant.settings);
+  const myStaffId = ((sf.data ?? []) as StaffRow[]).find((row) => row.user_id === s.user!.id)?.id ?? null;
 
   return (
     <>
@@ -46,6 +47,7 @@ export default async function AgendaPage({ params, searchParams }: { params: Pro
           services={(sv.data ?? []) as ServiceRow[]} staff={(sf.data ?? []) as StaffRow[]} hours={(hr.data ?? []) as HoursRow[]}
           blocked={((bl.data ?? []) as { day: string }[]).map((x) => x.day)} initialDate={today} initialBookings={(bk.data ?? []) as BookingRow[]}
           canAdmin={current.role === 'owner' || current.role === 'admin'}
+          myStaffId={myStaffId}
         />
       </main>
     </>

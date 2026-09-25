@@ -3,7 +3,7 @@ import { minorToInput } from './items';
 import { toE164Digits } from './phone';
 
 export interface ServiceRow { id: string; name: string; description: string; duration_min: number; price_minor: number; active: boolean; position?: number }
-export interface StaffRow { id: string; name: string; active: boolean }
+export interface StaffRow { id: string; name: string; active: boolean; user_id?: string | null }
 export interface HoursRow { weekday: number; is_open: boolean; opens: string; closes: string }
 export interface BookingRow {
   id: string; service_name: string; staff_name: string; duration_min: number; price_minor: number; starts_at: string; ends_at: string;
