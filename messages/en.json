@@ -740,7 +740,8 @@
       "forbidden": "You don't have permission for this action.",
       "status": "Could not update the booking.",
       "generic": "Could not save. Please try again."
-    }
+    },
+    "pickDate": "Pick a date"
   },
   "move": {
     "title": "Request a quote",

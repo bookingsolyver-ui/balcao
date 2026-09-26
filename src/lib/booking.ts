@@ -35,6 +35,19 @@ export function weekdayOf(ymd: string): number {
   const [y, m, d] = ymd.split('-').map(Number);
   return new Date(Date.UTC(y, m - 1, d)).getUTCDay();
 }
+export const monthOf = (ymd: string): string => ymd.slice(0, 7); // "2026-09"
+export function addMonths(yyyyMm: string, n: number): string {
+  const [y, m] = yyyyMm.split('-').map(Number);
+  const total = (y * 12 + (m - 1)) + n;
+  return `${Math.floor(total / 12)}-${pad((total % 12) + 1)}`;
+}
+export interface MonthCell { date: string; inMonth: boolean }
+/** Grelha de 6 semanas (42 dias) para o mês indicado ("2026-09"), com os dias dos meses vizinhos para preencher a 1ª e a última semana. */
+export function monthGrid(yyyyMm: string): MonthCell[] {
+  const first = `${yyyyMm}-01`;
+  const start = addDays(first, -weekdayOf(first)); // recua até domingo
+  return Array.from({ length: 42 }, (_, i) => { const d = addDays(start, i); return { date: d, inMonth: monthOf(d) === yyyyMm }; });
+}
 /** Diferença (em minutos) entre a hora local do fuso e UTC, no instante dado. */
 function tzOffsetMin(utc: Date, tz: string): number {
   const p = new Intl.DateTimeFormat('en-US', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).formatToParts(utc);

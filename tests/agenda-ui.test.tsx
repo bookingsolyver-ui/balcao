@@ -104,14 +104,25 @@ h = wrap('pt-PT', <BookingTracker token="t" initial={{ ...trk, starts_at: '2020-
 h = wrap('en', <BookingTracker token="t" initial={{ ...trk, status: 'pending' }} tenant={tenantTrack} />); assert.match(text(h), /Your booking/); assert.match(text(h), /Pending/);
 console.log('✔ acompanhamento da marcação: estados, calendário e cancelamento só se futura');
 
-// ---- um funcionário comum já vê a agenda filtrada em si próprio, sem precisar de clicar ----
+// ---- um funcionário comum só vê as suas próprias marcações — e nem sequer vê o filtro de equipa
+//      (a segurança já vem da base de dados: o próprio pedido ao servidor nunca traz as marcações de outra pessoa) ----
 h = wrap('pt-PT', <AgendaManager {...props} canAdmin={false} myStaffId="p2" />);
-assert.match(h, /<button class="chip" aria-pressed="true"[^>]*>Nuno<\/button>/, 'o chip do próprio (Nuno) já começa premido');
-assert.match(h, /<button class="chip" aria-pressed="false"[^>]*>Toda a equipa<\/button>/, '"toda a equipa" não está ativo por defeito');
+assert.doesNotMatch(h, /class="chips"/, 'sem filtro de equipa nenhum — não há nada para filtrar quando só se vê o seu próprio');
+assert.doesNotMatch(h, />Toda a equipa</, 'nem sequer aparece a opção "toda a equipa"');
 tx = text(h); assert.match(tx, /Rui Costa/); assert.doesNotMatch(tx, /Ana Silva/, 'só vê as marcações de Nuno, não as de Marta');
-console.log('✔ funcionário comum: a agenda já abre filtrada só nas suas marcações');
+console.log('✔ funcionário comum: só vê as suas próprias marcações, sem filtro nenhum à vista');
 
 h = wrap('pt-PT', <AgendaManager {...props} canAdmin={true} myStaffId="p2" />);
-assert.match(h, /<button class="chip" aria-pressed="true"[^>]*>Toda a equipa<\/button>/, 'dono/admin continua a ver tudo por defeito, mesmo que também seja um prestador');
-console.log('✔ dono/admin: continua a ver toda a gente por defeito, independentemente de myStaffId');
+assert.match(h, /<button class="chip" aria-pressed="true"[^>]*>Toda a equipa<\/button>/, 'dono/admin continua a ver tudo por defeito, e continua a ter o filtro');
+console.log('✔ dono/admin: continua a ver toda a gente por defeito, com o filtro completo à disposição');
+
+// ---- calendário mensal: saltar direto para qualquer dia, sem clicar "seguinte" repetidamente ----
+h = wrap('pt-PT', <AgendaManager {...props} initialShowCal />); tx = text(h);
+assert.match(tx, /Setembro de 2026/i); assert.match(tx, /\bdom\b/); assert.match(tx, /\bseg\b/); assert.match(tx, /\bsáb\b/); assert.doesNotMatch(tx, /domingo/, 'cortado a 3 letras, nunca o nome completo');
+assert.equal((h.match(/class="cal-day/g) ?? []).length, 42, '6 semanas completas, sempre');
+assert.match(h, /class="cal-day sel">21</, 'o dia 21 (a data que a agenda estava a ver) está marcado como selecionado'); assert.match(h, /class="cal-day today">26</, 'e o dia de hoje a sério (26) fica marcado à parte, mesmo sem ser o selecionado');
+console.log('✔ calendário mensal: mês certo, dias da semana traduzidos, hoje e selecionado marcados');
+
+h = wrap('en', <AgendaManager {...props} initialShowCal />); assert.match(text(h), /September 2026/); assert.match(text(h), /Sun/);
+console.log('✔ calendário em inglês');
 process.exit(0);

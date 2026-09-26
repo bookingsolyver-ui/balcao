@@ -1,7 +1,7 @@
 // Agenda: datas no fuso do negócio, validações e o fluxo completo contra o Postgres real.
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { addDays, bookingActions, buildAgendaSettings, buildBookingParams, buildService, calendarLink, dayList, dayRangeUtc, hhmm, isLiveBooking, mergeAgenda, agendaConfig, timeInTz, todayInTz, toServiceForm, weekdayOf, zonedToUtc, ymdInTz, type BookingForm, type BookingRow, type SlotRow, type TrackBooking } from '../src/lib/booking';
+import { addDays, addMonths, bookingActions, buildAgendaSettings, buildBookingParams, buildService, calendarLink, dayList, dayRangeUtc, hhmm, isLiveBooking, mergeAgenda, monthGrid, monthOf, agendaConfig, timeInTz, todayInTz, toServiceForm, weekdayOf, zonedToUtc, ymdInTz, type BookingForm, type BookingRow, type SlotRow, type TrackBooking } from '../src/lib/booking';
 import { dbErrorKey } from '../src/lib/errors';
 import { makeDb, asUser } from './helpers/pg';
 
@@ -21,6 +21,20 @@ assert.equal(addDays('2026-09-30', 1), '2026-10-01'); assert.equal(addDays('2026
 assert.equal(weekdayOf('2026-09-21'), 1, 'segunda-feira'); assert.equal(weekdayOf('2026-09-27'), 0);
 assert.equal(hhmm('09:30:00'), '09:30');
 console.log('✔ datas no fuso do negócio (verão/inverno, mudança de hora, meia-noite)');
+
+// ---- calendário mensal (saltar direto para qualquer mês, sem clicar dia a dia) ----
+assert.equal(monthOf('2026-09-21'), '2026-09');
+assert.equal(addMonths('2026-09', 1), '2026-10'); assert.equal(addMonths('2026-12', 1), '2027-01', 'passa o ano'); assert.equal(addMonths('2026-01', -1), '2025-12', 'e para trás também');
+assert.equal(addMonths('2026-09', 3), '2026-12', 'setembro + 3 = dezembro, de uma vez');
+const g = monthGrid('2026-09');
+assert.equal(g.length, 42, '6 semanas completas');
+assert.equal(g[0].date, '2026-08-30', 'começa no domingo antes do dia 1'); assert.equal(weekdayOf(g[0].date), 0);
+assert.equal(g.find((c) => c.date === '2026-09-01')!.inMonth, true);
+assert.equal(g[0].inMonth, false, 'o fim de agosto aparece, mas marcado como fora do mês');
+assert.equal(g[41].date, '2026-10-10'); assert.equal(g[41].inMonth, false, 'a última célula já é de outubro, também fora do mês');
+assert.equal(g.filter((c) => c.inMonth).length, 30, 'setembro tem 30 dias, todos presentes');
+const gFeb = monthGrid('2028-02'); assert.equal(gFeb.filter((c) => c.inMonth).length, 29, '2028 é bissexto');
+console.log('✔ calendário mensal: 6 semanas certas, meses vizinhos, meses com número de dias diferente');
 
 // ---- dias escolhíveis ----
 const hours = [0, 1, 2, 3, 4, 5, 6].map((w) => ({ weekday: w, is_open: w !== 0, opens: '09:00:00', closes: '18:00:00' }));
@@ -65,6 +79,8 @@ await db.query(`insert into tenant_members(tenant_id,user_id,role) values ($1,$2
 const svcId = (await db.query<{ id: string }>(`insert into services(tenant_id,name,duration_min,price_minor) values ($1,'Corte',60,500000) returning id`, [tid])).rows[0].id;
 await db.query(`update staff set name='Marta' where tenant_id=$1`, [tid]);
 const nuno = (await db.query<{ id: string }>(`insert into staff(tenant_id,name) values ($1,'Nuno') returning id`, [tid])).rows[0].id;
+const marta = (await db.query<{ id: string }>(`select id from staff where tenant_id=$1 and name='Marta'`, [tid])).rows[0].id;
+await db.query('update staff set user_id=$2 where id=$1', [marta, staffUser]); // este login "é" a Marta, para a agenda pessoal
 await db.query(`update business_hours set is_open=true, opens='09:00', closes='18:00' where tenant_id=$1`, [tid]);
 
 const today = todayInTz('Africa/Luanda');
@@ -94,12 +110,25 @@ assert.equal(await fails(() => asUser(db, 'anon', () => db.query('select cancel_
 console.log('✔ acompanhamento por token (com a loja) e cancelamento');
 
 // painel: estados por quem trabalha no negócio; concluir pontua fidelidade
-const b3 = await book({ time: '11:00', phone: '923306872', name: 'Carla Dias' });
+const b3 = await book({ time: '11:00', phone: '923306872', name: 'Carla Dias', staffId: marta });
 const setStatus = (who: string, id: string, st: string) => asUser(db, who, () => db.query('update bookings set status=$2 where id=$1', [id, st]));
-await setStatus(staffUser, b3.booking_id, 'completed');
+await setStatus(staffUser, b3.booking_id, 'completed'); // a Marta conclui a sua própria marcação
 assert.equal((await db.query<{ balance: number }>(`select balance from loyalty_customers where tenant_id=$1 and phone='244923306872'`, [tid])).rows[0].balance, 1, 'concluir marcação carimba a fidelidade');
 assert.equal(await fails(() => setStatus(owner, b3.booking_id, 'confirmed')), 'final_status', 'estado final não reabre');
 console.log('✔ estados no painel e fidelidade automática');
+
+// privacidade: um funcionário só vê e só edita as SUAS marcações — nunca as de outro colega
+const bNuno = await book({ time: '14:00', phone: '923306873', name: 'Zé Nuno Cliente', staffId: nuno });
+const staffSees = async (who: string) => (await asUser(db, who, () => db.query<{ id: string }>('select id from bookings where tenant_id=$1', [tid]))).rows.map((r) => r.id);
+const martaSees = await staffSees(staffUser);
+assert.ok(martaSees.includes(b3.booking_id), 'a Marta vê a sua própria marcação');
+assert.ok(!martaSees.includes(bNuno.booking_id), 'mas não vê a marcação do Nuno');
+assert.equal((await staffSees(owner)).length, (await asUser(db, owner, () => db.query('select id from bookings where tenant_id=$1', [tid]))).rows.length, 'o dono continua a ver tudo');
+assert.ok((await staffSees(owner)).includes(bNuno.booking_id), 'o dono vê a marcação do Nuno também');
+assert.equal(await fails(() => setStatus(staffUser, bNuno.booking_id, 'completed')), null, 'a Marta nem sequer encontra a marcação do Nuno para a alterar');
+const nunoRowAfter = (await asUser(db, owner, () => db.query<{ status: string }>('select status from bookings where id=$1', [bNuno.booking_id]))).rows[0];
+assert.equal(nunoRowAfter.status, 'confirmed', 'e a marcação do Nuno continua intacta, por muito que a Marta tente');
+console.log('✔ privacidade: cada funcionário só vê e só mexe nas suas próprias marcações');
 
 // selecionar "o dia" no fuso do negócio: marcação às 23:30 e às 00:00 (Lisboa) ficam em dias diferentes
 const lis = await mk('salao-pt', 'Europe/Lisbon', 'PT');
@@ -119,6 +148,5 @@ console.log('✔ o dia é o do fuso do negócio (23:30 e 00:00 em dias diferente
 // regras da agenda: a equipa vê, mas só admin altera serviços/equipa
 const wr = (who: string) => asUser(db, who, () => db.query(`insert into services(tenant_id,name,duration_min) values ($1,'X',30)`, [tid])).then(() => null, (e: Error) => e);
 assert.ok(await wr(staffUser), 'staff não cria serviços'); assert.equal(await wr(owner), null);
-assert.equal((await asUser(db, staffUser, () => db.query('select id from bookings where tenant_id=$1', [tid]))).rows.length >= 2, true, 'staff vê as marcações');
-console.log('✔ permissões da agenda');
+console.log('✔ permissões da agenda (a privacidade das marcações já foi confirmada em detalhe acima)');
 process.exit(0);

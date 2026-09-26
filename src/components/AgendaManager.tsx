@@ -5,15 +5,15 @@ import { createClient } from '@/lib/supabase/client';
 import { dbErrorKey } from '@/lib/errors';
 import { formatMoney } from '@/lib/money';
 import { fmtPhoneIntl, waLink } from '@/lib/phone';
-import { addDays, bookingActions, buildService, dayRangeUtc, timeInTz, todayInTz, toServiceForm, weekdayOf, type BookingRow, type HoursRow, type ServiceForm, type ServiceRow, type StaffRow } from '@/lib/booking';
+import { addDays, addMonths, bookingActions, buildService, dayRangeUtc, monthGrid, monthOf, timeInTz, todayInTz, toServiceForm, weekdayOf, type BookingRow, type HoursRow, type ServiceForm, type ServiceRow, type StaffRow } from '@/lib/booking';
 import { BookingFlow } from './store/BookingFlow';
 
 export interface AgendaTenant { id: string; slug: string; name: string; timezone: string; country: string; currency: string; decimals: number; moneyLocale: string; whatsapp: string | null; daysAhead: number; autoConfirm: boolean }
-interface Props { tenant: AgendaTenant; services: ServiceRow[]; staff: StaffRow[]; hours: HoursRow[]; blocked: string[]; initialDate: string; initialBookings: BookingRow[]; canAdmin: boolean; /** O prestador ligado a este login (se houver) — a agenda de um funcionário comum já começa filtrada nele. */ myStaffId?: string | null; /** Só para testes/SSR. */ initialTab?: 'day' | 'services' | 'team' }
+interface Props { tenant: AgendaTenant; services: ServiceRow[]; staff: StaffRow[]; hours: HoursRow[]; blocked: string[]; initialDate: string; initialBookings: BookingRow[]; canAdmin: boolean; /** O prestador ligado a este login (se houver) — a agenda de um funcionário comum já começa filtrada nele. */ myStaffId?: string | null; /** Só para testes/SSR. */ initialTab?: 'day' | 'services' | 'team'; /** Só para testes/SSR. */ initialShowCal?: boolean }
 type Dialog = { kind: 'booking' } | { kind: 'service'; s?: ServiceRow } | { kind: 'staff'; s?: StaffRow } | null;
 const ERR = ['name', 'duration', 'price', 'date', 'forbidden', 'status', 'generic'];
 
-export function AgendaManager({ tenant, services: s0, staff: st0, hours, blocked: b0, initialDate, initialBookings, canAdmin, myStaffId = null, initialTab = 'day' }: Props) {
+export function AgendaManager({ tenant, services: s0, staff: st0, hours, blocked: b0, initialDate, initialBookings, canAdmin, myStaffId = null, initialTab = 'day', initialShowCal = false }: Props) {
   const t = useTranslations('agenda');
   const tb = useTranslations('booking');
   const tt = t as unknown as (key: string, values?: Record<string, string | number>) => string;
@@ -23,6 +23,7 @@ export function AgendaManager({ tenant, services: s0, staff: st0, hours, blocked
   const [date, setDate] = useState(initialDate);
   const [bookings, setBookings] = useState(initialBookings);
   const [staffFilter, setStaffFilter] = useState(!canAdmin && myStaffId ? myStaffId : 'all');
+  const [showCal, setShowCal] = useState(initialShowCal);
   const [services, setServices] = useState(s0);
   const [staff, setStaff] = useState(st0);
   const [blocked, setBlocked] = useState(b0);
@@ -99,13 +100,16 @@ export function AgendaManager({ tenant, services: s0, staff: st0, hours, blocked
         <>
           <div className="toolbar">
             <button className="iconbtn" aria-label={t('prevDay')} onClick={() => setDate(addDays(date, -1))}>‹</button>
-            <b style={{ fontSize: 18, minWidth: 190, textAlign: 'center' }}>{dayLabel(date)}</b>
+            <button className="iconbtn" style={{ fontSize: 18, minWidth: 190, fontWeight: 700, color: 'var(--fg)', display: 'inline-flex', alignItems: 'center', gap: 8, justifyContent: 'center' }} onClick={() => setShowCal(true)} aria-label={t('pickDate')}>
+              {dayLabel(date)}
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="4" y="5.5" width="16" height="15" rx="3" /><path d="M4 10h16M8 3.5v3M16 3.5v3" /></svg>
+            </button>
             <button className="iconbtn" aria-label={t('nextDay')} onClick={() => setDate(addDays(date, 1))}>›</button>
             {date !== today && <button className="btn sm gray" onClick={() => setDate(today)}>{t('today')}</button>}
             <span style={{ flex: 1 }} />
             <button className="btn sm" onClick={() => setDialog({ kind: 'booking' })}>+ {t('newBooking')}</button>
           </div>
-          {staff.length > 1 && (
+          {canAdmin && staff.length > 1 && (
             <div className="chips" style={{ marginBottom: 14 }}>
               <button className="chip" aria-pressed={staffFilter === 'all'} onClick={() => setStaffFilter('all')}>{t('allStaff')}</button>
               {staff.map((s) => <button key={s.id} className="chip" aria-pressed={staffFilter === s.id} onClick={() => setStaffFilter(s.id)}>{s.name}</button>)}
@@ -187,13 +191,47 @@ export function AgendaManager({ tenant, services: s0, staff: st0, hours, blocked
           <div className="modal wide" role="dialog" aria-modal="true" aria-label={t('newBooking')}>
             <h2>{t('newBooking')}</h2>
             <BookingFlow mode="admin" slug={tenant.slug} tenant={{ name: tenant.name, country: tenant.country, currency: tenant.currency, decimals: tenant.decimals, moneyLocale: tenant.moneyLocale, timezone: tenant.timezone, whatsapp: tenant.whatsapp }}
-              services={services} staff={staff} hours={hours} blocked={blocked} daysAhead={tenant.daysAhead} autoConfirm={tenant.autoConfirm} onDone={() => { setDialog(null); void loadDay(date); }} />
+              services={services} staff={canAdmin ? staff : staff.filter((s) => s.id === myStaffId)} hours={hours} blocked={blocked} daysAhead={tenant.daysAhead} autoConfirm={tenant.autoConfirm} onDone={() => { setDialog(null); void loadDay(date); }} />
+          </div>
+        </div>
+      )}
+      {showCal && (
+        <div className="mbg" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setShowCal(false); }}>
+          <div className="modal cal-pop" role="dialog" aria-modal="true" aria-label={t('pickDate')}>
+            <MonthPicker date={date} today={today} locale={locale} onPick={setDate} onClose={() => setShowCal(false)} />
           </div>
         </div>
       )}
       {dialog?.kind === 'service' && <ServiceDialog tenant={tenant} s={dialog.s} onClose={() => setDialog(null)} onSaved={async () => { setDialog(null); await reloadSetup(); }} />}
       {dialog?.kind === 'staff' && <StaffDialog tenantId={tenant.id} s={dialog.s} onClose={() => setDialog(null)} onSaved={async () => { setDialog(null); await reloadSetup(); }} />}
     </>
+  );
+}
+
+// Fora do componente de propósito (o mesmo motivo do AddressFields no formulário de mudança):
+// definido lá dentro, o React recria isto a cada render e a grelha perderia o estado do mês a cada clique.
+function MonthPicker({ date, today, locale, onPick, onClose }: { date: string; today: string; locale: string; onPick: (d: string) => void; onClose: () => void }) {
+  const [month, setMonth] = useState(monthOf(date));
+  const grid = monthGrid(month);
+  const monthLabel = new Date(`${month}-01T12:00:00Z`).toLocaleDateString(locale, { month: 'long', year: 'numeric', timeZone: 'UTC' });
+  // o Intl "short" nem sempre abrevia (em pt devolve o nome completo) — corta-se à mão, para ficar sempre curto em qualquer idioma.
+  const weekdayLabels = Array.from({ length: 7 }, (_, i) => new Date(`2023-01-${String(i + 1).padStart(2, '0')}T12:00:00Z`).toLocaleDateString(locale, { weekday: 'short', timeZone: 'UTC' }).slice(0, 3)); // 1-7 jan 2023 = domingo a sábado
+  return (
+    <div>
+      <div className="cal-head">
+        <button className="iconbtn" aria-label="←" onClick={() => setMonth(addMonths(month, -1))}>‹</button>
+        <strong>{monthLabel}</strong>
+        <button className="iconbtn" aria-label="→" onClick={() => setMonth(addMonths(month, 1))}>›</button>
+      </div>
+      <div className="cal-week">{weekdayLabels.map((w, i) => <span key={i}>{w}</span>)}</div>
+      <div className="cal-grid">
+        {grid.map((c) => (
+          <button key={c.date} type="button" className={['cal-day', !c.inMonth && 'out', c.date === today && 'today', c.date === date && 'sel'].filter(Boolean).join(' ')} onClick={() => { onPick(c.date); onClose(); }}>
+            {Number(c.date.slice(8, 10))}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 

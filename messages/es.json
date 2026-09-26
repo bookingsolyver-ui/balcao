@@ -740,7 +740,8 @@
       "forbidden": "No tienes permiso para esta acción.",
       "status": "No se pudo actualizar la reserva.",
       "generic": "No se pudo guardar. Inténtalo de nuevo."
-    }
+    },
+    "pickDate": "Elegir fecha"
   },
   "move": {
     "title": "Solicitar presupuesto",

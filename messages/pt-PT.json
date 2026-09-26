@@ -740,7 +740,8 @@
       "forbidden": "Não tem permissão para esta ação.",
       "status": "Não foi possível atualizar a marcação.",
       "generic": "Não foi possível guardar. Tente novamente."
-    }
+    },
+    "pickDate": "Escolher data"
   },
   "move": {
     "title": "Pedir orçamento",
