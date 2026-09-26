@@ -1,13 +1,12 @@
 @import "tailwindcss";
 
-/* Tokens — "balcão de bairro": papel de talão, tinta de carimbo, verde de toldo.
-   Claro por defeito, escuro automático (o balcão depois de fechar). */
+/* Tokens — "balcão de bairro": azul e branco moderno */
 :root {
-  --acc-light: #2f5233; --acc-dark: #6ba375; --accent: var(--acc-light);
-  --bg: #fbf7ee; --bg2: #f3ecdc; --bg3: #e9dfc7; --card: #fffdf8;
-  --fg: #2b2016; --fg2: #6b5d48; --fg3: #94835f;
-  --line: rgba(43,32,22,.15); --line2: rgba(43,32,22,.08); --glass: rgba(251,247,238,.86);
-  --ok: #3d7a4a; --warn: #a6650e; --bad: #a3311f; --wa: #1f8a4c;
+  --acc-light: #2563eb; --acc-dark: #60a5fa; --accent: var(--acc-light);
+  --bg: #ffffff; --bg2: #f8fafc; --bg3: #f1f5f9; --card: #ffffff;
+  --fg: #0f172a; --fg2: #334155; --fg3: #64748b;
+  --line: rgba(15,23,42,.15); --line2: rgba(15,23,42,.08); --glass: rgba(255,255,255,.86);
+  --ok: #16a34a; --warn: #d97706; --bad: #dc2626; --wa: #16a34a;
   --tint: color-mix(in srgb, var(--accent) 12%, transparent);
   color-scheme: light;
 }
@@ -20,9 +19,9 @@
 [data-accent=teal]{--acc-light:#2c6363;--acc-dark:#6fa8a8}
 @media (prefers-color-scheme: dark) {
   :root {
-    --accent: var(--acc-dark); --bg: #211a12; --bg2: #2b2118; --bg3: #3a2e20; --card: #2a2118;
-    --fg: #f3e9d6; --fg2: #c4b394; --fg3: #93805e; --line: rgba(243,233,214,.16); --line2: rgba(243,233,214,.08);
-    --glass: rgba(33,26,18,.86); --ok: #6bae79; --warn: #d69a3d; --bad: #d6614a; --wa: #35b96a; color-scheme: dark;
+    --accent: var(--acc-dark); --bg: #0f172a; --bg2: #1e293b; --bg3: #334155; --card: #1e293b;
+    --fg: #f8fafc; --fg2: #cbd5e1; --fg3: #94a3b8; --line: rgba(248,250,252,.16); --line2: rgba(248,250,252,.08);
+    --glass: rgba(15,23,42,.86); --ok: #4ade80; --warn: #fbbf24; --bad: #f87171; --wa: #4ade80; color-scheme: dark;
   }
 }
 
