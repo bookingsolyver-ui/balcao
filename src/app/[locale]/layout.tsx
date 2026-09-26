@@ -1,15 +1,15 @@
 import type { Metadata } from 'next';
-import { Fraunces, Karla } from 'next/font/google';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 import '../globals.css';
 
-// Fraunces: destaque (títulos, números de pedido/preço) — Karla: corpo de texto e interface.
-// Ambas cobrem bem os diacríticos de pt-PT/pt-BR/es (latin-ext).
-const display = Fraunces({ subsets: ['latin', 'latin-ext'], weight: ['500', '600', '700'], style: ['normal', 'italic'], variable: '--font-display', display: 'swap' });
-const body = Karla({ subsets: ['latin', 'latin-ext'], weight: ['400', '500', '600', '700'], variable: '--font-body', display: 'swap' });
+// Uma só família (Plus Jakarta Sans), com pesos diferentes para títulos e corpo — no espírito da tryinteract.com.
+// Cobre bem os diacríticos de pt-PT/pt-BR/es (latin-ext).
+const display = Plus_Jakarta_Sans({ subsets: ['latin', 'latin-ext'], weight: ['600', '700', '800'], style: ['normal', 'italic'], variable: '--font-display', display: 'swap' });
+const body = Plus_Jakarta_Sans({ subsets: ['latin', 'latin-ext'], weight: ['400', '500', '600', '700'], variable: '--font-body', display: 'swap' });
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
