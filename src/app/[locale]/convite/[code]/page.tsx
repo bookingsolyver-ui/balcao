@@ -36,10 +36,10 @@ export default async function InvitePage({ params }: { params: Promise<{ locale:
               ) : (
                 <div style={{ marginTop: 22 }}>
                   <p className="muted small" style={{ marginBottom: 14 }}>{t('needLogin')}</p>
-  <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-  <Link className="btn" href={`/login?returnTo=/${locale}/convite/${code}`}>{t('login')}</Link>
-  <Link className="btn ghost" href={`/signup?returnTo=/${locale}/convite/${code}`}>{t('signup')}</Link>
-</div>
+                  <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <Link className="btn" href={`/login?returnTo=${encodeURIComponent(`/${locale}/convite/${code}`)}`}>{t('login')}</Link>
+                    <Link className="btn ghost" href={`/signup?returnTo=${encodeURIComponent(`/${locale}/convite/${code}`)}`}>{t('signup')}</Link>
+                  </div>
                 </div>
               )}
             </>

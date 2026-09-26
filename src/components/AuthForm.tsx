@@ -5,7 +5,7 @@ import { Link, useRouter } from '@/i18n/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { authErrorKey } from '@/lib/errors';
 
-export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
+export function AuthForm({ mode, returnTo }: { mode: 'login' | 'signup'; /** Caminho já validado (ex.: um convite de equipa) — sem isto, vai para o painel como sempre. */ returnTo?: string }) {
   const t = useTranslations('auth');
   const locale = useLocale();
   const router = useRouter();
@@ -21,17 +21,18 @@ export function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
     setBusy(true); setError(null);
     try {
       const supabase = createClient();
+      const goNext = () => { if (returnTo) window.location.href = returnTo; else { router.replace('/app'); router.refresh(); } };
       if (isLogin) {
         const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
         if (error) return setError(authErrorKey(error));
-        router.replace('/app'); router.refresh();
+        goNext();
       } else {
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(), password,
-          options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(`/${locale}/app`)}` },
+          options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(returnTo || `/${locale}/app`)}` },
         });
         if (error) return setError(authErrorKey(error));
-        if (data.session) { router.replace('/app'); router.refresh(); } else setSent(true);
+        if (data.session) goNext(); else setSent(true);
       }
     } catch { setError('generic'); } finally { setBusy(false); }
   }
