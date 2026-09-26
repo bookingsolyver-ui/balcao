@@ -85,36 +85,59 @@ export interface MovePayload {
   destination: { street: string; city: string; postal: string | null; floor: number | null; elevator: boolean | null; access: string | null };
   extras: string[]; special_items: string[]; preferred_date: string | null; date_flexible: boolean; time_window: TimeWindow; notes: string | null; consent: true;
 }
+type AddrCtx = { country: string };
+type AddrOk = { value: { street: string; city: string; postal: string | null; floor: number | null; elevator: boolean | null; access: string | null } };
+/** Regras de uma morada (usadas tanto na validação de um passo como no envio final — nunca duplicadas). */
+function validateAddress(a: AddressForm, which: 'origin' | 'destination', ctx: AddrCtx): AddrOk | { error: MoveFormError } {
+  if (a.street.trim().length < 3 || a.city.trim().length < 2) return { error: which };
+  let postal: string | null = a.postal.trim() || null;
+  if (postal && ctx.country === 'PT') { postal = normalizePostalPT(postal); if (!postal) return { error: `${which}_postal` as MoveFormError }; }
+  let floor: number | null = null;
+  if (a.floor.trim() !== '') { const n = Number(a.floor.trim()); if (!/^-?\d{1,2}$/.test(a.floor.trim()) || n < -5 || n > 60) return { error: `${which}_floor` as MoveFormError }; floor = n; }
+  return { value: { street: a.street.trim(), city: a.city.trim(), postal, floor, elevator: a.elevator === 'yes' ? true : a.elevator === 'no' ? false : null, access: a.access.trim().slice(0, 300) || null } };
+}
+function validateDate(f: MoveForm, ctx: { today: string; fullDays: string[] }): MoveFormError | null {
+  if (!f.preferredDate) return null;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(f.preferredDate) || f.preferredDate < ctx.today) return 'date';
+  if (ctx.fullDays.includes(f.preferredDate) && !f.flexible) return 'day_full';
+  return null;
+}
+function validateContact(f: MoveForm, ctx: { country: string }): MoveFormError | null {
+  if (f.name.trim().length < 2) return 'name';
+  if (!toE164Digits(f.phone, ctx.country)) return 'phone';
+  if (f.email.trim() && !isValidEmail(f.email.trim())) return 'email';
+  if (f.notes.length > 2000) return 'notes';
+  if (!f.consent) return 'consent';
+  return null;
+}
+
+/** Quantas etapas tem o formulário — a 4ª (extras/especiais) só existe se o negócio tiver configurado alguma coisa. */
+export function moveStepCount(cfg: MoveSettings): number { return cfg.extras.length > 0 || cfg.special_items.length > 0 ? 6 : 5; }
+/** Valida só os campos da etapa atual, para decidir se pode avançar — as mesmas regras do envio final, nunca duplicadas à parte. */
+export function moveStepError(step: number, hasExtrasStep: boolean, f: MoveForm, ctx: { country: string; today: string; fullDays: string[] }): MoveFormError | null {
+  const s = hasExtrasStep ? step : step >= 4 ? step + 1 : step; // sem a etapa de extras, a numeração "salta" para bater com moveStepCount
+  if (s === 1) return parseVolume(f.volume) === null ? 'volume' : null;
+  if (s === 2) { const r = validateAddress(f.origin, 'origin', ctx); return 'error' in r ? r.error : null; }
+  if (s === 3) { const r = validateAddress(f.destination, 'destination', ctx); return 'error' in r ? r.error : null; }
+  if (s === 4) return null; // extras/especiais: nunca obrigatório
+  if (s === 5) return validateDate(f, ctx);
+  return validateContact(f, ctx);
+}
+
 export function buildMoveRequest(f: MoveForm, ctx: { country: string; today: string; fullDays: string[] }): { ok: true; payload: MovePayload } | { ok: false; error: MoveFormError } {
-  const name = f.name.trim();
-  if (name.length < 2) return { ok: false, error: 'name' };
-  const phone = toE164Digits(f.phone, ctx.country);
-  if (!phone) return { ok: false, error: 'phone' };
-  const email = f.email.trim();
-  if (email && !isValidEmail(email)) return { ok: false, error: 'email' };
+  const contactErr = validateContact(f, ctx);
+  if (contactErr) return { ok: false, error: contactErr };
+  const phone = toE164Digits(f.phone, ctx.country)!;
   const vol = parseVolume(f.volume);
   if (vol === null) return { ok: false, error: 'volume' };
 
-  const addr = (a: AddressForm, which: 'origin' | 'destination') => {
-    if (a.street.trim().length < 3 || a.city.trim().length < 2) return { error: which } as const;
-    let postal: string | null = a.postal.trim() || null;
-    if (postal && ctx.country === 'PT') { postal = normalizePostalPT(postal); if (!postal) return { error: `${which}_postal` } as const; }
-    let floor: number | null = null;
-    if (a.floor.trim() !== '') { const n = Number(a.floor.trim()); if (!/^-?\d{1,2}$/.test(a.floor.trim()) || n < -5 || n > 60) return { error: `${which}_floor` } as const; floor = n; }
-    return { value: { street: a.street.trim(), city: a.city.trim(), postal, floor, elevator: a.elevator === 'yes' ? true : a.elevator === 'no' ? false : null, access: a.access.trim().slice(0, 300) || null } };
-  };
-  const o = addr(f.origin, 'origin'); if ('error' in o) return { ok: false, error: o.error as MoveFormError };
-  const d = addr(f.destination, 'destination'); if ('error' in d) return { ok: false, error: d.error as MoveFormError };
+  const o = validateAddress(f.origin, 'origin', ctx); if ('error' in o) return { ok: false, error: o.error };
+  const d = validateAddress(f.destination, 'destination', ctx); if ('error' in d) return { ok: false, error: d.error };
+  const dateErr = validateDate(f, ctx); if (dateErr) return { ok: false, error: dateErr };
 
-  if (f.preferredDate) {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(f.preferredDate) || f.preferredDate < ctx.today) return { ok: false, error: 'date' };
-    if (ctx.fullDays.includes(f.preferredDate) && !f.flexible) return { ok: false, error: 'day_full' };
-  }
-  if (f.notes.length > 2000) return { ok: false, error: 'notes' };
-  if (!f.consent) return { ok: false, error: 'consent' };
   return {
     ok: true,
-    payload: { name, phone, email: email || null, move_type: f.moveType, volume_m3: vol, origin: o.value, destination: d.value, extras: [...new Set(f.extras)], special_items: [...new Set(f.special)],
+    payload: { name: f.name.trim(), phone, email: f.email.trim() || null, move_type: f.moveType, volume_m3: vol, origin: o.value, destination: d.value, extras: [...new Set(f.extras)], special_items: [...new Set(f.special)],
       preferred_date: f.preferredDate || null, date_flexible: f.flexible, time_window: f.window, notes: f.notes.trim() || null, consent: true },
   };
 }

@@ -18,27 +18,58 @@ const moveTenant = { slug: 'mudancas-rapidas', name: 'Mudanças Rápidas', whats
 const cfg = { ...DEFAULT_MOVING, rate_per_m3_minor: 3500, min_price_minor: 30000, per_floor_minor: 1500 };
 const today = '2026-09-21';
 
-// ---- formulário do cliente ----
+// ---- formulário do cliente, agora por etapas (uma de cada vez, não tudo junto) ----
 const reEsc = (v: string) => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// etapa 1: tipo e volume — e mais nada disto ainda visível
 let h = wrap('pt-PT', <MoveRequestForm tenant={moveTenant} cfg={cfg} fullDays={[]} today={today} />); let tx = text(h);
-assert.match(tx, /Tipo de mudança/); assert.match(tx, /Casa/); assert.match(tx, /Escritório/); assert.match(tx, /Só alguns móveis/);
+assert.match(tx, /Passo 1 de 6/); assert.match(tx, /Tipo de mudança/); assert.match(tx, /Casa/); assert.match(tx, /Escritório/); assert.match(tx, /Só alguns móveis/);
 assert.match(tx, /Volume estimado \(m³\)/); assert.match(tx, /Tipologia \(ajuda a estimar\)/);
 for (const ty of cfg.typologies) assert.match(h, new RegExp(`<option value="${reEsc(ty.key)}">${reEsc(ty.key)} · ${ty.m3} m³</option>`), `tipologia ${ty.key}`);
-assert.match(tx, /Morada de origem/); assert.match(tx, /Morada de destino/); assert.match(tx, /Elevador/); assert.match(tx, /Tem elevador/); assert.match(tx, /Sem elevador/); assert.match(tx, /Não sei/);
-for (const e of cfg.extras) assert.match(tx, new RegExp(reEsc(e.name))); for (const sp of cfg.special_items) assert.match(tx, new RegExp(reEsc(sp)));
-assert.match(tx, /Tenho flexibilidade de datas/); assert.match(tx, /Observações importantes/); assert.match(tx, /Autoriz[oa] o contacto/);
-assert.match(tx, /Pedir orçamento/); assert.doesNotMatch(tx, /Ver política de privacidade/, 'sem link quando não configurado');
-console.log('✔ formulário do cliente: tipos, tipologias, moradas, elevador, extras, itens especiais, consentimento');
+assert.doesNotMatch(tx, /Morada de origem/, 'a morada só aparece no seu próprio passo'); assert.doesNotMatch(tx, /Autoriz[oa] o contacto/, 'o consentimento só aparece no último passo');
+assert.doesNotMatch(h, /type="submit"[^>]*>\s*Pedir orçamento/, 'no 1º passo o botão é "Seguinte", não "Pedir orçamento"'); assert.match(tx, /Seguinte/);
+assert.doesNotMatch(tx, /Voltar/, 'no 1º passo não há "Voltar"');
+console.log('✔ passo 1: só tipo e volume — o resto ainda não aparece');
 
-h = wrap('pt-PT', <MoveRequestForm tenant={moveTenant} cfg={{ ...cfg, privacy_url: 'https://exemplo.pt/privacidade' }} fullDays={[today]} today={today} />);
+// etapa 2 e 3: moradas, cada uma isolada no seu passo
+h = wrap('pt-PT', <MoveRequestForm tenant={moveTenant} cfg={cfg} fullDays={[]} today={today} initialStep={2} />); tx = text(h);
+assert.match(tx, /Passo 2 de 6/); assert.match(tx, /Morada de origem/); assert.match(tx, /Elevador/); assert.match(tx, /Tem elevador/); assert.match(tx, /Sem elevador/); assert.match(tx, /Não sei/);
+assert.doesNotMatch(tx, /Morada de destino/, 'a origem e o destino não aparecem juntas'); assert.match(tx, /Voltar/);
+h = wrap('pt-PT', <MoveRequestForm tenant={moveTenant} cfg={cfg} fullDays={[]} today={today} initialStep={3} />); tx = text(h);
+assert.match(tx, /Passo 3 de 6/); assert.match(tx, /Morada de destino/); assert.doesNotMatch(tx, /Morada de origem/);
+console.log('✔ passos 2 e 3: origem e destino, cada uma no seu próprio passo, nunca as duas juntas');
+
+// etapa 4: extras e itens especiais (só existe porque este negócio tem extras configurados)
+h = wrap('pt-PT', <MoveRequestForm tenant={moveTenant} cfg={cfg} fullDays={[]} today={today} initialStep={4} />); tx = text(h);
+assert.match(tx, /Passo 4 de 6/); for (const e of cfg.extras) assert.match(tx, new RegExp(reEsc(e.name))); for (const sp of cfg.special_items) assert.match(tx, new RegExp(reEsc(sp)));
+console.log('✔ passo 4: extras e itens especiais');
+
+// etapa 6 (última): notas, contacto e consentimento — e o botão já diz "Pedir orçamento"
+h = wrap('pt-PT', <MoveRequestForm tenant={moveTenant} cfg={cfg} fullDays={[]} today={today} initialStep={6} />); tx = text(h);
+assert.match(tx, /Passo 6 de 6/); assert.match(tx, /Observações importantes/); assert.match(tx, /Autoriz[oa] o contacto/); assert.match(tx, /Pedir orçamento/);
+assert.doesNotMatch(tx, /Seguinte/, 'no último passo não há "Seguinte", só o botão de enviar');
+console.log('✔ último passo: observações, contacto, consentimento — botão já é "Pedir orçamento"');
+
+// sem extras configurados: salta logo do passo 3 (destino) para "quando" — só 5 passos ao todo
+h = wrap('pt-PT', <MoveRequestForm tenant={moveTenant} cfg={{ ...cfg, extras: [], special_items: [] }} fullDays={[]} today={today} initialStep={4} />); tx = text(h);
+assert.match(tx, /Passo 4 de 5/); assert.match(tx, /Data preferida/); assert.match(tx, /Tenho flexibilidade de datas/); assert.doesNotMatch(tx, /Embalagem/, 'sem extras configurados, o passo 4 já é "quando", não extras');
+console.log('✔ sem extras configurados: o passo de extras desaparece, e a contagem total desce para 5');
+
+h = wrap('pt-PT', <MoveRequestForm tenant={moveTenant} cfg={{ ...cfg, privacy_url: 'https://exemplo.pt/privacidade' }} fullDays={[today]} today={today} initialStep={6} />);
 assert.match(h, /href="https:\/\/exemplo\.pt\/privacidade"/); assert.match(text(h), /Ver política de privacidade/);
 console.log('✔ link da política de privacidade quando configurado');
 
 h = wrap('en', <MoveRequestForm tenant={{ ...moveTenant, country: 'US' }} cfg={DEFAULT_MOVING} fullDays={[]} today={today} />); tx = text(h);
-assert.match(tx, /Request a quote/); assert.match(tx, /Pickup address/); assert.match(tx, /No elevator/); assert.match(tx, /I agree to be contacted/);
+assert.match(tx, /Request a quote/); assert.match(tx, /Step 1 of 6/);
+h = wrap('en', <MoveRequestForm tenant={{ ...moveTenant, country: 'US' }} cfg={DEFAULT_MOVING} fullDays={[]} today={today} initialStep={2} />);
+assert.match(text(h), /Pickup address/); assert.match(text(h), /No elevator/);
+h = wrap('en', <MoveRequestForm tenant={{ ...moveTenant, country: 'US' }} cfg={DEFAULT_MOVING} fullDays={[]} today={today} initialStep={6} />);
+assert.match(text(h), /I agree to be contacted/);
 h = wrap('es', <MoveRequestForm tenant={moveTenant} cfg={DEFAULT_MOVING} fullDays={[]} today={today} />);
-assert.match(text(h), /Solicitar presupuesto/); assert.match(text(h), /Dirección de origen/);
-console.log('✔ formulário em inglês e espanhol');
+assert.match(text(h), /Solicitar presupuesto/);
+h = wrap('es', <MoveRequestForm tenant={moveTenant} cfg={DEFAULT_MOVING} fullDays={[]} today={today} initialStep={2} />);
+assert.match(text(h), /Dirección de origen/);
+console.log('✔ formulário em inglês e espanhol, incluindo passos avançados');
 
 // ---- painel do negócio ----
 const row = (n: number, status: MoveRow['status'], over: Partial<MoveRow> = {}): MoveRow => ({

@@ -1,7 +1,7 @@
 // Mudanças: validação, sugestão de preço, CSV e o fluxo completo contra o Postgres real (pedido → orçamento → confirmado → concluído).
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { DEFAULT_MOVING, addressLine, buildMoveRequest, buildMovingSettings, emptyMoveForm, estimateVolume, isLiveMove, mergeMoving, moveActions, moveGuard, moveMessage, movesToCsv, movingConfig, normalizePostalPT, parseVolume, suggestQuote, toMovingSettingsForm, type MoveForm, type MoveRow, type MoveTrack } from '../src/lib/moving';
+import { DEFAULT_MOVING, addressLine, buildMoveRequest, buildMovingSettings, emptyMoveForm, estimateVolume, isLiveMove, mergeMoving, moveActions, moveGuard, moveMessage, moveStepCount, moveStepError, movesToCsv, movingConfig, normalizePostalPT, parseVolume, suggestQuote, toMovingSettingsForm, type MoveForm, type MoveRow, type MoveTrack } from '../src/lib/moving';
 import { dbErrorKey } from '../src/lib/errors';
 import { makeDb, asUser } from './helpers/pg';
 
@@ -139,4 +139,20 @@ assert.ok(lines[1].includes('Rua das Flores 10, 1200-123, Lisboa'));
 const tricky = movesToCsv([{ ...all[0], customer_name: 'Ana "Nina"; Silva', notes: 'linha1\nlinha2' }], H, { money: String, status: (s) => s, type: (x) => x, window: (w) => w, date: (i) => i.slice(0, 10) });
 assert.match(tricky, /"Ana ""Nina""; Silva"/); assert.match(tricky, /"linha1\nlinha2"/);
 console.log('✔ exportação CSV (Excel PT: separador ";", BOM, aspas e quebras de linha)');
+
+// ---- validação por etapa (formulário por etapas) — as mesmas regras do envio final, nunca outras ----
+const cfgWith = DEFAULT_MOVING;
+const cfgWithout = { ...cfgWith, extras: [], special_items: [] };
+assert.equal(moveStepCount(cfgWith), 6, 'com extras/especiais configurados: 6 etapas'); assert.equal(moveStepCount(cfgWithout), 5, 'sem nada configurado: 5 etapas (salta a etapa de extras)');
+
+assert.equal(moveStepError(1, true, form({ volume: '' }), ctx), 'volume'); assert.equal(moveStepError(1, true, form(), ctx), null);
+assert.equal(moveStepError(2, true, form({ origin: { ...emptyMoveForm().origin, street: 'Ru', city: 'Lisboa' } }), ctx), 'origin'); assert.equal(moveStepError(2, true, form(), ctx), null);
+assert.equal(moveStepError(3, true, form({ destination: { ...emptyMoveForm().destination, street: '', city: '' } }), ctx), 'destination');
+assert.equal(moveStepError(4, true, form({ name: '' }), ctx), null, 'etapa de extras nunca bloqueia, seja lá o que faltar noutro sítio');
+assert.equal(moveStepError(5, true, form({ preferredDate: '2000-01-01' }), ctx), 'date'); assert.equal(moveStepError(5, true, form(), ctx), null);
+assert.equal(moveStepError(6, true, form({ consent: false }), ctx), 'consent'); assert.equal(moveStepError(6, true, form({ name: 'A' }), ctx), 'name'); assert.equal(moveStepError(6, true, form(), ctx), null);
+// sem a etapa de extras (4ª etapa não existe): a 4ª pergunta passa a ser "quando", a 5ª "contacto"
+assert.equal(moveStepError(4, false, form({ preferredDate: '2000-01-01' }), ctx), 'date', 'sem extras: a numeração desliza — a etapa 4 é "quando"');
+assert.equal(moveStepError(5, false, form({ consent: false }), ctx), 'consent', 'sem extras: a etapa 5 é "contacto"');
+console.log('✔ validação por etapa: mesmas regras do envio final, nunca bloqueia por engano na etapa errada');
 process.exit(0);

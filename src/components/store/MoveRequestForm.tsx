@@ -4,18 +4,45 @@ import { useLocale, useTranslations } from 'next-intl';
 import { createClient } from '@/lib/supabase/client';
 import { dbErrorKey } from '@/lib/errors';
 import { waLink } from '@/lib/phone';
-import { addressLine, buildMoveRequest, emptyMoveForm, estimateVolume, moveMessage, type AddressForm, type MoveForm, type MoveSettings } from '@/lib/moving';
+import { addressLine, buildMoveRequest, emptyMoveForm, estimateVolume, moveMessage, moveStepCount, moveStepError, type AddressForm, type MoveForm, type MoveSettings } from '@/lib/moving';
 
 export interface MoveTenant { slug: string; name: string; whatsapp: string | null; country: string; timezone: string }
-interface Props { tenant: MoveTenant; cfg: MoveSettings; fullDays: string[]; today: string }
+interface Props { tenant: MoveTenant; cfg: MoveSettings; fullDays: string[]; today: string; /** Só para testes/SSR. */ initialStep?: number }
 const MOVE_TYPES = ['home', 'office', 'furniture'] as const;
 const KNOWN = ['name', 'phone', 'email', 'volume', 'origin', 'destination', 'origin_postal', 'destination_postal', 'origin_floor', 'destination_floor', 'date', 'day_full', 'consent', 'notes', 'tenant_not_found', 'module_disabled', 'too_many_requests', 'generic'];
+type Tr = (key: string, values?: Record<string, string | number>) => string;
 
-export function MoveRequestForm({ tenant, cfg, fullDays, today }: Props) {
+// Fora do componente de propósito: definido cá dentro, o React recria isto a cada tecla e os campos perdem o foco.
+function AddressFields({ which, label, a, onChange, t }: { which: 'origin' | 'destination'; label: string; a: AddressForm; onChange: (patch: Partial<AddressForm>) => void; t: Tr }) {
+  return (
+    <div>
+      <h3 className="sec-t" style={{ fontSize: 18, marginBottom: 10 }}>{label}</h3>
+      <div className="addr-card">
+        <div className="field"><label htmlFor={`${which}-street`}>{t('street')}</label><input id={`${which}-street`} className="input" value={a.street} onChange={(e) => onChange({ street: e.target.value })} /></div>
+        <div className="frow">
+          <div className="field"><label htmlFor={`${which}-city`}>{t('city')}</label><input id={`${which}-city`} className="input" value={a.city} onChange={(e) => onChange({ city: e.target.value })} /></div>
+          <div className="field"><label htmlFor={`${which}-postal`}>{t('postal')}</label><input id={`${which}-postal`} className="input" value={a.postal} onChange={(e) => onChange({ postal: e.target.value })} /></div>
+          <div className="field"><label htmlFor={`${which}-floor`}>{t('floor')}</label><input id={`${which}-floor`} className="input" inputMode="numeric" placeholder="0" value={a.floor} onChange={(e) => onChange({ floor: e.target.value })} /><span className="hint">{t('floorHint')}</span></div>
+        </div>
+        <div className="field"><span className="lbl">{t('elevator')}</span>
+          <div className="seg3" role="group">
+            <button type="button" aria-pressed={a.elevator === 'yes'} onClick={() => onChange({ elevator: 'yes' })}>{t('elevatorYes')}</button>
+            <button type="button" aria-pressed={a.elevator === 'no'} onClick={() => onChange({ elevator: 'no' })}>{t('elevatorNo')}</button>
+            <button type="button" aria-pressed={a.elevator === ''} onClick={() => onChange({ elevator: '' })}>{t('elevatorUnknown')}</button>
+          </div></div>
+        <div className="field"><label htmlFor={`${which}-access`}>{t('access')}</label><input id={`${which}-access`} className="input" maxLength={300} value={a.access} onChange={(e) => onChange({ access: e.target.value })} /><span className="hint">{t('accessHint')}</span></div>
+      </div>
+    </div>
+  );
+}
+
+export function MoveRequestForm({ tenant, cfg, fullDays, today, initialStep = 1 }: Props) {
   const t = useTranslations('move');
-  const tt = t as unknown as (key: string, values?: Record<string, string | number>) => string;
+  const tt = t as unknown as Tr;
   const locale = useLocale();
   const [f, setF] = useState<MoveForm>(emptyMoveForm());
+  const [step, setStep] = useState(initialStep);
+  const [stepErr, setStepErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [done, setDone] = useState<{ number: number; token: string; text: string } | null>(null);
@@ -23,9 +50,21 @@ export function MoveRequestForm({ tenant, cfg, fullDays, today }: Props) {
   const setAddr = (which: 'origin' | 'destination', patch: Partial<AddressForm>) => setF((p) => ({ ...p, [which]: { ...p[which], ...patch } }));
   const toggle = (list: 'extras' | 'special', v: string) => setF((p) => ({ ...p, [list]: p[list].includes(v) ? p[list].filter((x) => x !== v) : [...p[list], v] }));
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault(); setErr(null);
-    const b = buildMoveRequest(f, { country: tenant.country, today, fullDays });
+  const hasExtrasStep = cfg.extras.length > 0 || cfg.special_items.length > 0;
+  const stepCount = moveStepCount(cfg);
+  const ctx = { country: tenant.country, today, fullDays };
+
+  function next() {
+    const e = moveStepError(step, hasExtrasStep, f, ctx);
+    if (e) return setStepErr(e);
+    setStepErr(null);
+    if (step < stepCount) setStep(step + 1); else void submit();
+  }
+  function back() { setStepErr(null); setStep((s) => Math.max(1, s - 1)); }
+
+  async function submit() {
+    setErr(null);
+    const b = buildMoveRequest(f, ctx);
     if (!b.ok) return setErr(b.error);
     setBusy(true);
     try {
@@ -55,103 +94,102 @@ export function MoveRequestForm({ tenant, cfg, fullDays, today }: Props) {
         <div className="form" style={{ textAlign: 'left' }}>
           {tenant.whatsapp ? <a className="btn wa block" target="_blank" rel="noopener" href={waLink(tenant.whatsapp, done.text)}>{t('sendWhatsapp')}</a> : <p className="sf-note">{t('noWhatsapp')}</p>}
           <a className="btn ghost block" href={`/${locale}/s/${tenant.slug}/move/${done.token}`}>{t('track')}</a>
-          <button className="btn gray block" onClick={() => { setDone(null); setF(emptyMoveForm()); }}>{t('another')}</button>
+          <button className="btn gray block" onClick={() => { setDone(null); setF(emptyMoveForm()); setStep(1); }}>{t('another')}</button>
         </div>
       </div>
     );
   }
 
-  const errText = err ? tt(`errors.${err}`) : null;
-  const Intro = () => (<><h2 style={{ fontSize: 24, fontWeight: 700, letterSpacing: '-.025em', marginBottom: 6 }}>{t('title')}</h2><p className="muted" style={{ marginBottom: 20 }}>{t('intro')}</p></>);
-  const AddressFields = ({ which, label }: { which: 'origin' | 'destination'; label: string }) => {
-    const a = f[which];
-    return (
-      <div>
-        <h3 className="sec-t" style={{ fontSize: 18, marginBottom: 10 }}>{label}</h3>
-        <div className="addr-card">
-          <div className="field"><label htmlFor={`${which}-street`}>{t('street')}</label><input id={`${which}-street`} className="input" value={a.street} onChange={(e) => setAddr(which, { street: e.target.value })} /></div>
-          <div className="frow">
-            <div className="field"><label htmlFor={`${which}-city`}>{t('city')}</label><input id={`${which}-city`} className="input" value={a.city} onChange={(e) => setAddr(which, { city: e.target.value })} /></div>
-            <div className="field"><label htmlFor={`${which}-postal`}>{t('postal')}</label><input id={`${which}-postal`} className="input" value={a.postal} onChange={(e) => setAddr(which, { postal: e.target.value })} /></div>
-            <div className="field"><label htmlFor={`${which}-floor`}>{t('floor')}</label><input id={`${which}-floor`} className="input" inputMode="numeric" placeholder="0" value={a.floor} onChange={(e) => setAddr(which, { floor: e.target.value })} /><span className="hint">{t('floorHint')}</span></div>
-          </div>
-          <div className="field"><span className="lbl">{t('elevator')}</span>
-            <div className="seg3" role="group">
-              <button type="button" aria-pressed={a.elevator === 'yes'} onClick={() => setAddr(which, { elevator: 'yes' })}>{t('elevatorYes')}</button>
-              <button type="button" aria-pressed={a.elevator === 'no'} onClick={() => setAddr(which, { elevator: 'no' })}>{t('elevatorNo')}</button>
-              <button type="button" aria-pressed={a.elevator === ''} onClick={() => setAddr(which, { elevator: '' })}>{t('elevatorUnknown')}</button>
-            </div></div>
-          <div className="field"><label htmlFor={`${which}-access`}>{t('access')}</label><input id={`${which}-access`} className="input" maxLength={300} value={a.access} onChange={(e) => setAddr(which, { access: e.target.value })} /><span className="hint">{t('accessHint')}</span></div>
-        </div>
-      </div>
-    );
-  };
+  const errText = err ? tt(`errors.${err}`) : stepErr ? tt(`errors.${stepErr}`) : null;
+  // O próprio "step" já é a posição visual certa: quando não há etapa de extras, os blocos abaixo
+  // simplesmente respondem a números de passo mais baixos (a "janela" desliza), sem precisar de ajuste aqui.
+  const totalShown = stepCount;
 
   return (
     <div>
-      <Intro />
-    <form className="movef" onSubmit={submit}>
-      <div>
-        <h3 className="sec-t">{t('moveType')}</h3>
-        <div className="seg3" role="group">{MOVE_TYPES.map((mt) => <button type="button" key={mt} aria-pressed={f.moveType === mt} onClick={() => set('moveType', mt)}>{tt(`type.${mt}`)}</button>)}</div>
-      </div>
-      <div>
-        <h3 className="sec-t">{t('volume')}</h3>
-        <div className="frow" style={{ alignItems: 'end' }}>
-          <div className="field"><label htmlFor="mv-volume">{t('volume')}</label><input id="mv-volume" className="input" inputMode="decimal" placeholder="30" value={f.volume} onChange={(e) => set('volume', e.target.value)} /></div>
-          {cfg.typologies.length > 0 && (
-            <div className="field"><label htmlFor="mv-typo">{t('typology')}</label>
-              <select id="mv-typo" className="input" value="" onChange={(e) => { const v = estimateVolume(e.target.value, cfg); if (v != null) set('volume', String(v)); }}>
-                <option value="">{t('chooseTypology')}</option>{cfg.typologies.map((ty) => <option key={ty.key} value={ty.key}>{ty.key} · {ty.m3} m³</option>)}
-              </select></div>
-          )}
+      <h2 style={{ fontSize: 24, fontWeight: 700, letterSpacing: '-.025em', marginBottom: 6 }}>{t('title')}</h2>
+      <p className="muted" style={{ marginBottom: 18 }}>{t('intro')}</p>
+
+      <div className="step-progress" aria-hidden="true">{Array.from({ length: totalShown }, (_, i) => <span key={i} className={`seg ${i < step ? 'on' : ''}`} />)}</div>
+      <p className="step-label">{tt('stepOf', { step, total: totalShown })}</p>
+
+      <form className="movef" onSubmit={(e) => { e.preventDefault(); next(); }}>
+        {step === 1 && (
+          <>
+            <div>
+              <h3 className="sec-t">{t('moveType')}</h3>
+              <div className="seg3" role="group">{MOVE_TYPES.map((mt) => <button type="button" key={mt} aria-pressed={f.moveType === mt} onClick={() => set('moveType', mt)}>{tt(`type.${mt}`)}</button>)}</div>
+            </div>
+            <div>
+              <h3 className="sec-t">{t('volume')}</h3>
+              <div className="frow" style={{ alignItems: 'end' }}>
+                <div className="field"><label htmlFor="mv-volume">{t('volume')}</label><input id="mv-volume" className="input" inputMode="decimal" placeholder="30" value={f.volume} onChange={(e) => set('volume', e.target.value)} /></div>
+                {cfg.typologies.length > 0 && (
+                  <div className="field"><label htmlFor="mv-typo">{t('typology')}</label>
+                    <select id="mv-typo" className="input" value="" onChange={(e) => { const v = estimateVolume(e.target.value, cfg); if (v != null) set('volume', String(v)); }}>
+                      <option value="">{t('chooseTypology')}</option>{cfg.typologies.map((ty) => <option key={ty.key} value={ty.key}>{ty.key} · {ty.m3} m³</option>)}
+                    </select></div>
+                )}
+              </div>
+              <p className="hint">{t('volumeHint')}</p>
+            </div>
+          </>
+        )}
+
+        {step === 2 && <AddressFields which="origin" label={t('origin')} a={f.origin} onChange={(p) => setAddr('origin', p)} t={tt} />}
+        {step === 3 && <AddressFields which="destination" label={t('destination')} a={f.destination} onChange={(p) => setAddr('destination', p)} t={tt} />}
+
+        {step === 4 && hasExtrasStep && (
+          <>
+            {cfg.extras.length > 0 && (
+              <div><h3 className="sec-t">{t('extras')}</h3>
+                <div className="check-grid">{cfg.extras.map((e) => (
+                  <label key={e.name} className={`check-opt ${f.extras.includes(e.name) ? 'on' : ''}`}><input type="checkbox" checked={f.extras.includes(e.name)} onChange={() => toggle('extras', e.name)} />{e.name}</label>
+                ))}</div></div>
+            )}
+            {cfg.special_items.length > 0 && (
+              <div><h3 className="sec-t">{t('special')}</h3><p className="hint" style={{ marginTop: -6, marginBottom: 10 }}>{t('specialHint')}</p>
+                <div className="check-grid">{cfg.special_items.map((s) => (
+                  <label key={s} className={`check-opt ${f.special.includes(s) ? 'on' : ''}`}><input type="checkbox" checked={f.special.includes(s)} onChange={() => toggle('special', s)} />{s}</label>
+                ))}</div></div>
+            )}
+          </>
+        )}
+
+        {step === (hasExtrasStep ? 5 : 4) && (
+          <div>
+            <h3 className="sec-t">{t('when')}</h3>
+            <div className="frow">
+              <div className="field"><label htmlFor="mv-date">{t('preferredDate')}</label><input id="mv-date" className="input" type="date" min={today} value={f.preferredDate} onChange={(e) => set('preferredDate', e.target.value)} />
+                {f.preferredDate && fullDays.includes(f.preferredDate) && <span className="hint" style={{ color: 'var(--warn)' }}>{t('dayFull')}</span>}</div>
+              <div className="field"><span className="lbl">{t('window')}</span>
+                <div className="seg3" role="group"><button type="button" aria-pressed={f.window === 'any'} onClick={() => set('window', 'any')}>{t('windowAny')}</button><button type="button" aria-pressed={f.window === 'morning'} onClick={() => set('window', 'morning')}>{t('windowMorning')}</button><button type="button" aria-pressed={f.window === 'afternoon'} onClick={() => set('window', 'afternoon')}>{t('windowAfternoon')}</button></div></div>
+            </div>
+            <label className="check-opt" style={{ marginTop: 10, display: 'inline-flex' }}><input type="checkbox" checked={f.flexible} onChange={(e) => set('flexible', e.target.checked)} />{t('flexible')}</label>
+          </div>
+        )}
+
+        {step === (hasExtrasStep ? 6 : 5) && (
+          <>
+            <div className="field"><label htmlFor="mv-notes">{t('notes')}</label><textarea id="mv-notes" className="input" rows={4} maxLength={2000} value={f.notes} onChange={(e) => set('notes', e.target.value)} /><span className="hint">{t('notesHint')}</span></div>
+            <div>
+              <h3 className="sec-t">{t('contact')}</h3>
+              <div className="frow">
+                <div className="field"><label htmlFor="mv-name">{t('name')}</label><input id="mv-name" className="input" autoComplete="name" value={f.name} onChange={(e) => set('name', e.target.value)} /></div>
+                <div className="field"><label htmlFor="mv-phone">{t('phone')}</label><input id="mv-phone" className="input" type="tel" inputMode="tel" autoComplete="tel" value={f.phone} onChange={(e) => set('phone', e.target.value)} /></div>
+                <div className="field"><label htmlFor="mv-email">{t('email')}</label><input id="mv-email" className="input" type="email" autoComplete="email" value={f.email} onChange={(e) => set('email', e.target.value)} /></div>
+              </div>
+            </div>
+            <label className="consent-row"><input type="checkbox" checked={f.consent} onChange={(e) => set('consent', e.target.checked)} /><span>{t('consent')}{cfg.privacy_url && <> · <a className="link" href={cfg.privacy_url} target="_blank" rel="noopener">{t('privacyLink')}</a></>}</span></label>
+          </>
+        )}
+
+        {errText && <p className="err" role="alert">{errText}</p>}
+        <div className="step-nav">
+          {step > 1 && <button type="button" className="btn gray" onClick={back}>{t('stepBack')}</button>}
+          <button className="btn" type="submit" disabled={busy}>{busy ? t('submitting') : step < stepCount ? t('stepNext') : t('submit')}</button>
         </div>
-        <p className="hint">{t('volumeHint')}</p>
-      </div>
-
-      <AddressFields which="origin" label={t('origin')} />
-      <AddressFields which="destination" label={t('destination')} />
-
-      {cfg.extras.length > 0 && (
-        <div><h3 className="sec-t">{t('extras')}</h3>
-          <div className="check-grid">{cfg.extras.map((e) => (
-            <label key={e.name} className={`check-opt ${f.extras.includes(e.name) ? 'on' : ''}`}><input type="checkbox" checked={f.extras.includes(e.name)} onChange={() => toggle('extras', e.name)} />{e.name}</label>
-          ))}</div></div>
-      )}
-      {cfg.special_items.length > 0 && (
-        <div><h3 className="sec-t">{t('special')}</h3><p className="hint" style={{ marginTop: -6, marginBottom: 10 }}>{t('specialHint')}</p>
-          <div className="check-grid">{cfg.special_items.map((s) => (
-            <label key={s} className={`check-opt ${f.special.includes(s) ? 'on' : ''}`}><input type="checkbox" checked={f.special.includes(s)} onChange={() => toggle('special', s)} />{s}</label>
-          ))}</div></div>
-      )}
-
-      <div>
-        <h3 className="sec-t">{t('when')}</h3>
-        <div className="frow">
-          <div className="field"><label htmlFor="mv-date">{t('preferredDate')}</label><input id="mv-date" className="input" type="date" min={today} value={f.preferredDate} onChange={(e) => set('preferredDate', e.target.value)} />
-            {f.preferredDate && fullDays.includes(f.preferredDate) && <span className="hint" style={{ color: 'var(--warn)' }}>{t('dayFull')}</span>}</div>
-          <div className="field"><span className="lbl">{t('window')}</span>
-            <div className="seg3" role="group"><button type="button" aria-pressed={f.window === 'any'} onClick={() => set('window', 'any')}>{t('windowAny')}</button><button type="button" aria-pressed={f.window === 'morning'} onClick={() => set('window', 'morning')}>{t('windowMorning')}</button><button type="button" aria-pressed={f.window === 'afternoon'} onClick={() => set('window', 'afternoon')}>{t('windowAfternoon')}</button></div></div>
-        </div>
-        <label className="check-opt" style={{ marginTop: 10, display: 'inline-flex' }}><input type="checkbox" checked={f.flexible} onChange={(e) => set('flexible', e.target.checked)} />{t('flexible')}</label>
-      </div>
-
-      <div className="field"><label htmlFor="mv-notes">{t('notes')}</label><textarea id="mv-notes" className="input" rows={4} maxLength={2000} value={f.notes} onChange={(e) => set('notes', e.target.value)} /><span className="hint">{t('notesHint')}</span></div>
-
-      <div>
-        <h3 className="sec-t">{t('contact')}</h3>
-        <div className="frow">
-          <div className="field"><label htmlFor="mv-name">{t('name')}</label><input id="mv-name" className="input" autoComplete="name" value={f.name} onChange={(e) => set('name', e.target.value)} /></div>
-          <div className="field"><label htmlFor="mv-phone">{t('phone')}</label><input id="mv-phone" className="input" type="tel" inputMode="tel" autoComplete="tel" value={f.phone} onChange={(e) => set('phone', e.target.value)} /></div>
-          <div className="field"><label htmlFor="mv-email">{t('email')}</label><input id="mv-email" className="input" type="email" autoComplete="email" value={f.email} onChange={(e) => set('email', e.target.value)} /></div>
-        </div>
-      </div>
-
-      <label className="consent-row"><input type="checkbox" checked={f.consent} onChange={(e) => set('consent', e.target.checked)} /><span>{t('consent')}{cfg.privacy_url && <> · <a className="link" href={cfg.privacy_url} target="_blank" rel="noopener">{t('privacyLink')}</a></>}</span></label>
-
-      {errText && <p className="err" role="alert">{errText}</p>}
-      <button className="btn block" type="submit" disabled={busy}>{busy ? t('submitting') : t('submit')}</button>
-    </form>
+      </form>
     </div>
   );
 }

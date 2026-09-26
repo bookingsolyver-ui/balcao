@@ -860,7 +860,10 @@
       "not_found": "Pedido não encontrado.",
       "cannot_respond": "Este pedido já não pode ser respondido.",
       "generic": "Não foi possível enviar o pedido. Tente novamente."
-    }
+    },
+    "stepOf": "Passo {step} de {total}",
+    "stepNext": "Seguinte",
+    "stepBack": "Voltar"
   },
   "moveOrders": {
     "title": "Pedidos de mudança",

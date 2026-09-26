@@ -860,7 +860,10 @@
       "not_found": "Solicitud no encontrada.",
       "cannot_respond": "Esta solicitud ya no se puede responder.",
       "generic": "No se pudo enviar la solicitud. Inténtalo de nuevo."
-    }
+    },
+    "stepOf": "Paso {step} de {total}",
+    "stepNext": "Siguiente",
+    "stepBack": "Atrás"
   },
   "moveOrders": {
     "title": "Solicitudes de mudanza",

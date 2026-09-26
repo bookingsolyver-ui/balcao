@@ -860,7 +860,10 @@
       "not_found": "Request not found.",
       "cannot_respond": "This request can no longer be responded to.",
       "generic": "Could not send the request. Please try again."
-    }
+    },
+    "stepOf": "Step {step} of {total}",
+    "stepNext": "Next",
+    "stepBack": "Back"
   },
   "moveOrders": {
     "title": "Move requests",
